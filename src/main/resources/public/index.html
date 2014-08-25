@@ -1,0 +1,20 @@
+<!doctype html>
+<html ng-app>
+<head>
+    <title>EMS - Enterprise Monitoring System</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+    <script src="device.js"></script>
+</head>
+
+<body>
+<div ng-controller="DeviceController">
+
+    <ul>
+        <li ng-repeat="device in devices">
+            <p>Name {{device.name}}</p>
+            <p>Type {{device.deviceSpecification.name}}</p>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
