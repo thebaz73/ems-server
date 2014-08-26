@@ -8,8 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import javax.sql.DataSource;
 
 /**
  * Application
@@ -18,7 +31,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-public class Application implements CommandLineRunner {
+public class Application extends WebMvcConfigurerAdapter implements CommandLineRunner {
+    private static final String[] RESOURCE_LOCATIONS = {
+            "classpath:/META-INF/resources/", "classpath:/resources/",
+            "classpath:/static/", "classpath:/public/" };
     @Autowired
     DeviceSpecificationRepository specificationRepository;
     @Autowired
@@ -26,6 +42,75 @@ public class Application implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/home").setViewName("home");
+        registry.addViewController("/").setViewName("home");
+        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/about").setViewName("home");
+        registry.addViewController("/contact").setViewName("home");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        if (!registry.hasMappingForPattern("/webjars/**")) {
+            registry.addResourceHandler("/webjars/**").addResourceLocations(
+                    "classpath:/META-INF/resources/webjars/");
+        }
+        if (!registry.hasMappingForPattern("/**")) {
+            registry.addResourceHandler("/**").addResourceLocations(
+                    RESOURCE_LOCATIONS);
+        }
+    }
+
+    @Bean
+    public ApplicationSecurity applicationSecurity() {
+        return new ApplicationSecurity();
+    }
+
+    @Bean
+    public AuthenticationSecurity authenticationSecurity() {
+        return new AuthenticationSecurity();
+    }
+
+    @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+    protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        private SecurityProperties security;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .authorizeRequests()
+                    .antMatchers("/webjars/**").permitAll()
+                    .anyRequest().authenticated();
+            http
+                    .formLogin()
+                    .loginPage("/login")
+                    .failureUrl("/login?error")
+                    .permitAll()
+                    .and()
+                    .logout()
+                    .permitAll();
+        }
+    }
+
+    @Order(Ordered.HIGHEST_PRECEDENCE + 10)
+    protected static class AuthenticationSecurity extends
+            GlobalAuthenticationConfigurerAdapter {
+
+        @Autowired
+        private DataSource dataSource;
+
+        @Override
+        public void init(AuthenticationManagerBuilder auth) throws Exception {
+            auth.jdbcAuthentication().dataSource(this.dataSource).withUser("admin")
+                    .password("admin").roles("ADMIN", "USER").and().withUser("user")
+                    .password("user").roles("USER");
+        }
     }
 
     @Override

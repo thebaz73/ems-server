@@ -23,12 +23,12 @@ public class InventoryController {
     @Autowired
     DeviceSpecificationRepository deviceSpecificationRepository;
 
-    @RequestMapping(value = "devices", method = GET, produces = "application/json")
+    @RequestMapping(value = "devices", method = GET)
     List<Device> devices() {
         return deviceRepository.findAll();
     }
 
-    @RequestMapping(value = "specifications", method = GET, produces = "application/json")
+    @RequestMapping(value = "specifications", method = GET)
     List<DeviceSpecification> specifications() {
         return deviceSpecificationRepository.findAll();
     }
