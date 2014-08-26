@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:include="head">
-</head>
-
+<head th:include="head"/>
 <body>
-<header th:include="navbar"></header>
+<header th:include="navbar"/>
+
 <section class="container">
+    <p class="alert alert-info" th:text="${#httpServletRequest.requestURI}">Test</p>
 </section>
 
-<footer th:include="footer"></footer>
-<section th:include="scripts"></section>
+<footer th:include="footer"/>
+<section th:include="scripts"/>
 </body>
 </html>

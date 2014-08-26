@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:include="head">
-</head>
+<head th:include="head"/>
 
 <body>
-<header th:include="navbar"></header>
+<header class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}" href="/">EMS</a>
+        </div>
+        <div class="collapse navbar-collapse">
+        </div><!--/.nav-collapse -->
+    </div>
+</header>
 <section class="container">
-    <h1 th:text="${title}">Title</h1>
+    <h1 th:text="${title}">Error</h1>
     <div id="created" th:text="${#dates.format(timestamp)}">July 11,
         2012 2:17:16 PM CDT</div>
     <div>
@@ -19,7 +32,7 @@
     </div>
 </section>
 
-<footer th:include="footer"></footer>
-<section th:include="scripts"></section>
+<footer th:include="footer"/>
+<section th:include="scripts"/>
 </body>
 </html>

@@ -16,8 +16,8 @@
         <div class="collapse navbar-collapse">
             <p class="navbar-text" th:inline="text">Welcome, [[${#httpServletRequest.remoteUser}]]!</p>
             <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a th:href="@{/}" href="/">Home</a></li>
-                <li class="dropdown">
+                <li th:class="${#httpServletRequest.requestURI == '/'} ? 'active'"><a th:href="@{/}" href="/">Home</a></li>
+                <li th:class="${#httpServletRequest.requestURI.startsWith('/devices')} ? 'active dropdown' : 'dropdown'">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Devices <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="#">Action</a></li>
@@ -29,9 +29,9 @@
                         <li><a href="#">One more separated link</a></li>
                     </ul>
                 </li>
-                <li><a th:href="@{/contact}" href="/contact">Contact</a></li>
-                <li><a th:href="@{/about}" href="/about">About</a></li>
-                <li><a th:href="@{/logout}" href="/logout">Logout</a></li>
+                <li th:class="${#httpServletRequest.requestURI == '/contact'} ? 'active'"><a th:href="@{/contact}" href="/contact">Contact</a></li>
+                <li th:class="${#httpServletRequest.requestURI == '/about'} ? 'active'"><a th:href="@{/about}" href="/about">About</a></li>
+                <li th:class="${#httpServletRequest.requestURI == '/logout'} ? 'active'"><a th:href="@{/logout}" href="/logout">Logout</a></li>
             </ul>
             <form class="navbar-form navbar-right">
                 <input type="text" class="form-control" placeholder="Search..."/>
