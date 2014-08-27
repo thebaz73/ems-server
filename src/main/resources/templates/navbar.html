@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <body>
-<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+<div th:fragment="secure" class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -40,6 +40,27 @@
         </div><!--/.nav-collapse -->
     </div>
 </div>
+<div th:fragment="common" class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}" href="/">EMS</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li th:class="${#httpServletRequest.requestURI == '/'} ? 'active'"><a th:href="@{/}" href="/">Home</a></li>
+                <li th:class="${#httpServletRequest.requestURI == '/contact'} ? 'active'"><a th:href="@{/contact}" href="/contact">Contact</a></li>
+                <li th:class="${#httpServletRequest.requestURI == '/about'} ? 'active'"><a th:href="@{/about}" href="/about">About</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+
 </body>
 </html>
 

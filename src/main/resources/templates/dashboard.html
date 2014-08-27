@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org">
 <head th:include="head"/>
 <body>
-<header th:include="navbar"/>
+<header th:include="navbar::secure" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section class="container">
     <p class="alert alert-info" th:text="${#httpServletRequest.requestURI}">Test</p>

@@ -47,11 +47,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/home").setViewName("home");
-        registry.addViewController("/").setViewName("home");
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/about").setViewName("home");
-        registry.addViewController("/contact").setViewName("home");
+        registry.addViewController("/about").setViewName("mktg");
+        registry.addViewController("/contact").setViewName("mktg");
     }
 
     @Override
@@ -86,7 +84,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-                    .antMatchers("/webjars/**").permitAll()
+                    .antMatchers("/webjars/**", "/about", "/contact").permitAll()
                     .anyRequest().authenticated();
             http
                     .formLogin()
