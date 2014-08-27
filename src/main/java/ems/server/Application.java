@@ -5,6 +5,8 @@ import ems.server.data.DeviceRepository;
 import ems.server.data.DeviceSpecificationRepository;
 import ems.server.domain.Device;
 import ems.server.domain.DeviceSpecification;
+import ems.server.domain.EmsRole;
+import ems.server.domain.EmsUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,10 +21,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -118,23 +116,29 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception {
-            PasswordEncoder encoder = new BCryptPasswordEncoder();
+            EmsUser user;
 
-            auth.userDetailsService(userManager).passwordEncoder(encoder);
+            auth.userDetailsService(userManager).passwordEncoder(userManager.getEncoder());
             auth.jdbcAuthentication().dataSource(dataSource);
 
-            if (!userManager.userExists("user")) {
-                User user = new User("user", encoder.encode("user"),
-                        Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-
+            user = new EmsUser("user", "user",
+                    Arrays.asList(new EmsRole("ROLE_USER")));
+            user.setName("Normal user");
+            if (!userManager.userCreated("user")) {
                 userManager.createUser(user);
             }
+            else {
+                userManager.allocateUser(user);
+            }
 
-            if (!userManager.userExists("admin")) {
-                User user = new User("admin", encoder.encode("admin"),
-                        Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER")));
-
+            user = new EmsUser("admin", "admin",
+                    Arrays.asList(new EmsRole("ROLE_ADMIN"), new EmsRole("ROLE_USER")));
+            user.setName("Administrator user");
+            if (!userManager.userCreated("admin")) {
                 userManager.createUser(user);
+            }
+            else {
+                userManager.allocateUser(user);
             }
         }
     }

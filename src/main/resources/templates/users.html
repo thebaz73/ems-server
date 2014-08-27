@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:replace="head"/>
+<body>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+
+<section class="container" th:unless="${#lists.isEmpty(allUsers)}">
+        <h2 th:text="#{title.user.list}">List of</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th th:text="#{user.name}">Name</th>
+                <th th:text="#{user.email}">Email</th>
+                <th th:text="#{user.username}">Username</th>
+                <th th:text="#{user.roles}">Roles</th>
+                <th th:text="#{user.actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="aUser : ${allUsers}">
+                <td th:text="${aUser.name}">Name</td>
+                <td th:text="${aUser.email}">Email</td>
+                <td th:text="${aUser.username}">Username</td>
+                <!--<td th:text="${#strings.arrayJoin(-->
+                             <!--#messages.arrayMsg(-->
+                               <!--#strings.arrayPrepend(u.roles,'seedstarter.feature.')),-->
+                             <!--', ')}">Electric Heating, Turf</td>-->
+                <td>
+                    <table>
+                        <tbody>
+                        <tr th:each="row,rowStat : ${aUser.roles}">
+                            <td th:text="${rowStat.count}">1</td>
+                            <td>.&nbsp;</td>
+                            <td th:text="${#messages.msg('user.role.'+row.role.name)}">role</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td><form class="form-inline" role="form" th:action="@{/admin/users/} + ${aUser.username}" action="#" method="POST">
+                    <input type="hidden" name="_method" value="DELETE"/>
+                    <button type="submit" class="btn btn-default btn-sm" value="delete"><span class="glyphicon glyphicon-remove-circle"></span> <span th:text="#{user.delete}">Delete</span></button>
+                </form></td>
+            </tr>
+            </tbody>
+        </table>
+</section>
+<section class="container">
+    <h2 th:text="#{title.user.new}">Add new</h2>
+    <form class="form-horizontal col-xs-12 col-sm-6 col-md-8 col-md-offset-2" role="form" th:action="@{/admin/users}" th:object="${emsUser}" action="#" method="POST">
+        <div class="form-group">
+            <legend style="text-align:center;" th:text="#{user.data}">User Data</legend>
+        </div>
+
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label" th:text="#{user.name}">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email" class="col-sm-2 control-label" th:text="#{user.email}">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="username" class="col-sm-2 control-label" th:text="#{user.username}">username</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" th:field="*{username}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-sm-2 control-label" th:text="#{user.password}">password</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" th:field="*{password}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" th:text="#{user.roles}">roles</label>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{user.roles.head.rownum}">Row</th>
+                    <th th:text="#{user.roles.head.role}">Role</th>
+                    <th>
+                        <button type="submit" name="addRole" class="btn btn-default btn-sm" th:text="#{user.role.add}">Add role</button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row,rowStat : *{roles}">
+                    <td th:text="${rowStat.count}">1</td>
+                    <td>
+                        <select th:field="*{roles[__${rowStat.index}__].role}">
+                            <option th:each="var : ${allRoles}" th:value="${var}" th:text="#{${'user.role.'+var}}">Role</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="submit" name="removeRole" class="btn btn-default btn-sm" th:value="${rowStat.index}" th:text="#{user.role.remove}">Remove role</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--<div class="col-sm-10">
+                <input type="roles" class="form-control" id="roles" th:field="*{roles}" th:errorclass="has-error"/>
+            </div>-->
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-8 col-sm-5">
+                <button type="submit" class="btn btn-primary" th:text="#{user.create}">Add User</button>
+                <button type="reset" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<footer th:include="footer"/>
+<section th:replace="scripts"/>
+</body>
+</html>
