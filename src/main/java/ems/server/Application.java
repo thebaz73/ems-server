@@ -1,5 +1,6 @@
 package ems.server;
 
+import ems.server.admin.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.DeviceSpecificationRepository;
 import ems.server.domain.Device;
@@ -18,12 +19,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 /**
  * Application
@@ -85,6 +91,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             http
                     .authorizeRequests()
                     .antMatchers("/webjars/**", "/about", "/contact").permitAll()
+                    .antMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
             http
                     .formLogin()
@@ -94,7 +101,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
                     .and()
                     .logout()
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/login");
+                    .logoutSuccessUrl("/login")
+                    .and()
+                    .rememberMe();
         }
     }
 
@@ -104,12 +113,29 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
         @Autowired
         private DataSource dataSource;
+        @Autowired
+        private UserManager userManager;
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception {
-            auth.jdbcAuthentication().dataSource(this.dataSource).withUser("admin")
-                    .password("admin").roles("ADMIN", "USER").and().withUser("user")
-                    .password("user").roles("USER");
+            PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+            auth.userDetailsService(userManager).passwordEncoder(encoder);
+            auth.jdbcAuthentication().dataSource(dataSource);
+
+            if (!userManager.userExists("user")) {
+                User user = new User("user", encoder.encode("user"),
+                        Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+
+                userManager.createUser(user);
+            }
+
+            if (!userManager.userExists("admin")) {
+                User user = new User("admin", encoder.encode("admin"),
+                        Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER")));
+
+                userManager.createUser(user);
+            }
         }
     }
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:include="head"/>
+<head th:replace="head"/>
 
 <body>
-<header th:include="navbar::common" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 <section class="container">
     <h1 th:text="${title}">Error</h1>
     <div id="created" th:text="${#dates.format(timestamp)}">July 11,
@@ -19,6 +19,7 @@
 </section>
 
 <footer th:include="footer"/>
-<section th:include="scripts"/>
+<section th:replace="scripts"/>
+
 </body>
 </html>

@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-<head th:include="head"/>
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:replace="head"/>
 <body>
-<header th:include="navbar::secure" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section class="container">
     <p class="alert alert-info" th:text="${#httpServletRequest.requestURI}">Test</p>
+    <p class="alert alert-info">
+        Logged user: <span sec:authentication="name">Bob</span><br/>
+        Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+    </p>
 </section>
 
 <footer th:include="footer"/>
-<section th:include="scripts"/>
+<section th:replace="scripts"/>
 </body>
 </html>

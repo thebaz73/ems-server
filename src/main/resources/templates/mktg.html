@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:include="head"/>
+<head th:replace="head"/>
 <body>
-<header th:include="navbar::common" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section th:if="${#httpServletRequest.requestURI == '/contact'}" class="container">
     <div class="panel panel-default">
@@ -12,15 +12,13 @@
         </div>
         <div class="panel-body">
             <address>
-                <strong>Twitter, Inc.</strong><br/>
-                795 Folsom Ave, Suite 600<br/>
-                San Francisco, CA 94107<br/>
-                <abbr title="Phone">P:</abbr> (123) 456-7890
-            </address>
-
-            <address>
+                <strong>BAZNET</strong><br/>
                 <strong>Marco Bazzoni</strong><br/>
-                <a href="mailto:marco.bazzoni@baznet.net">marco.bazzoni@baznet.net</a>
+                795 Folsom Ave, Suite 600<br/>
+                San Francisco, CA 94107<br/><br/>
+                <abbr title="Web Site">WWW: </abbr><a href="http://baznet.net">www.baznet.net</a><br/>
+                <abbr title="Email Address">@: </abbr><a href="mailto:marco.bazzoni@baznet.net">marco.bazzoni@baznet.net</a><br/>
+                <abbr title="Mobile Phone">M: </abbr> (123) 456-7890
             </address>
         </div>
     </div>
@@ -39,6 +37,7 @@
 </section>
 
 <footer th:include="footer"/>
-<section th:include="scripts"/>
+<section th:replace="scripts"/>
+
 </body>
 </html>
