@@ -116,13 +116,14 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
         @Override
         public void init(AuthenticationManagerBuilder auth) throws Exception {
-            EmsUser user;
-
             auth.userDetailsService(userManager).passwordEncoder(userManager.getEncoder());
             auth.jdbcAuthentication().dataSource(dataSource);
 
-            user = new EmsUser("user", "user",
-                    Arrays.asList(new EmsRole("ROLE_USER")));
+            for (EmsUser emsUser : userManager.findAllUsers()) {
+                userManager.allocateUser(emsUser);
+            }
+
+            EmsUser user = new EmsUser("user", "user", Arrays.asList(new EmsRole("ROLE_USER")));
             user.setName("Normal user");
             if (!userManager.userCreated("user")) {
                 userManager.createUser(user);
@@ -131,14 +132,10 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
                 userManager.allocateUser(user);
             }
 
-            user = new EmsUser("admin", "admin",
-                    Arrays.asList(new EmsRole("ROLE_ADMIN"), new EmsRole("ROLE_USER")));
-            user.setName("Administrator user");
+            EmsUser admin = new EmsUser("admin", "admin", Arrays.asList(new EmsRole("ROLE_ADMIN"), new EmsRole("ROLE_USER")));
+            admin.setName("Administrator user");
             if (!userManager.userCreated("admin")) {
-                userManager.createUser(user);
-            }
-            else {
-                userManager.allocateUser(user);
+                userManager.createUser(admin);
             }
         }
     }

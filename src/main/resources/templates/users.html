@@ -6,7 +6,9 @@
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section class="container" th:unless="${#lists.isEmpty(allUsers)}">
-        <h2 th:text="#{title.user.list}">List of</h2>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading" th:text="#{title.user.list}">List of</div>
         <table class="table table-striped">
             <thead>
             <tr>
@@ -22,10 +24,6 @@
                 <td th:text="${aUser.name}">Name</td>
                 <td th:text="${aUser.email}">Email</td>
                 <td th:text="${aUser.username}">Username</td>
-                <!--<td th:text="${#strings.arrayJoin(-->
-                             <!--#messages.arrayMsg(-->
-                               <!--#strings.arrayPrepend(u.roles,'seedstarter.feature.')),-->
-                             <!--', ')}">Electric Heating, Turf</td>-->
                 <td>
                     <table>
                         <tbody>
@@ -37,13 +35,14 @@
                         </tbody>
                     </table>
                 </td>
-                <td><form class="form-inline" role="form" th:action="@{/admin/users/} + ${aUser.username}" action="#" method="POST">
+                <td><form th:unless="${aUser.username == 'admin'}" class="form-inline" role="form" th:action="@{/admin/users/} + ${aUser.username}" action="#" method="POST">
                     <input type="hidden" name="_method" value="DELETE"/>
                     <button type="submit" class="btn btn-default btn-sm" value="delete"><span class="glyphicon glyphicon-remove-circle"></span> <span th:text="#{user.delete}">Delete</span></button>
                 </form></td>
             </tr>
             </tbody>
         </table>
+    </div>
 </section>
 <section class="container">
     <h2 th:text="#{title.user.new}">Add new</h2>
