@@ -3,7 +3,7 @@ package ems.server.web;
  * Copyright
  */
 
-import ems.server.admin.ConfigurationManager;
+import ems.server.business.ConfigurationManager;
 import ems.server.domain.EmsConfigurationEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

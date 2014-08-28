@@ -1,6 +1,6 @@
 package ems.server;
 
-import ems.server.admin.UserManager;
+import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.DeviceSpecificationRepository;
 import ems.server.data.EmsConfigurationRepository;

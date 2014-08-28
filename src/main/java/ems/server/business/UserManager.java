@@ -1,4 +1,4 @@
-package ems.server.admin;
+package ems.server.business;
 /*
  * Copyright
  */

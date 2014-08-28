@@ -3,7 +3,7 @@ package ems.server.web;
  * Copyright
  */
 
-import ems.server.admin.UserManager;
+import ems.server.business.UserManager;
 import ems.server.domain.EmsRole;
 import ems.server.domain.EmsUser;
 import ems.server.domain.Role;
