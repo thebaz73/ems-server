@@ -3,10 +3,8 @@ package ems.server;
 import ems.server.admin.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.DeviceSpecificationRepository;
-import ems.server.domain.Device;
-import ems.server.domain.DeviceSpecification;
-import ems.server.domain.EmsRole;
-import ems.server.domain.EmsUser;
+import ems.server.data.EmsConfigurationRepository;
+import ems.server.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -44,6 +42,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     DeviceSpecificationRepository specificationRepository;
     @Autowired
     DeviceRepository deviceRepository;
+    @Autowired
+    EmsConfigurationRepository configurationRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -157,6 +157,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d2.setName("Device002");
             d2.setDeviceSpecification(specification);
             deviceRepository.save(d2);
+        }
+        if(configurationRepository.count() == 0) {
+            configurationRepository.save(new EmsConfigurationEntry("test", "test"));
         }
     }
 }

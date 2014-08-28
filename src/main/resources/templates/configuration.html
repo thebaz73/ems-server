@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="head"/>
+<body>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+
+<section class="container" th:unless="${#lists.isEmpty(allEntries)}">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading" th:text="#{title.configuration.list}">List of</div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th th:text="#{configuration.key}">Key</th>
+                <th th:text="#{configuration.value}">Value</th>
+                <th th:text="#{configuration.actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="aConfiguration : ${allEntries}" valign="middle">
+                <td th:text="${aConfiguration.key}">Key</td>
+                <td th:text="${aConfiguration.value}">Value</td>
+                <td><form class="form-inline" role="form" th:action="@{/admin/configuration/} + ${aConfiguration.id}" action="#" method="GET">
+                    <button type="submit" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span> <span th:text="#{configuration.edit}">Edit</span></button>
+                </form></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<section class="container" th:if="${(process != null) and (process == 'edit')}">
+    <form class="form-horizontal col-xs-12 col-sm-6 col-md-8 col-md-offset-2" role="form" th:action="@{/admin/configuration}" th:object="${emsConfigurationEntry}" action="#" method="POST">
+        <input type="hidden" name="_method" value="PUT"/>
+        <div class="form-group">
+            <legend style="text-align:center;" th:text="#{configuration.data}">Configuration Data</legend>
+        </div>
+
+        <input type="hidden" id="id" th:field="*{id}"/>
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="key" class="col-sm-2 control-label" th:text="#{configuration.key}">Key</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="key" th:field="*{key}" th:errorclass="has-error" readonly="readonly"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="value" class="col-sm-2 control-label" th:text="#{configuration.value}">Value</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="value" th:field="*{value}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-8 col-sm-5">
+                <button type="submit" class="btn btn-success" value="put" th:text="#{configuration.edit}">Edit Configuration</button>
+                <button type="reset" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<footer th:include="footer"/>
+<section th:replace="scripts"/>
+</body>
+</html>

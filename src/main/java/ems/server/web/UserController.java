@@ -30,7 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Time: 1:14 PM
  */
 @Controller
-public class AdministratorController {
+public class UserController {
     @Autowired
     private UserManager userManager;
 
@@ -69,7 +69,7 @@ public class AdministratorController {
     }
 
     @RequestMapping(value = "/admin/users", method = GET)
-    public String showUser(Model model) {
+    public String show(Model model) {
         model.addAttribute("emsUser", new EmsUser());
         return "users";
     }
