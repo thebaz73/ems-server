@@ -1,18 +1,26 @@
 package ems.server.domain;
 
-
 import org.springframework.data.annotation.Id;
 
 /**
- * DeviceSpecification
- * Created by thebaz on 25/08/14.
+ * Driver
+ * Created by thebaz on 8/28/14.
  */
-public class DeviceSpecification {
+public class Driver {
     @Id
     private String id;
 
     private String name;
-    private String type;
+    private Type type;
+    private String resource;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -22,11 +30,11 @@ public class DeviceSpecification {
         this.name = name;
     }
 
-    public String getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Type type) {
         this.type = type;
     }
 }

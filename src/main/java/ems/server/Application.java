@@ -2,7 +2,7 @@ package ems.server;
 
 import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
-import ems.server.data.DeviceSpecificationRepository;
+import ems.server.data.SpecificationRepository;
 import ems.server.data.EmsConfigurationRepository;
 import ems.server.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             "classpath:/META-INF/resources/", "classpath:/resources/",
             "classpath:/static/", "classpath:/public/" };
     @Autowired
-    DeviceSpecificationRepository specificationRepository;
+    SpecificationRepository specificationRepository;
     @Autowired
     DeviceRepository deviceRepository;
     @Autowired
@@ -143,19 +143,19 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     @Override
     public void run(String... args) throws Exception {
         if(specificationRepository.count() == 0) {
-            DeviceSpecification specification = new DeviceSpecification();
-            specification.setName("Test001");
-            specification.setType("Type001");
+            Specification specification = new Specification();
+            specification.setName("AcmeProbe");
+            specification.setType(Type.TYPE_PROBE);
             specificationRepository.save(specification);
 
             Device d1 = new Device();
             d1.setName("Device001");
-            d1.setDeviceSpecification(specification);
+            d1.setSpecification(specification);
             deviceRepository.save(d1);
 
             Device d2 = new Device();
             d2.setName("Device002");
-            d2.setDeviceSpecification(specification);
+            d2.setSpecification(specification);
             deviceRepository.save(d2);
         }
         if(configurationRepository.count() == 0) {

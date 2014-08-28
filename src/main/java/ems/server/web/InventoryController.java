@@ -1,9 +1,9 @@
 package ems.server.web;
 
 import ems.server.data.DeviceRepository;
-import ems.server.data.DeviceSpecificationRepository;
+import ems.server.data.SpecificationRepository;
 import ems.server.domain.Device;
-import ems.server.domain.DeviceSpecification;
+import ems.server.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ public class InventoryController {
     @Autowired
     DeviceRepository deviceRepository;
     @Autowired
-    DeviceSpecificationRepository deviceSpecificationRepository;
+    SpecificationRepository specificationRepository;
 
     @RequestMapping(value = "devices", method = GET)
     List<Device> devices() {
@@ -29,7 +29,7 @@ public class InventoryController {
     }
 
     @RequestMapping(value = "specifications", method = GET)
-    List<DeviceSpecification> specifications() {
-        return deviceSpecificationRepository.findAll();
+    List<Specification> specifications() {
+        return specificationRepository.findAll();
     }
 }

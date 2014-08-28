@@ -15,17 +15,13 @@ public enum Role {
     ROLE_ADMIN("ROLE_ADMIN"),
     ROLE_MANAGER("ROLE_MANAGER");
 
-
     public static final Role[] ALL = { ROLE_USER, ROLE_ADMIN, ROLE_MANAGER };
-
 
     private final String name;
 
-
-
     public static Role forName(final String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null for feature");
+            throw new IllegalArgumentException("Name cannot be null for role");
         }
         if (name.toUpperCase().equals("ROLE_USER")) {
             return ROLE_USER;
@@ -37,11 +33,9 @@ public enum Role {
         throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");
     }
 
-
     private Role(final String name) {
         this.name = name;
     }
-
 
     public String getName() {
         return this.name;
@@ -50,4 +44,5 @@ public enum Role {
     @Override
     public String toString() {
         return getName();
-    }}
+    }
+}
