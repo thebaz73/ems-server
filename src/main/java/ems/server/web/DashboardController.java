@@ -10,11 +10,8 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * WelcomeController
- * <p/>
- * User: mbazzoni
- * Date: 8/25/14
- * Time: 5:49 PM
+ * DashboardController
+ * Created by thebaz on 8/25/14.
  */
 @Controller
 public class DashboardController {
