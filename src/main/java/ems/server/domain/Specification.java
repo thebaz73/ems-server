@@ -1,6 +1,7 @@
 package ems.server.domain;
 
 
+import ems.driver.domain.Driver;
 import org.springframework.data.annotation.Id;
 
 /**
