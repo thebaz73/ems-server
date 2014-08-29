@@ -67,21 +67,6 @@
             <artifactId>bootstrap</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>ems.server</groupId>
-            <artifactId>ems-driver-probe</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>ems.server</groupId>
-            <artifactId>ems-driver-modulator</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>ems.server</groupId>
-            <artifactId>ems-driver-router</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <properties>

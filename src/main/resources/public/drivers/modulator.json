@@ -1,0 +1,41 @@
+{
+    "type":"object",
+    "title":"Modulator",
+    "properties":{
+        "status":{
+            "title":"Status",
+            "type":"string",
+            "enum":[ "OK", "WARN", "ERROR", "UNKNOWN" ]
+        },
+        "power":{
+            "title":"Power",
+            "type":"number"
+        },
+        "reflected-power":{
+            "title":"Reflected power",
+            "type":"number"
+        },
+        "nominal-power":{
+            "title":"Nominal power",
+            "type":"integer"
+        },
+        "location":{
+            "title":"Location",
+            "type":"object",
+            "properties":{
+                "latitude":{
+                    "title":"Latitude",
+                    "type":"number"
+                },
+                "longitude":{
+                    "title":"Longitude",
+                    "type":"number"
+                }
+            }
+        },
+        "alarm":{
+            "title":"Alarm",
+            "type":"boolean"
+        }
+    }
+}

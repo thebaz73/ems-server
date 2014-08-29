@@ -1,7 +1,6 @@
 package ems.server.domain;
 
 
-import ems.driver.domain.Driver;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -14,7 +13,7 @@ public class Specification {
 
     private String name;
     private Type type;
-    private Driver driver;
+    private String driver;
     private Protocol protocol;
 
     public String getId() {
@@ -41,11 +40,11 @@ public class Specification {
         this.type = type;
     }
 
-    public Driver getDriver() {
+    public String getDriver() {
         return driver;
     }
 
-    public void setDriver(Driver driver) {
+    public void setDriver(String driver) {
         this.driver = driver;
     }
 

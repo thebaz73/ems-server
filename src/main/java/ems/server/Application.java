@@ -143,20 +143,37 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     @Override
     public void run(String... args) throws Exception {
         if(specificationRepository.count() == 0) {
-            Specification specification = new Specification();
-            specification.setName("AcmeProbe");
-            specification.setType(Type.TYPE_PROBE);
-            specificationRepository.save(specification);
+            Specification s1 = new Specification();
+            s1.setName("AcmeProbe");
+            s1.setType(Type.TYPE_PROBE);
+            s1.setDriver("/drivers/probe.json");
+            specificationRepository.save(s1);
 
             Device d1 = new Device();
             d1.setName("Device001");
-            d1.setSpecification(specification);
+            d1.setSpecification(s1);
             deviceRepository.save(d1);
 
             Device d2 = new Device();
             d2.setName("Device002");
-            d2.setSpecification(specification);
+            d2.setSpecification(s1);
             deviceRepository.save(d2);
+
+            Specification s2 = new Specification();
+            s2.setName("AcmeModulator");
+            s2.setType(Type.TYPE_PROBE);
+            s2.setDriver("/drivers/modulator.json");
+            specificationRepository.save(s2);
+
+            Device d3 = new Device();
+            d3.setName("Device003");
+            d3.setSpecification(s2);
+            deviceRepository.save(d3);
+
+            Device d4 = new Device();
+            d4.setName("Device004");
+            d4.setSpecification(s2);
+            deviceRepository.save(d4);
         }
         if(configurationRepository.count() == 0) {
             configurationRepository.save(new EmsConfigurationEntry("test", "test"));
