@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:replace="head"/>
+<body>
+
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+
+<script>
+    // Set the default CSS theme and icon library globally
+    JSONEditor.defaults.theme = 'bootstrap3';
+    JSONEditor.defaults.iconlib = 'bootstrap3';
+    JSONEditor.defaults.options.disable_edit_json = true;
+    JSONEditor.defaults.options.disable_properties = true;
+</script>
+
+<section class="container">
+    <div class='row'>
+        <div class='col-xs-12 col-sm-6 col-md-8 col-md-offset-2'>
+            <button id='submit' class='btn btn-default btn-sm'>Submit (console.log)</button>
+            <span id='valid_indicator' class='label label-default'></span>
+        </div>
+    </div>
+    <div class='row'>
+        <div id='editor_holder'></div>
+    </div>
+
+    <script>
+        // Initialize the editor
+        var editor = new JSONEditor(document.getElementById('editor_holder'),{
+            // Enable fetching schemas via ajax
+            ajax: true,
+
+            // The schema for the editor
+            schema: {
+                $ref: "/drivers/probe.json" ,
+                format: "grid"
+            }
+        });
+
+        // Hook up the submit button to log to the console
+        document.getElementById('submit').addEventListener('click',function() {
+            // Get the value from the editor
+            console.log(editor.getValue());
+        });
+
+        // Hook up the validation indicator to update its
+        // status whenever the editor changes
+        editor.on('change',function() {
+            // Get an array of errors from the validator
+            var errors = editor.validate();
+
+            var indicator = document.getElementById('valid_indicator');
+
+            // Not valid
+            if(errors.length) {
+                indicator.className = 'label label-danger';
+                indicator.textContent = 'Not valid';
+            }
+            // Valid
+            else {
+                indicator.className = 'label label-success';
+                indicator.textContent = 'Valid';
+            }
+        });
+    </script>
+</section>
+
+<footer th:include="footer"/>
+<section th:replace="scripts"/>
+</body>
+</html>
