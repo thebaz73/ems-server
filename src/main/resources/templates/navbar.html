@@ -43,8 +43,13 @@
                     <li><a th:href="@{/admin/configuration}" href="#">Edit configuration</a></li>
                 </ul>
             </li>
-            <li th:class="${#httpServletRequest.requestURI == '/contact'} ? 'active'"><a th:href="@{/contact}" href="#">Contact</a></li>
-            <li th:class="${#httpServletRequest.requestURI == '/about'} ? 'active'"><a th:href="@{/about}" href="#">About</a></li>
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/mktg')} ? 'active dropdown' : 'dropdown'">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li th:class="${#httpServletRequest.requestURI == '/mktg/contact'} ? 'active'"><a th:href="@{/mktg/contact}" href="#">Contact</a></li>
+                    <li th:class="${#httpServletRequest.requestURI == '/mktg/about'} ? 'active'"><a th:href="@{/mktg/about}" href="#">About</a></li>
+                </ul>
+            </li>
             <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI == '/logout'} ? 'active'"><a th:href="@{/logout}" href="#">Logout</a></li>
         </ul>
         <form sec:authorize="isAuthenticated()" class="navbar-form navbar-right" th:action="@{/search}" action="#">

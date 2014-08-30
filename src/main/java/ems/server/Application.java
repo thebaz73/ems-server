@@ -52,8 +52,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/about").setViewName("mktg");
-        registry.addViewController("/contact").setViewName("mktg");
+        registry.addViewController("/mktg/about").setViewName("mktg");
+        registry.addViewController("/mktg/contact").setViewName("mktg");
     }
 
     @Override
@@ -142,6 +142,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
     @Override
     public void run(String... args) throws Exception {
+        deviceRepository.deleteAll();
+        specificationRepository.deleteAll();
         if(specificationRepository.count() == 0) {
             Specification s1 = new Specification();
             s1.setName("AcmeProbe");
@@ -161,7 +163,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
-            s2.setType(Type.TYPE_PROBE);
+            s2.setType(Type.TYPE_MODULATOR);
             s2.setDriver("/drivers/modulator.json");
             specificationRepository.save(s2);
 
@@ -175,8 +177,10 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d4.setSpecification(s2);
             deviceRepository.save(d4);
         }
+        configurationRepository.deleteAll();
         if(configurationRepository.count() == 0) {
-            configurationRepository.save(new EmsConfigurationEntry("test", "test"));
+            configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
+            configurationRepository.save(new EmsConfigurationEntry("map_longitude", 10.52626));
         }
     }
 }

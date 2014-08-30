@@ -14,9 +14,10 @@ import java.util.Map;
  * Created by thebaz on 8/25/14.
  */
 @Controller
-public class DashboardController {
+public class DashboardController extends ConfigurationAwareController {
     @RequestMapping("/")
     public String dashboard(Map<String, Object> model) {
+        model.put("configuration", getConfiguration());
         model.put("message", "Hello World");
         model.put("title", "Hello Home");
         model.put("date", new Date());
