@@ -8,7 +8,10 @@
 <section class="container" th:unless="${#lists.isEmpty(allUsers)}">
     <div class="panel panel-default">
         <!-- Default panel contents -->
-        <div class="panel-heading" th:text="#{title.user.list}">List of</div>
+        <div class="panel-heading">
+            <h3 class="panel-title" th:text="#{title.user.list}">List of</h3>
+        </div>
+
         <table class="table table-striped">
             <thead>
             <tr>
