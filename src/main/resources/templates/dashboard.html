@@ -7,7 +7,8 @@
 
 <section class="container-fluid">
     <div id="system-alert" class="alert alert-info alert-dismissible" role="alert" th:if="${alert != null}">
-        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span
+                class="sr-only">Close</span></button>
         <span th:text="${alert}"><strong>Warning!</strong> Better check yourself, you're not looking too good.</span>
     </div>
     <div class="row">
@@ -16,8 +17,6 @@
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.map}">Map view</h3>
                 </div>
-                <div class="panel-body" id="map-alert"></div>
-
                 <div id="map" style="height: 520px;"></div>
             </div>
         </div>
@@ -26,18 +25,47 @@
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.inventory}">Inventory</h3>
                 </div>
-                <div class="panel-body" id="table-alert"></div>
-                <table class="table table-striped" id="inventory-placeholder">
-                    <thead>
-                    <tr>
-                        <th th:text="#{device.name}">Name</th>
-                        <th th:text="#{device.type}">Type</th>
-                        <th th:text="#{device.status}">Status</th>
-                        <!--<th th:text="#{device.actions}">Actions</th>-->
-                    </tr>
-                    </thead>
-
-                </table>
+                <div class="panel-body" id="search-div">
+                    <form class="form-horizontal" th:action="@{/inventory/search}" action="#" role="form" method="get">
+                    <label for="search-inventory" class="col-sm-offset-2 col-lg-4 control-label">Search Inventory:</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="search-inventory" type="text" class="form-control"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                    </div></form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover" id="inventory-placeholder">
+                        <thead>
+                        <tr>
+                            <th th:text="#{device.name}">Name</th>
+                            <th th:text="#{device.type}">Type</th>
+                            <th th:text="#{device.status}">Status</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title" th:text="#{title.log}">Event log</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condensed" id="log-placeholder">
+                        <thead>
+                        <tr>
+                            <th th:text="#{log.timestamp}">Timestamp</th>
+                            <th th:text="#{log.device}">device</th>
+                            <th th:text="#{log.type}">Type</th>
+                            <th th:text="#{log.severity}">Severity</th>
+                            <th th:text="#{log.description}">Description</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -46,7 +74,8 @@
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
 <script type="text/javascript" th:inline="javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
+        $('#search-div').toggle();
         map = new GMaps({
             div: '#map',
             mapType: "satellite",
@@ -55,9 +84,12 @@
             lng: [[${configuration.map_longitude}]]
         });
 
-        var xhr = $.getJSON('/inventory/devices');
-        xhr.done(fillMap);
-        xhr.done(fillInventory($('inventory-placeholder')));
+        var devices = $.getJSON('/inventory/devices');
+        devices.done(fillMap);
+        devices.done(fillInventory);
+
+        var eventLog = $.getJSON('/inventory/events');
+        eventLog.done(fillEventLogs);
     });
 </script>
 

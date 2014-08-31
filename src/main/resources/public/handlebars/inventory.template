@@ -3,7 +3,16 @@
 <tr valign="middle" data-device-id="{{id}}">
     <td>{{name}}</td>
     <td>{{specification.type}}</td>
-    <td>{{status}}</td>
+    <td>
+{{#equal status 'ok'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-success col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
+{{#equal status 'warn'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-warning col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
+{{#equal status 'error'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-danger col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
+{{#equal status 'unknown'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-default col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
+    </td>
+</tr>
+{{else}}
+<tr valign="middle" data-device-id="{{id}}">
+    <td colspan="3" class="alert alert-info" role="alert">The Inventory is void.</td>
 </tr>
 {{/each}}
 </tbody>

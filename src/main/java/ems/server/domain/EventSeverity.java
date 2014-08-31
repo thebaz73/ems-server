@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by thebaz on 31/08/14.
  */
 public enum EventSeverity {
-    EVENT_INFO("EVENT_INFO"),
-    EVENT_WARN("EVENT_WARN"),
-    EVENT_ERROR("EVENT_ERROR"),
-    EVENT_FATAL("EVENT_FATAL");
+    EVENT_INFO("info"),
+    EVENT_WARN("warn"),
+    EVENT_ERROR("error"),
+    EVENT_FATAL("fatal");
 
     public static final EventSeverity[] ALL = {EVENT_INFO, EVENT_WARN, EVENT_ERROR, EVENT_FATAL};
 
@@ -26,13 +26,13 @@ public enum EventSeverity {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null for type");
         }
-        if (name.toUpperCase().equals("EVENT_INFO")) {
+        if (name.toUpperCase().equals("info")) {
             return EVENT_INFO;
-        } else if (name.toUpperCase().equals("EVENT_WARN")) {
+        } else if (name.toUpperCase().equals("warn")) {
             return EVENT_WARN;
-        } else if (name.toUpperCase().equals("EVENT_ERROR")) {
+        } else if (name.toUpperCase().equals("error")) {
             return EVENT_ERROR;
-        } else if (name.toUpperCase().equals("EVENT_FATAL")) {
+        } else if (name.toUpperCase().equals("fatal")) {
             return EVENT_FATAL;
         }
         throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");

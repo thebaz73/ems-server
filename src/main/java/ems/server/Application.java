@@ -1,5 +1,7 @@
 package ems.server;
 
+import ems.driver.common.Location;
+import ems.driver.common.Status;
 import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.EmsConfigurationRepository;
@@ -96,17 +98,19 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Device d1 = new Device();
             d1.setName("Device001");
+            d1.setStatus(Status.OK);
             d1.setSpecification(s1);
             deviceRepository.save(d1);
 
-            EventHelper.addEvents(d1);
+            EventHelper.addEvents(eventRepository, d1);
 
             Device d2 = new Device();
             d2.setName("Device002");
+            d2.setStatus(Status.WARN);
             d2.setSpecification(s1);
             deviceRepository.save(d2);
 
-            EventHelper.addEvents(d2);
+            EventHelper.addEvents(eventRepository, d2);
 
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
@@ -116,17 +120,21 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Device d3 = new Device();
             d3.setName("Device003");
+            d3.setStatus(Status.OK);
             d3.setSpecification(s2);
+            d3.setLocation(new Location(45.0,10.0));
             deviceRepository.save(d3);
 
-            EventHelper.addEvents(d3);
+            EventHelper.addEvents(eventRepository, d3);
 
             Device d4 = new Device();
             d4.setName("Device004");
+            d4.setStatus(Status.ERROR);
             d4.setSpecification(s2);
+            d4.setLocation(new Location(45.123,8.971));
             deviceRepository.save(d4);
 
-            EventHelper.addEvents(d4);
+            EventHelper.addEvents(eventRepository, d4);
         }
         configurationRepository.deleteAll();
         if (configurationRepository.count() == 0) {

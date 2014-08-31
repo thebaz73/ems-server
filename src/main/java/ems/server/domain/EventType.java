@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by thebaz on 31/08/14.
  */
 public enum EventType {
-    EVENT_NETWORK("EVENT_NETWORK"),
-    EVENT_CONFIGURATION("EVENT_CONFIGURATION"),
-    EVENT_PROTOCOL("EVENT_PROTOCOL");
+    EVENT_NETWORK("network"),
+    EVENT_CONFIGURATION("configuration"),
+    EVENT_PROTOCOL("protocol");
 
     public static final EventType[] ALL = {EVENT_NETWORK, EVENT_CONFIGURATION, EVENT_PROTOCOL};
 
@@ -25,11 +25,11 @@ public enum EventType {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null for type");
         }
-        if (name.toUpperCase().equals("EVENT_NETWORK")) {
+        if (name.toUpperCase().equals("network")) {
             return EVENT_NETWORK;
-        } else if (name.toUpperCase().equals("EVENT_CONFIGURATION")) {
+        } else if (name.toUpperCase().equals("configuration")) {
             return EVENT_CONFIGURATION;
-        } else if (name.toUpperCase().equals("EVENT_PROTOCOL")) {
+        } else if (name.toUpperCase().equals("protocol")) {
             return EVENT_PROTOCOL;
         }
         throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");

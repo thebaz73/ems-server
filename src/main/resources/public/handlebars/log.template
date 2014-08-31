@@ -1,0 +1,25 @@
+<tbody>
+{{#each events}}
+<tr valign="middle" data-event-id="{{id}}" class="{{#equal eventSeverity 'info'}}alert alert-info{{/equal}}
+{{#equal eventSeverity 'warn'}}alert alert-warning{{/equal}}
+{{#equal eventSeverity 'error'}}alert alert-danger{{/equal}}
+{{#equal eventSeverity 'fatal'}}active{{/equal}}">
+    <td>{{dateFormat timestamp format="YYYY-MM-DDThh:mm:ss"}}</td>
+    <td>{{device.name}}</td>
+    <td>{{eventType}}</td>
+    <td>
+{{#equal eventSeverity 'info'}}<span class="glyphicon glyphicon-info-sign"></span> {{eventSeverity}}{{/equal}}
+{{#equal eventSeverity 'warn'}}<span class="glyphicon glyphicon-warning-sign"></span> {{eventSeverity}}{{/equal}}
+{{#equal eventSeverity 'error'}}<span class="glyphicon glyphicon-warning-sign"></span> {{eventSeverity}}{{/equal}}
+{{#equal eventSeverity 'fatal'}}<span class="glyphicon glyphicon-exclamation-sign"></span> {{eventSeverity}}{{/equal}}
+    </td>
+    <td>{{description}}</td>
+</tr>
+{{else}}
+<tr valign="middle" data-device-id="{{id}}">
+    <td colspan="5" class="alert alert-info" role="alert">The Log is void.</td>
+</tr>
+{{/each}}
+</tbody>
+
+

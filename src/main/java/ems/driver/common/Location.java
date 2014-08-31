@@ -14,10 +14,16 @@ import javax.annotation.Generated;
 })
 public class Location {
 
-    @JsonProperty("latitude")
     private Double latitude;
-    @JsonProperty("longitude")
     private Double longitude;
+
+    public Location() {
+    }
+
+    public Location(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     /**
      * @return The latitude
