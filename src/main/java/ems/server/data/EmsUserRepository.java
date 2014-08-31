@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * EmsUserRepository
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 3:32 PM

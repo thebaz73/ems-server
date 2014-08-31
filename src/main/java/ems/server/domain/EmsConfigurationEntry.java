@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 
 /**
  * EmsConfigurationEntry
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/28/14
  * Time: 9:17 AM

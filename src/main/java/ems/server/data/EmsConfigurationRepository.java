@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * EmsConfigurationRepository
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/28/14
  * Time: 9:18 AM

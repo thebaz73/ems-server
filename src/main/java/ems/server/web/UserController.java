@@ -24,7 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * AdministratorController
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 1:14 PM
@@ -49,7 +49,7 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "users";
         }
-        if(userManager.userCreated(emsUser.getUsername())) {
+        if (userManager.userCreated(emsUser.getUsername())) {
             return "users";
         }
 
@@ -60,7 +60,7 @@ public class UserController {
 
     @RequestMapping(value = "/admin/users/{username}", method = DELETE)
     public String removeUser(@ModelAttribute("aUser") EmsUser emsUser, @PathVariable("username") String username) {
-        if(!userManager.userCreated(username)) {
+        if (!userManager.userCreated(username)) {
             return "redirect:/admin/users";
         }
 

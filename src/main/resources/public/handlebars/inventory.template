@@ -1,0 +1,9 @@
+<tbody>
+{{#each devices}}
+<tr valign="middle" data-device-id="{{id}}">
+    <td>{{name}}</td>
+    <td>{{specification.type}}</td>
+    <td>{{status}}</td>
+</tr>
+{{/each}}
+</tbody>

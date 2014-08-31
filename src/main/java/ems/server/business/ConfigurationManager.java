@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * ConfigurationManager
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/28/14
  * Time: 9:16 AM

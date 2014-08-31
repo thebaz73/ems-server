@@ -11,20 +11,19 @@ import java.util.List;
 
 /**
  * EmsUser
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 2:26 PM
  */
 public class EmsUser {
+    private final List<EmsRole> roles = new ArrayList<EmsRole>();
     @Id
     private String id;
-
     private String name;
     private String email;
     private String username;
     private String password;
-    private final List<EmsRole> roles = new ArrayList<EmsRole>();
 
     public EmsUser() {
     }

@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 
 /**
  * EmsRole
- * <p/>
+ * <p>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 2:38 PM

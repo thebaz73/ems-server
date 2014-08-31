@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head th:replace="head"/>
 <body>
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
@@ -16,12 +16,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.map}">Map view</h3>
                 </div>
-                <!--<div class="panel-body">
-                    <span class="label label-default" id="map-alert">
-                        lat: <span th:text="${configuration.map_latitude}">#</span>
-                        long: <span th:text="${configuration.map_longitude}">#</span>
-                    </span>
-                </div>-->
+                <div class="panel-body" id="map-alert"></div>
 
                 <div id="map" style="height: 520px;"></div>
             </div>
@@ -31,19 +26,17 @@
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.inventory}">Inventory</h3>
                 </div>
-                <!--<div class="panel-body">
-                    <span class="label label-default" id="table-alert"></span>
-                </div>-->
-                <table class="table table-striped">
+                <div class="panel-body" id="table-alert"></div>
+                <table class="table table-striped" id="inventory-placeholder">
                     <thead>
                     <tr>
                         <th th:text="#{device.name}">Name</th>
                         <th th:text="#{device.type}">Type</th>
+                        <th th:text="#{device.status}">Status</th>
                         <!--<th th:text="#{device.actions}">Actions</th>-->
                     </tr>
                     </thead>
-                    <tbody id="inventory-placeholder">
-                    </tbody>
+
                 </table>
             </div>
         </div>
@@ -63,7 +56,8 @@
         });
 
         var xhr = $.getJSON('/inventory/devices');
-        xhr.done(fillInventory);
+        xhr.done(fillMap);
+        xhr.done(fillInventory($('inventory-placeholder')));
     });
 </script>
 

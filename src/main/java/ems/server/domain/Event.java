@@ -1,0 +1,65 @@
+package ems.server.domain;
+
+import org.springframework.data.annotation.Id;
+
+/**
+ * Event
+ * Created by thebaz on 31/08/14.
+ */
+public class Event {
+    @Id
+    private String id;
+    private Long timestamp;
+    private EventType eventType;
+    private EventSeverity eventSeverity;
+    private Device device;
+    private String description;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public EventType getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public EventSeverity getEventSeverity() {
+        return eventSeverity;
+    }
+
+    public void setEventSeverity(EventSeverity eventSeverity) {
+        this.eventSeverity = eventSeverity;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}

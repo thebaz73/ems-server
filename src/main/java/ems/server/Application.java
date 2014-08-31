@@ -2,9 +2,11 @@ package ems.server;
 
 import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
-import ems.server.data.SpecificationRepository;
 import ems.server.data.EmsConfigurationRepository;
+import ems.server.data.EventRepository;
+import ems.server.data.SpecificationRepository;
 import ems.server.domain.*;
+import ems.server.utils.EventHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,7 +39,9 @@ import java.util.Arrays;
 public class Application extends WebMvcConfigurerAdapter implements CommandLineRunner {
     private static final String[] RESOURCE_LOCATIONS = {
             "classpath:/META-INF/resources/", "classpath:/resources/",
-            "classpath:/static/", "classpath:/public/" };
+            "classpath:/static/", "classpath:/public/"};
+    @Autowired
+    EventRepository eventRepository;
     @Autowired
     SpecificationRepository specificationRepository;
     @Autowired
@@ -76,6 +80,59 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     @Bean
     public AuthenticationSecurity authenticationSecurity() {
         return new AuthenticationSecurity();
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        eventRepository.deleteAll();
+        deviceRepository.deleteAll();
+        specificationRepository.deleteAll();
+        if (specificationRepository.count() == 0) {
+            Specification s1 = new Specification();
+            s1.setName("AcmeProbe");
+            s1.setType(Type.TYPE_PROBE);
+            s1.setDriver("/drivers/probe.json");
+            specificationRepository.save(s1);
+
+            Device d1 = new Device();
+            d1.setName("Device001");
+            d1.setSpecification(s1);
+            deviceRepository.save(d1);
+
+            EventHelper.addEvents(d1);
+
+            Device d2 = new Device();
+            d2.setName("Device002");
+            d2.setSpecification(s1);
+            deviceRepository.save(d2);
+
+            EventHelper.addEvents(d2);
+
+            Specification s2 = new Specification();
+            s2.setName("AcmeModulator");
+            s2.setType(Type.TYPE_MODULATOR);
+            s2.setDriver("/drivers/modulator.json");
+            specificationRepository.save(s2);
+
+            Device d3 = new Device();
+            d3.setName("Device003");
+            d3.setSpecification(s2);
+            deviceRepository.save(d3);
+
+            EventHelper.addEvents(d3);
+
+            Device d4 = new Device();
+            d4.setName("Device004");
+            d4.setSpecification(s2);
+            deviceRepository.save(d4);
+
+            EventHelper.addEvents(d4);
+        }
+        configurationRepository.deleteAll();
+        if (configurationRepository.count() == 0) {
+            configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
+            configurationRepository.save(new EmsConfigurationEntry("map_longitude", 10.52626));
+        }
     }
 
     @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
@@ -127,8 +184,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             user.setName("Normal user");
             if (!userManager.userCreated("user")) {
                 userManager.createUser(user);
-            }
-            else {
+            } else {
                 userManager.allocateUser(user);
             }
 
@@ -137,50 +193,6 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             if (!userManager.userCreated("admin")) {
                 userManager.createUser(admin);
             }
-        }
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        deviceRepository.deleteAll();
-        specificationRepository.deleteAll();
-        if(specificationRepository.count() == 0) {
-            Specification s1 = new Specification();
-            s1.setName("AcmeProbe");
-            s1.setType(Type.TYPE_PROBE);
-            s1.setDriver("/drivers/probe.json");
-            specificationRepository.save(s1);
-
-            Device d1 = new Device();
-            d1.setName("Device001");
-            d1.setSpecification(s1);
-            deviceRepository.save(d1);
-
-            Device d2 = new Device();
-            d2.setName("Device002");
-            d2.setSpecification(s1);
-            deviceRepository.save(d2);
-
-            Specification s2 = new Specification();
-            s2.setName("AcmeModulator");
-            s2.setType(Type.TYPE_MODULATOR);
-            s2.setDriver("/drivers/modulator.json");
-            specificationRepository.save(s2);
-
-            Device d3 = new Device();
-            d3.setName("Device003");
-            d3.setSpecification(s2);
-            deviceRepository.save(d3);
-
-            Device d4 = new Device();
-            d4.setName("Device004");
-            d4.setSpecification(s2);
-            deviceRepository.save(d4);
-        }
-        configurationRepository.deleteAll();
-        if(configurationRepository.count() == 0) {
-            configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
-            configurationRepository.save(new EmsConfigurationEntry("map_longitude", 10.52626));
         }
     }
 }
