@@ -12,7 +12,7 @@
         <span th:text="${alert}"><strong>Warning!</strong> Better check yourself, you're not looking too good.</span>
     </div>
     <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.map}">Map view</h3>
@@ -20,28 +20,40 @@
                 <div id="map" style="height: 520px;"></div>
             </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title" th:text="#{title.inventory}">Inventory</h3>
-                </div>
-                <div class="panel-body" id="search-div">
-                    <form class="form-horizontal" th:action="@{/inventory/search}" action="#" role="form" method="get">
-                    <label for="search-inventory" class="col-sm-offset-2 col-lg-4 control-label">Search Inventory:</label>
-                    <div class="col-lg-6">
-                        <div class="input-group">
-                            <input id="search-inventory" type="text" class="form-control"/>
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                            </span>
+                    <div class="row">
+                        <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.inventory}">Inventory</h3>
+                        <div class="col-lg-4">
+                            <form class="form-inline" th:action="@{/inventory/search}" action="#" role="form" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </div>
+                            </form>
                         </div>
-                    </div></form>
+                    </div>
                 </div>
                 <div id="inventory-placeholder"></div>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title" th:text="#{title.log}">Event log</h3>
+                    <div class="row">
+                        <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.log}">Event log</h3>
+                        <div class="col-lg-4">
+                            <form class="form-inline" th:action="@{/inventory/search}" action="#" role="form" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div id="log-placeholder"></div>
             </div>

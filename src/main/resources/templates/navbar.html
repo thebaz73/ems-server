@@ -9,7 +9,7 @@
         <a class="navbar-brand" th:href="@{/}" href="/">EMS</a>
     </div>
     <div class="collapse navbar-collapse">
-        <p sec:authorize="isAuthenticated()" class="navbar-text" th:inline="text">Welcome, [[${#httpServletRequest.remoteUser}]]!</p>
+        <!--<p sec:authorize="isAuthenticated()" class="navbar-text" th:inline="text">Welcome, [[${#httpServletRequest.remoteUser}]]!</p>-->
         <ul class="nav navbar-nav navbar-right">
             <li th:class="${#httpServletRequest.requestURI == '/'} ? 'active'"><a th:href="@{/}" href="/">Home</a></li>
             <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${#httpServletRequest.requestURI.startsWith('/devices')} ? 'active dropdown' : 'dropdown'">
@@ -52,9 +52,6 @@
             </li>
             <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI == '/logout'} ? 'active'"><a th:href="@{/logout}" href="#">Logout</a></li>
         </ul>
-        <form sec:authorize="isAuthenticated()" class="navbar-form navbar-right" th:action="@{/search}" action="#">
-            <input type="text" class="form-control" placeholder="Search..."/>
-        </form>
     </div><!--/.nav-collapse -->
 </div>
 
