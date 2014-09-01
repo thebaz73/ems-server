@@ -72,6 +72,11 @@
             <artifactId>momentjs</artifactId>
             <version>2.8.1-1</version>
         </dependency>
+        <dependency>
+            <groupId>ems.server</groupId>
+            <artifactId>ems-drivers</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <properties>
