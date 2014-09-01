@@ -37,35 +37,13 @@
                         </div>
                     </div></form>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-condensed table-hover" id="inventory-placeholder">
-                        <thead>
-                        <tr>
-                            <th th:text="#{device.name}">Name</th>
-                            <th th:text="#{device.type}">Type</th>
-                            <th th:text="#{device.status}">Status</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
+                <div id="inventory-placeholder"></div>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="#{title.log}">Event log</h3>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-condensed" id="log-placeholder">
-                        <thead>
-                        <tr>
-                            <th th:text="#{log.timestamp}">Timestamp</th>
-                            <th th:text="#{log.device}">device</th>
-                            <th th:text="#{log.type}">Type</th>
-                            <th th:text="#{log.severity}">Severity</th>
-                            <th th:text="#{log.description}">Description</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
+                <div id="log-placeholder"></div>
             </div>
         </div>
     </div>
@@ -75,7 +53,6 @@
 <section th:replace="scripts"/>
 <script type="text/javascript" th:inline="javascript">
     $(document).ready(function () {
-        $('#search-div').toggle();
         map = new GMaps({
             div: '#map',
             mapType: "satellite",
@@ -83,15 +60,18 @@
             lat: [[${configuration.map_latitude}]],
             lng: [[${configuration.map_longitude}]]
         });
-
-        var devices = $.getJSON('/inventory/devices');
-        devices.done(fillMap);
-        devices.done(fillInventory);
-
-        var eventLog = $.getJSON('/inventory/events');
-        eventLog.done(fillEventLogs);
     });
 </script>
-
+<script type="text/javascript">
+    /* <![CDATA[ */
+    $(document).ready(function () {
+        $('#search-div').toggle();
+        var devices = $.getJSON('/inventory/devices');
+        devices.done(fillMap);
+        loadPagedData('/inventory/devices', 0, 5, fillInventory);
+        loadPagedData('/inventory/events', 0, 5, fillEventLogs);
+    });
+    /* ]]> */
+</script>
 </body>
 </html>
