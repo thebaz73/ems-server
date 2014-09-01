@@ -18,7 +18,7 @@
     $.get("/drivers/modulator.json", function(data) {
         var json = JSON.parse(data);
         if(json.type === "object") {
-            $.get("/handlebars/object.template", function(template) {
+            $.get("/template/object", function(template) {
                 var t = Handlebars.compile(template);
                 $("#view").append(t(json));
             });

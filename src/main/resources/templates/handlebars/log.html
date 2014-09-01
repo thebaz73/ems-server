@@ -1,12 +1,13 @@
-<div class="table-responsive">
+<div class="table-responsive" xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:th="http://www.thymeleaf.org">
     <table class="table table-condensed">
         <thead>
         <tr>
-            <th>Timestamp</th>
-            <th>Device</th>
-            <th>Type</th>
-            <th>Severity</th>
-            <th>Description</th>
+            <th th:text="#{log.timestamp}">Timestamp</th>
+            <th th:text="#{log.device}">Device</th>
+            <th th:text="#{log.type}">Type</th>
+            <th th:text="#{log.severity}">Severity</th>
+            <th th:text="#{log.description}">Description</th>
         </tr>
         </thead>
         <tbody>

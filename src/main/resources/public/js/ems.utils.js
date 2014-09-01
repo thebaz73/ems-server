@@ -51,7 +51,7 @@ function loadPagedData(uri, page, pageSize, callback) {
  * @param data data
  */
 function fillInventory(data) {
-    $.get("/handlebars/inventory.template", function (template) {
+    $.get("/template/inventory", function (template) {
         var t = Handlebars.compile(template);
         $('#inventory-placeholder').html(t(data));
     });
@@ -66,7 +66,7 @@ function fillEventLogs(data) {
 //    var json = {
 //        events: data
 //    };
-    $.get("/handlebars/log.template", function (template) {
+    $.get("/template/log", function (template) {
         var t = Handlebars.compile(template);
         $('#log-placeholder').html(t(data));
     });
