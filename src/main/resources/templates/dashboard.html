@@ -26,9 +26,9 @@
                     <div class="row">
                         <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.inventory}">Inventory</h3>
                         <div class="col-lg-4">
-                            <form class="form-inline" th:action="@{/inventory/search}" action="#" role="form" method="get">
+                            <form class="form-inline" th:action="@{/repo/search/inventory}" action="#" role="form" method="get">
                                 <div class="input-group">
-                                    <input type="text" class="form-control"/>
+                                    <input type="text" class="form-control" placeholder="Search inventory..."/>
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
                                     </span>
@@ -44,9 +44,9 @@
                     <div class="row">
                         <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.log}">Event log</h3>
                         <div class="col-lg-4">
-                            <form class="form-inline" th:action="@{/inventory/search}" action="#" role="form" method="get">
+                            <form class="form-inline" th:action="@{/repo/search/log}" action="#" role="form" method="get">
                                 <div class="input-group">
-                                    <input type="text" class="form-control"/>
+                                    <input type="text" class="form-control" placeholder="Search log..."/>
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
                                     </span>

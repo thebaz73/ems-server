@@ -12,14 +12,14 @@
         </thead>
         <tbody>
         {{#each content}}
-        <tr valign="middle" data-event-id="{{id}}" class="{{#equal eventSeverity 'info'}}alert alert-info{{/equal}}
+        <tr valign="middle" onclick="window.location = '/inventory/show/{{device.id}}'" class="{{#equal eventSeverity 'info'}}alert alert-info{{/equal}}
 {{#equal eventSeverity 'warn'}}alert alert-warning{{/equal}}
 {{#equal eventSeverity 'error'}}alert alert-danger{{/equal}}
 {{#equal eventSeverity 'fatal'}}active{{/equal}}">
             <td>{{dateFormat timestamp}}</td>
             <td>{{device.name}}</td>
-            <td>{{eventType}}</td>
-            <td>
+            <td style="text-transform: capitalize;">{{eventType}}</td>
+            <td style="text-transform: capitalize;">
                 {{#equal eventSeverity 'info'}}<span class="glyphicon glyphicon-info-sign"></span> {{eventSeverity}}{{/equal}}
                 {{#equal eventSeverity 'warn'}}<span class="glyphicon glyphicon-warning-sign"></span> {{eventSeverity}}{{/equal}}
                 {{#equal eventSeverity 'error'}}<span class="glyphicon glyphicon-warning-sign"></span> {{eventSeverity}}{{/equal}}
@@ -28,7 +28,7 @@
             <td>{{description}}</td>
         </tr>
         {{else}}
-        <tr valign="middle" data-device-id="{{id}}">
+        <tr valign="middle">
             <td colspan="5" class="alert alert-info" role="alert">The Log is void.</td>
         </tr>
         {{/each}}

@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Created by thebaz on 8/28/14.
  */
 public enum Type {
-    TYPE_PROBE("PROBE"),
-    TYPE_ROUTER("ROUTER"),
-    TYPE_MODULATOR("MODULATOR");
+    TYPE_PROBE("probe"),
+    TYPE_ROUTER("router"),
+    TYPE_MODULATOR("modulator");
 
     public static final Type[] ALL = {TYPE_PROBE, TYPE_ROUTER, TYPE_MODULATOR};
 
@@ -25,11 +25,11 @@ public enum Type {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null for type");
         }
-        if (name.toUpperCase().equals("PROBE")) {
+        if (name.toUpperCase().equals("probe")) {
             return TYPE_PROBE;
-        } else if (name.toUpperCase().equals("ROUTER")) {
+        } else if (name.toUpperCase().equals("router")) {
             return TYPE_ROUTER;
-        } else if (name.toUpperCase().equals("MODULATOR")) {
+        } else if (name.toUpperCase().equals("modulator")) {
             return TYPE_MODULATOR;
         }
         throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");
