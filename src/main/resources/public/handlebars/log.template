@@ -4,7 +4,7 @@
 {{#equal eventSeverity 'warn'}}alert alert-warning{{/equal}}
 {{#equal eventSeverity 'error'}}alert alert-danger{{/equal}}
 {{#equal eventSeverity 'fatal'}}active{{/equal}}">
-    <td>{{dateFormat timestamp format="YYYY-MM-DDThh:mm:ss"}}</td>
+    <td>{{dateFormat timestamp}}</td>
     <td>{{device.name}}</td>
     <td>{{eventType}}</td>
     <td>

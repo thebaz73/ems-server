@@ -18,12 +18,12 @@ Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
 //  moment syntax example: moment(Date("2011-07-18T15:50:52")).format("MMMM YYYY")
 //  usage: {{dateFormat creation_date format="MMMM YYYY"}}
 Handlebars.registerHelper('dateFormat', function(context, block) {
+    var d = new Date(context);
     if (window.moment) {
-        var f = block.hash.format || "MMM Do, YYYY";
-        var d = new Date(context);
+        var f = block.hash.format || "YYYY-MM-DDThh:mm:ss";
         return d.toISOString();//moment(d).format(f);
     }else{
-        return context;   //  moment plugin not available. return data as is.
+        return d.toISOString();   //  moment plugin not available. return data as is.
     }
 });
 
@@ -33,7 +33,7 @@ function fillMap(data) {
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (item.location != undefined && item.location.latitude != undefined && item.location.longitude != undefined) {
-                var markerColor = (item.status == 'ok') ? 'blue' : (item.status == 'error') ? 'red' : (item.status == 'warn') ? 'yellow' : 'grey';
+                var markerColor = (item.status == 'ok') ? 'green' : (item.status == 'error') ? 'red' : (item.status == 'warn') ? 'yellow' : 'grey';
                 markers_data.push({
                     lat : item.location.latitude,
                     lng : item.location.longitude,
