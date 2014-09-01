@@ -16,7 +16,7 @@ public class TemplateController {
 
     @RequestMapping(value = "/template/{name}", method = GET)
     public String show(@PathVariable("name") String name) {
-        return "handlebars/"  + name;
+        return "handlebars/" + name;
     }
 
 }

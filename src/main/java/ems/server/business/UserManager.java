@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * UserManager
- * <p>
+ * <p/>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 11:39 AM

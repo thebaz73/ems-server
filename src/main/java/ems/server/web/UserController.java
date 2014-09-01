@@ -24,7 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * AdministratorController
- * <p>
+ * <p/>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 1:14 PM

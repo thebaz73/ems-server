@@ -32,7 +32,7 @@ public class InventoryController {
         return deviceRepository.findAll();
     }
 
-    @RequestMapping(value = "/inventory/devices", params = {"page","pageSize"}, method = GET)
+    @RequestMapping(value = "/inventory/devices", params = {"page", "pageSize"}, method = GET)
     Page<Device> devices(@RequestParam(value = "page") int page, @RequestParam(value = "pageSize") int pageSize) {
         Pageable pageable = new PageRequest(page, pageSize);
         return deviceRepository.findAll(pageable);

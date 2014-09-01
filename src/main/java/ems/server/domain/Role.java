@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Role
- * <p>
+ * <p/>
  * User: mbazzoni
  * Date: 8/27/14
  * Time: 2:22 PM

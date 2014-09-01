@@ -122,7 +122,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d3.setName("Device003");
             d3.setStatus(Status.OK);
             d3.setSpecification(s2);
-            d3.setLocation(new Location(45.0,10.0));
+            d3.setLocation(new Location(45.0, 10.0));
             deviceRepository.save(d3);
 
             EventHelper.addEvents(eventRepository, d3);
@@ -131,7 +131,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d4.setName("Device004");
             d4.setStatus(Status.ERROR);
             d4.setSpecification(s2);
-            d4.setLocation(new Location(45.123,8.971));
+            d4.setLocation(new Location(45.123, 8.971));
             deviceRepository.save(d4);
 
             EventHelper.addEvents(eventRepository, d4);

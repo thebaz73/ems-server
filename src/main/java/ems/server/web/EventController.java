@@ -21,7 +21,7 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
-    @RequestMapping(value = "/inventory/events", params = {"page","pageSize"}, method = GET)
+    @RequestMapping(value = "/inventory/events", params = {"page", "pageSize"}, method = GET)
     Page<Event> events(@RequestParam(value = "page") int page, @RequestParam(value = "pageSize") int pageSize) {
         Pageable pageable = new PageRequest(page, pageSize);
         return eventRepository.findAll(pageable);
