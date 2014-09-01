@@ -33,12 +33,19 @@ function fillMap(data) {
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (item.location != undefined && item.location.latitude != undefined && item.location.longitude != undefined) {
-                var markerColor = (item.status == 'ok') ? 'green' : (item.status == 'error') ? 'red' : (item.status == 'warn') ? 'yellow' : 'grey';
+                var icon = (item.status == 'ok') ? '/imgs/status_ok.png' : (item.status == 'error') ? '/imgs/status_error.png' : (item.status == 'warn') ? '/imgs/status_warn.png' : '/imgs/status_unknown.png';
                 markers_data.push({
                     lat : item.location.latitude,
                     lng : item.location.longitude,
-                    color: markerColor,
-                    title : item.name
+                    title : item.name,
+                    icon : {
+                        size : new google.maps.Size(16, 16),
+                        url : icon
+                    },
+                    itemUrl: '/inventory/show/'+item.id,
+                    click: function(e) {
+                        window.location = this.itemUrl;
+                    }
                 });
             }
         }
