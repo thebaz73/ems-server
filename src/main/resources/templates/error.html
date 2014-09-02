@@ -6,7 +6,9 @@
 <body>
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 <section class="container">
-    <h1 th:text="${title}">Error</h1>
+    <div class="page-header">
+        <h1 th:text="'Error '+${status}">Error</h1>
+    </div>
     <div id="created" th:text="${#dates.format(timestamp)}">July 11,
         2012 2:17:16 PM CDT</div>
     <div>
