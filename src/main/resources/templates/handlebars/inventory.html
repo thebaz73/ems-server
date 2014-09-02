@@ -14,10 +14,10 @@
             <td>{{name}}</td>
             <td style="text-transform: capitalize;">{{specification.type}}</td>
             <td style="text-transform: capitalize;">
-                {{#equal status 'ok'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-success col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
-                {{#equal status 'warn'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-warning col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
-                {{#equal status 'error'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-danger col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
-                {{#equal status 'unknown'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-default col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{status}}</a>{{/equal}}
+                {{#equal driver.status 'OK'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-success col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
+                {{#equal driver.status 'WARN'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-warning col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
+                {{#equal driver.status 'ERROR'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-danger col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
+                {{#equal driver.status 'UNKNOWN'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-default col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
             </td>
         </tr>
         {{else}}

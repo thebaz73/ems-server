@@ -1,7 +1,9 @@
 package ems.server;
 
-import ems.driver.common.Location;
-import ems.driver.common.Status;
+import ems.driver.domain.common.Location;
+import ems.driver.domain.common.Status;
+import ems.driver.domain.modulator.Modulator;
+import ems.driver.domain.probe.Probe;
 import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.EmsConfigurationRepository;
@@ -98,7 +100,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Device d1 = new Device();
             d1.setName("Device001");
-            d1.setStatus(Status.OK);
+            Probe p1 = new Probe();
+            p1.setStatus(Status.OK);
+            d1.setDriver(p1);
             d1.setSpecification(s1);
             deviceRepository.save(d1);
 
@@ -106,7 +110,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Device d2 = new Device();
             d2.setName("Device002");
-            d2.setStatus(Status.WARN);
+            Probe p2 = new Probe();
+            p2.setStatus(Status.WARN);
+            d2.setDriver(p2);
             d2.setSpecification(s1);
             deviceRepository.save(d2);
 
@@ -120,18 +126,28 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             Device d3 = new Device();
             d3.setName("Device003");
-            d3.setStatus(Status.OK);
+            Modulator m1 = new Modulator();
+            m1.setStatus(Status.OK);
+            Location l1 = new Location();
+            l1.setLatitude(45.0);
+            l1.setLongitude(10.0);
+            m1.setLocation(l1);
+            d3.setDriver(m1);
             d3.setSpecification(s2);
-            d3.setLocation(new Location(45.0, 10.0));
             deviceRepository.save(d3);
 
             EventHelper.addEvents(eventRepository, d3);
 
             Device d4 = new Device();
             d4.setName("Device004");
-            d4.setStatus(Status.ERROR);
+            Modulator m2 = new Modulator();
+            m2.setStatus(Status.ERROR);
+            Location l2 = new Location();
+            l2.setLatitude(45.123);
+            l2.setLongitude(8.871);
+            m2.setLocation(l2);
+            d4.setDriver(m2);
             d4.setSpecification(s2);
-            d4.setLocation(new Location(45.123, 8.971));
             deviceRepository.save(d4);
 
             EventHelper.addEvents(eventRepository, d4);

@@ -1,7 +1,6 @@
 package ems.server.domain;
 
-import ems.driver.common.Location;
-import ems.driver.common.Status;
+import ems.driver.domain.Driver;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -14,8 +13,7 @@ public class Device {
 
     private String name;
     private Specification specification;
-    private Status status;
-    private Location location;
+    private Driver driver;
 
     public String getId() {
         return id;
@@ -41,19 +39,11 @@ public class Device {
         this.specification = specification;
     }
 
-    public Status getStatus() {
-        return status;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 }
