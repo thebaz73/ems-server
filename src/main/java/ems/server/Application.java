@@ -106,12 +106,12 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Device d1 = DeviceHelper.getInstance().createDevice(name, s1, status);
             deviceRepository.save(d1);
 
-            EventHelper.addEvents(eventRepository, d1);
+            EventHelper.getInstance().addEvents(eventRepository, d1);
 
             Device d2 = DeviceHelper.getInstance().createDevice("Device002", s1, Status.WARN);
             deviceRepository.save(d2);
 
-            EventHelper.addEvents(eventRepository, d2);
+            EventHelper.getInstance().addEvents(eventRepository, d2);
 
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
@@ -127,7 +127,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Device d3 = DeviceHelper.getInstance().createDevice("Device003", s2, Status.OK, l1);
             deviceRepository.save(d3);
 
-            EventHelper.addEvents(eventRepository, d3);
+            EventHelper.getInstance().addEvents(eventRepository, d3);
 
             Location l2 = new Location();
             l2.setLatitude(45.123);
@@ -135,7 +135,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Device d4 = DeviceHelper.getInstance().createDevice("Device004", s2, Status.ERROR, l2);
             deviceRepository.save(d4);
 
-            EventHelper.addEvents(eventRepository, d4);
+            EventHelper.getInstance().addEvents(eventRepository, d4);
         }
         configurationRepository.deleteAll();
         if (configurationRepository.count() == 0) {
