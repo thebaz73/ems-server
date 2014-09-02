@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:th="http://www.thymeleaf.org">
 <head th:replace="head"/>
 <body>
 
@@ -45,6 +45,27 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="panel-footer text-center">
+            <ul class="pagination" style="margin:0">
+                <li th:class="${allSpecifications.number eq 0} ? 'disabled' : ''">
+                    <a th:if="${not allSpecifications.first}" th:href="@{${'specifications'}(page=${allSpecifications.number-1},pageSize=${allSpecifications.size})}">&laquo;</a>
+                </li>
+
+                <li th:each="pageNo : ${#numbers.sequence(0, allSpecifications.totalPages - 1)}" th:class="${allSpecifications.number eq pageNo}? 'active' : ''">
+                    <a th:if="${allSpecifications.number  eq pageNo}" href="javascript:void(0);" th:text="${pageNo + 1}">
+                        1
+                    </a>
+                    <a th:if="${not (allSpecifications.number  eq pageNo)}" th:href="@{${'specifications'}(page=${pageNo},pageSize=${allSpecifications.size})}" th:text="${pageNo + 1}">
+                        1
+                    </a>
+
+                </li>
+                <li th:class="${allSpecifications.number + 1 ge allSpecifications.totalPages} ? 'disabled' : ''">
+                    <a th:if="${not allSpecifications.last}" th:href="@{${'specifications'}(page=${allSpecifications.number+1},pageSize=${allSpecifications.size})}">&raquo;</a>
+                </li>
+            </ul>
+
         </div>
     </div>
 </section>
