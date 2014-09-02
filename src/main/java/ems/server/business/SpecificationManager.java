@@ -30,7 +30,20 @@ public class SpecificationManager {
         return specificationRepository.findAll();
     }
 
-    public void editEntry(Specification entry) {
-        specificationRepository.save(entry);
+    public void createSpecification(Specification specification) {
+        if(specification.getId() != null) {
+            specification.setId(null);
+        }
+        specificationRepository.save(specification);
+    }
+
+    public void editSpecification(Specification specification) {
+        if(specification.getId() != null && specificationRepository.findOne(specification.getId()) != null ) {
+            specificationRepository.save(specification);
+        }
+    }
+
+    public void deleteSpecification(String id) {
+        specificationRepository.delete(id);
     }
 }

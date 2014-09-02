@@ -47,27 +47,6 @@ public class UserManager extends JdbcUserDetailsManager {
      * @return user list
      */
     public List<EmsUser> findAllUsers() {
-/*
-        List<EmsUser> allUsers = new ArrayList<EmsUser>();
-        List<String> allGroups = findAllGroups();
-        for (String group : allGroups) {
-            List<String> userNames = findUsersInGroup(group);
-            for (String userName : userNames) {
-                UserDetails userDetails = loadUserByUsername(userName);
-                EmsUser user = new EmsUser();
-                user.setUsername(userDetails.getUsername());
-                user.setPassword(userDetails.getPassword());
-                for (GrantedAuthority grantedAuthority : userDetails.getAuthorities()) {
-                    EmsRole role = new EmsRole();
-                    role.setRole(Role.forName(grantedAuthority.getAuthority()));
-                    user.getRoles().add(role);
-                }
-                allUsers.add(user);
-            }
-        }
-
-        return allUsers;
-*/
         return emsUserRepository.findAll();
     }
 

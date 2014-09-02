@@ -41,7 +41,7 @@
                     </td>
                     <td><form th:unless="${aUser.username == 'admin'}" class="form-inline" role="form" th:action="@{/admin/users/} + ${aUser.username}" action="#" method="POST">
                         <input type="hidden" name="_method" value="DELETE"/>
-                        <button type="submit" class="btn btn-default btn-sm" value="delete"><span class="glyphicon glyphicon-remove"></span> <span th:text="#{user.delete}">Delete</span></button>
+                        <button type="submit" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-trash"></span> <span th:text="#{user.delete}">Delete</span></button>
                     </form></td>
                 </tr>
                 </tbody>
@@ -113,8 +113,8 @@
             </table>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-8 col-sm-5">
-                <button type="submit" class="btn btn-success" th:text="#{user.create}">Add User</button>
+            <div class="col-sm-12 text-right">
+                <button type="submit" class="btn btn-primary" th:text="#{user.create}">Add User</button>
                 <button type="reset" class="btn btn-danger">Cancel</button>
             </div>
         </div>

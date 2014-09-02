@@ -25,7 +25,7 @@
                     <td th:text="${aConfiguration.key}">Key</td>
                     <td th:text="${aConfiguration.value}">Value</td>
                     <td><form class="form-inline" role="form" th:action="@{/admin/configuration/} + ${aConfiguration.id}" action="#" method="GET">
-                        <button type="submit" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-edit"></span> <span th:text="#{configuration.edit}">Edit</span></button>
+                        <button type="submit" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span> <span th:text="#{configuration.edit}">Edit</span></button>
                     </form></td>
                 </tr>
                 </tbody>
@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-8 col-sm-5">
+            <div class="col-sm-12 text-right">
                 <button type="submit" class="btn btn-success" value="put" th:text="#{configuration.edit}">Edit Configuration</button>
                 <button type="reset" class="btn btn-danger">Cancel</button>
             </div>
