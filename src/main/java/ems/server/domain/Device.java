@@ -1,7 +1,10 @@
 package ems.server.domain;
 
 import ems.driver.domain.Driver;
+import ems.protocol.domain.Protocol;
 import org.springframework.data.annotation.Id;
+
+import java.net.Inet4Address;
 
 /**
  * Device
@@ -12,8 +15,11 @@ public class Device {
     private String id;
 
     private String name;
+    private java.net.Inet4Address address;
+    private Integer port;
     private Specification specification;
     private Driver driver;
+    private Protocol protocol;
 
     public String getId() {
         return id;
@@ -31,6 +37,22 @@ public class Device {
         this.name = name;
     }
 
+    public Inet4Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Inet4Address address) {
+        this.address = address;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
     public Specification getSpecification() {
         return specification;
     }
@@ -45,5 +67,13 @@ public class Device {
 
     public void setDriver(Driver driver) {
         this.driver = driver;
+    }
+
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
     }
 }

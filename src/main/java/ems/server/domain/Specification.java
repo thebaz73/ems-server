@@ -1,6 +1,8 @@
 package ems.server.domain;
 
 
+import ems.driver.domain.DriverType;
+import ems.protocol.domain.ProtocolType;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -12,9 +14,10 @@ public class Specification {
     private String id;
 
     private String name;
-    private Type type;
+    private DriverType driverType;
     private String driver;
-    private Protocol protocol;
+    private ProtocolType protocolType;
+    private String protocol;
 
     public String getId() {
         return id;
@@ -32,12 +35,12 @@ public class Specification {
         this.name = name;
     }
 
-    public Type getType() {
-        return type;
+    public DriverType getDriverType() {
+        return driverType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setDriverType(DriverType driverType) {
+        this.driverType = driverType;
     }
 
     public String getDriver() {
@@ -48,11 +51,19 @@ public class Specification {
         this.driver = driver;
     }
 
-    public Protocol getProtocol() {
+    public ProtocolType getProtocolType() {
+        return protocolType;
+    }
+
+    public void setProtocolType(ProtocolType protocolType) {
+        this.protocolType = protocolType;
+    }
+
+    public String getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(Protocol protocol) {
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 }

@@ -5,6 +5,7 @@
         <tr>
             <th th:text="#{device.name}">Name</th>
             <th th:text="#{device.type}">Type</th>
+            <th th:text="#{device.protocol}">Protocol</th>
             <th th:text="#{device.status}">Status</th>
         </tr>
         </thead>
@@ -12,7 +13,8 @@
         {{#each content}}
         <tr valign="middle" onclick="window.location = '/inventory/show/{{id}}'">
             <td>{{name}}</td>
-            <td style="text-transform: capitalize;">{{specification.type}}</td>
+            <td style="text-transform: capitalize;">{{specification.driverType}}</td>
+            <td style="text-transform: capitalize;">{{specification.protocolType}}</td>
             <td style="text-transform: capitalize;">
                 {{#equal driver.status 'OK'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-success col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
                 {{#equal driver.status 'WARN'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-warning col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}

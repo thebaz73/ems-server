@@ -1,15 +1,16 @@
 package ems.server;
 
+import ems.driver.domain.DriverType;
 import ems.driver.domain.common.Location;
 import ems.driver.domain.common.Status;
-import ems.driver.domain.modulator.Modulator;
-import ems.driver.domain.probe.Probe;
+import ems.protocol.domain.ProtocolType;
 import ems.server.business.UserManager;
 import ems.server.data.DeviceRepository;
 import ems.server.data.EmsConfigurationRepository;
 import ems.server.data.EventRepository;
 import ems.server.data.SpecificationRepository;
 import ems.server.domain.*;
+import ems.server.utils.DeviceHelper;
 import ems.server.utils.EventHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -94,60 +95,44 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
         if (specificationRepository.count() == 0) {
             Specification s1 = new Specification();
             s1.setName("AcmeProbe");
-            s1.setType(Type.TYPE_PROBE);
-            s1.setDriver("/drivers/probe.json");
+            s1.setDriverType(DriverType.fromValue("probe"));
+            s1.setDriver("probe.json");
+            s1.setProtocolType(ProtocolType.fromValue("snmp"));
+            s1.setProtocol("snmp_protocol.json");
             specificationRepository.save(s1);
 
-            Device d1 = new Device();
-            d1.setName("Device001");
-            Probe p1 = new Probe();
-            p1.setStatus(Status.OK);
-            d1.setDriver(p1);
-            d1.setSpecification(s1);
+            String name = "Device001";
+            Status status = Status.OK;
+            Device d1 = DeviceHelper.getInstance().createDevice(name, s1, status);
             deviceRepository.save(d1);
 
             EventHelper.addEvents(eventRepository, d1);
 
-            Device d2 = new Device();
-            d2.setName("Device002");
-            Probe p2 = new Probe();
-            p2.setStatus(Status.WARN);
-            d2.setDriver(p2);
-            d2.setSpecification(s1);
+            Device d2 = DeviceHelper.getInstance().createDevice("Device002", s1, Status.WARN);
             deviceRepository.save(d2);
 
             EventHelper.addEvents(eventRepository, d2);
 
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
-            s2.setType(Type.TYPE_MODULATOR);
+            s2.setDriverType(DriverType.fromValue("modulator"));
             s2.setDriver("/drivers/modulator.json");
+            s2.setProtocolType(ProtocolType.fromValue("snmp"));
+            s2.setProtocol("snmp_protocol.json");
             specificationRepository.save(s2);
 
-            Device d3 = new Device();
-            d3.setName("Device003");
-            Modulator m1 = new Modulator();
-            m1.setStatus(Status.OK);
             Location l1 = new Location();
             l1.setLatitude(45.0);
             l1.setLongitude(10.0);
-            m1.setLocation(l1);
-            d3.setDriver(m1);
-            d3.setSpecification(s2);
+            Device d3 = DeviceHelper.getInstance().createDevice("Device003", s2, Status.OK, l1);
             deviceRepository.save(d3);
 
             EventHelper.addEvents(eventRepository, d3);
 
-            Device d4 = new Device();
-            d4.setName("Device004");
-            Modulator m2 = new Modulator();
-            m2.setStatus(Status.ERROR);
             Location l2 = new Location();
             l2.setLatitude(45.123);
             l2.setLongitude(8.871);
-            m2.setLocation(l2);
-            d4.setDriver(m2);
-            d4.setSpecification(s2);
+            Device d4 = DeviceHelper.getInstance().createDevice("Device004", s2, Status.ERROR, l2);
             deviceRepository.save(d4);
 
             EventHelper.addEvents(eventRepository, d4);
