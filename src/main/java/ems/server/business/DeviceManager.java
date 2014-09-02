@@ -2,9 +2,12 @@ package ems.server.business;
 
 
 import ems.server.data.DeviceRepository;
+import ems.server.data.EventRepository;
 import ems.server.domain.Device;
 import ems.server.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.List;
 public class DeviceManager {
     @Autowired
     private DeviceRepository deviceRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     public Device findDevice(String id) {
         return deviceRepository.findOne(id);
@@ -47,4 +52,7 @@ public class DeviceManager {
         return  deviceRepository.findBySpecification(specification);
     }
 
+    public Page<Device> findAllDevices(Pageable pageable) {
+        return deviceRepository.findAll(pageable);
+    }
 }

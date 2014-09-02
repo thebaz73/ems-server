@@ -71,7 +71,7 @@ public class SpecificationController {
 
     @ModelAttribute("allSpecifications")
     public Page<Specification> allSpecifications(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
-        Pageable pageable = new PageRequest(page, pageSize, Sort.Direction.DESC, "name");
+        Pageable pageable = new PageRequest(page, pageSize, Sort.Direction.ASC, "name");
         return specificationManager.findAllSpecifications(pageable);
     }
 

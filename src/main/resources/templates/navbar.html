@@ -15,7 +15,7 @@
             <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${#httpServletRequest.requestURI.startsWith('/devices')} ? 'active dropdown' : 'dropdown'">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Devices <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a th:href="@{/devices}" href="#">Show devices</a></li>
+                    <li><a th:href="@{/devices}" href="#">Manage devices</a></li>
                     <li><a th:href="@{/devices/history}" href="#">Show data logs</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header">Manage Monitoring</li>
@@ -27,7 +27,7 @@
             <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${#httpServletRequest.requestURI.startsWith('/specifications')} ? 'active dropdown' : 'dropdown'">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Device specifications <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a th:href="@{/specifications}" href="#">Show device specifications</a></li>
+                    <li><a th:href="@{/specifications}" href="#">Manage device specifications</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header">Manage protocols</li>
                     <li><a th:href="@{/specifications/mibs}" href="#">MIBs</a></li>

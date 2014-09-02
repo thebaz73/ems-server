@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="head"/>
+<body>
+
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+
+<section class="container" th:unless="${#lists.isEmpty(allDevices)}">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <h3 class="panel-title" th:text="#{title.device.list}">List of</h3>
+        </div>
+        <div class="panel-body" th:if="${warning}">
+            <div id="system-alert" class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <span th:text="${warning}"><strong>Warning!</strong> Better check yourself, you're not looking too good.</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th th:text="#{device.name}">Name</th>
+                    <th th:text="#{device.driver}">Driver</th>
+                    <th th:text="#{device.protocol}">Protocol</th>
+                    <th th:text="#{device.actions}" colspan="2">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="aDevice : ${allDevices}" valign="middle">
+                    <td th:text="${aDevice.name}">Name</td>
+                    <td th:text="${aDevice.specification.driverType}" style="text-transform: capitalize;">Driver</td>
+                    <td th:text="${aDevice.specification.protocolType}" style="text-transform: capitalize;">Protocol</td>
+
+                    <td><form class="form-inline" role="form" th:action="@{/devices/} + ${aDevice.id}" action="#" method="GET">
+                        <button type="submit" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span> <span th:text="#{device.edit}">Edit</span></button>
+                    </form></td><td><form class="form-inline" role="form" th:action="@{/devices/} + ${aDevice.id}" action="#" method="POST">
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button type="submit" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-trash"></span> <span th:text="#{device.delete}">Delete</span></button>
+                    </form></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer text-center">
+            <ul class="pagination" style="margin:0">
+                <li th:class="${allDevices.number eq 0} ? 'disabled' : ''">
+                    <a th:if="${not allDevices.first}" th:href="@{${'devices'}(page=${allDevices.number-1},pageSize=${allDevices.size})}">&laquo;</a>
+                </li>
+
+                <li th:each="pageNo : ${#numbers.sequence(0, allDevices.totalPages - 1)}" th:class="${allDevices.number eq pageNo}? 'active' : ''">
+                    <a th:if="${allDevices.number  eq pageNo}" href="javascript:void(0);" th:text="${pageNo + 1}">
+                        1
+                    </a>
+                    <a th:if="${not (allDevices.number  eq pageNo)}" th:href="@{${'devices'}(page=${pageNo},pageSize=${allDevices.size})}" th:text="${pageNo + 1}">
+                        1
+                    </a>
+
+                </li>
+                <li th:class="${allDevices.number + 1 ge allDevices.totalPages} ? 'disabled' : ''">
+                    <a th:if="${not allDevices.last}" th:href="@{${'devices'}(page=${allDevices.number+1},pageSize=${allDevices.size})}">&raquo;</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</section>
+<section class="container" th:if="${process != null}">
+    <form class="form-horizontal col-xs-12 col-sm-6 col-md-8 col-md-offset-2" role="form" th:action="@{/devices}" th:object="${device}" action="#" method="POST">
+        <input type="hidden" name="_method" value="PUT" th:if="${process == 'edit'}"/>
+        <div class="form-group">
+            <legend style="text-align:center;" th:text="#{device.data}">Device Data</legend>
+        </div>
+
+        <input type="hidden" th:field="*{id}" th:if="${process == 'edit'}"/>
+
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label" th:text="#{device.name}">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-12 text-right">
+                <button type="submit" class="btn btn-primary" th:text="#{device.create}" th:if="${process == 'create'}">Add Device</button>
+                <button type="submit" class="btn btn-success" value="put" th:text="#{device.edit}" th:if="${process == 'edit'}">Edit Device</button>
+                <!--<button type="reset" class="btn btn-danger">Cancel</button>-->
+            </div>
+        </div>
+    </form>
+</section>
+
+<footer th:include="footer"/>
+<section th:replace="scripts"/>
+<!--<script type="application/javascript">
+    $.get("/drivers/modulator.json", function(data) {
+        var json = JSON.parse(data);
+        if(json.type === "object") {
+            $.get("/template/object", function(template) {
+                var t = Handlebars.compile(template);
+                //$("#view").append(t(json));
+                console.log(t(json));
+            });
+        }
+    });
+</script>-->
+</body>
+</html>
