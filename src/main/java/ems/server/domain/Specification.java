@@ -5,6 +5,9 @@ import ems.driver.domain.DriverType;
 import ems.protocol.domain.ProtocolType;
 import org.springframework.data.annotation.Id;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Specification
  * Created by thebaz on 25/08/14.
@@ -18,6 +21,7 @@ public class Specification {
     private String driver;
     private ProtocolType protocolType;
     private String protocol;
+    private final Map<String, Object> properties = new HashMap<String, Object>();
 
     public String getId() {
         return id;
@@ -65,5 +69,9 @@ public class Specification {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 }

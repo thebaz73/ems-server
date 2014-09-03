@@ -84,13 +84,13 @@
                 <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
             </ul>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:if="${processStep == 'first'}">
             <label for="name" class="col-sm-2 control-label" th:text="#{specification.name}">Name</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
-        <div class="form-group" th:if="${locked == false}">
+        <div class="form-group" th:if="${(locked == false) and (processStep == 'first')}">
             <label for="driver" class="col-sm-2 control-label" th:text="#{specification.driver}">Driver</label>
             <div class="col-sm-10">
                 <select type="text" class="form-control" id="driver" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
@@ -100,14 +100,14 @@
                 </select>
             </div>
         </div>
-        <div class="form-group has-feedback" th:if="${locked == true}">
+        <div class="form-group has-feedback" th:if="${(locked == true) and (processStep == 'first')}">
             <label class="col-sm-2 control-label" th:text="#{specification.driver}">Driver</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;" readonly="readonly"/>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
         </div>
-        <div class="form-group" th:if="${locked == false}">
+        <div class="form-group" th:if="${(locked == false) and (processStep == 'first')}">
             <label for="protocol" class="col-sm-2 control-label" th:text="#{specification.protocol}">Protocol</label>
             <div class="col-sm-10">
                 <select type="text" class="form-control" id="protocol" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
@@ -117,17 +117,21 @@
                 </select>
             </div>
         </div>
-        <div class="form-group has-feedback" th:if="${locked == true}">
+        <div class="form-group has-feedback" th:if="${(locked == true) and (processStep == 'first')}">
             <label class="col-sm-2 control-label" th:text="#{specification.protocol}">Protocol</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;" readonly="readonly"/>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
         </div>
+        <div th:if="${processStep == 'final'}" id="driver-placeholder">
+        </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
-                <button type="submit" class="btn btn-primary" th:text="#{specification.create}" th:if="${process == 'create'}">Add Specification</button>
-                <button type="submit" class="btn btn-success" value="put" th:text="#{specification.edit}" th:if="${process == 'edit'}">Edit Specification</button>
+                <button type="submit" class="btn btn-primary" th:text="#{specification.create}" th:if="${(process == 'create') and (processStep == 'final')}">Add Specification</button>
+                <button type="submit" class="btn btn-success" value="put" th:text="#{specification.edit}" th:if="${(process == 'edit') and (processStep == 'final')}">Edit Specification</button>
+                <button type="submit" class="btn btn-default" th:utext="#{specification.next}" th:if="${(process == 'create') and (processStep != 'final')}">Next &raquo;</button>
+                <button type="submit" class="btn btn-default" value="put" th:utext="#{specification.next}" th:if="${(process == 'edit') and (processStep != 'final')}">Next &raquo;</button>
                 <a role="button" class="btn btn-danger" th:href="@{/specifications}" href="#">Cancel</a>
             </div>
         </div>
@@ -136,17 +140,15 @@
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
-<!--<script type="application/javascript">
-    $.get("/drivers/modulator.json", function(data) {
+<script type="application/javascript" th:if="${processStep == 'final'}" th:inline="javascript">
+    $.get([[${jsonDriverSchema}]], function(data) {
         var json = JSON.parse(data);
-        if(json.type === "object") {
-            $.get("/template/object", function(template) {
-                var t = Handlebars.compile(template);
-                //$("#view").append(t(json));
-                console.log(t(json));
-            });
-        }
+        $.get("/template/driver", function(template) {
+            var t = Handlebars.compile(template);
+            $("#driver-placeholder").append(t(json));
+            //console.log(t(json));
+        });
     });
-</script>-->
+</script>
 </body>
 </html>

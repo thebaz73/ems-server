@@ -87,8 +87,18 @@ Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
 
 Handlebars.registerHelper('notEqual', function(lvalue, rvalue, options) {
     if (arguments.length < 3)
-        throw new Error("Handlebars Helper equal needs 2 parameters");
+        throw new Error("Handlebars Helper notEqual needs 2 parameters");
     if( lvalue==rvalue ) {
+        return options.inverse(this);
+    } else {
+        return options.fn(this);
+    }
+});
+
+Handlebars.registerHelper('validDriverProperty', function(lvalue, options) {
+    if (arguments.length < 2)
+        throw new Error("Handlebars Helper validDriverProperty needs 1 parameter");
+    if( lvalue=='status' || lvalue=='type' || lvalue=='location' ) {
         return options.inverse(this);
     } else {
         return options.fn(this);

@@ -4,13 +4,13 @@ package ems.server.web;
  */
 
 import ems.driver.domain.Driver;
+import ems.driver.domain.common.Location;
 import ems.driver.domain.common.Status;
 import ems.protocol.domain.Protocol;
 import ems.server.business.DeviceManager;
 import ems.server.business.SpecificationManager;
 import ems.server.domain.Device;
 import ems.server.domain.Specification;
-import ems.server.utils.DeviceHelper;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
@@ -130,9 +130,11 @@ public class DeviceController {
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
-                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, DeviceHelper.class.getClassLoader());
+                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());
                     Driver driver = driverClass.newInstance();
                     BeanUtils.setProperty(driver, "status", Status.fromValue("unknown"));
+                    BeanUtils.setProperty(driver, "location", new Location());
+                    BeanUtils.setProperty(driver, "type", specification.getDriverType());
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
@@ -148,7 +150,7 @@ public class DeviceController {
                     return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
                 try {
-                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
+                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, getClass().getClassLoader());
                     Protocol protocol = protocolClass.newInstance();
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
@@ -170,7 +172,7 @@ public class DeviceController {
             model.addAttribute("jsonProtocolSchema", device.getSpecification().getProtocol());
             return "devices";
         }
-        if(processStep.equalsIgnoreCase("protocol")) {
+        else if(processStep.equalsIgnoreCase("protocol")) {
             processStep = "final";
             Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
             Protocol protocol = currentDevice.getProtocol();
@@ -190,10 +192,9 @@ public class DeviceController {
             model.addAttribute("process", process);
             model.addAttribute("device", currentDevice);
             model.addAttribute("processStep", processStep);
-            model.addAttribute("jsonDriverSchema", currentDevice.getSpecification().getDriver());
             return "devices";
         }
-        if(processStep.equalsIgnoreCase("final")) {
+        else {
             Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
             Driver driver = currentDevice.getDriver();
             for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
@@ -212,8 +213,8 @@ public class DeviceController {
 
             deviceManager.createDevice(currentDevice);
             model.clear();
+            return "redirect:/devices";
         }
-        return "redirect:/devices";
     }
 
     @RequestMapping(value = "/devices", method = PUT)
@@ -236,7 +237,7 @@ public class DeviceController {
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
-                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, DeviceHelper.class.getClassLoader());
+                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());
                     Driver driver = driverClass.newInstance();
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
@@ -250,7 +251,7 @@ public class DeviceController {
                     return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
                 try {
-                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
+                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, getClass().getClassLoader());
                     Protocol protocol = protocolClass.newInstance();
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
@@ -272,15 +273,15 @@ public class DeviceController {
             model.addAttribute("jsonProtocolSchema", device.getSpecification().getProtocol());
             return "devices";
         }
-        if(processStep.equalsIgnoreCase("protocol")) {
+        else if(processStep.equalsIgnoreCase("protocol")) {
             processStep = "final";
             return "devices";
         }
-        if(processStep.equalsIgnoreCase("final")) {
+        else {
             deviceManager.createDevice(device);
             model.clear();
+            return "redirect:/devices";
         }
-        return "redirect:/devices";
     }
 
     @RequestMapping(value = "/devices/{id}", method = DELETE)
@@ -304,9 +305,7 @@ public class DeviceController {
         if(currentDevice.getSpecification() != null) {
             model.addAttribute("jsonProtocolSchema", currentDevice.getSpecification().getProtocol());
         }
-        if(currentDevice.getSpecification() != null) {
-            model.addAttribute("jsonDriverSchema", currentDevice.getSpecification().getDriver());
-        }
+
         return "devices";
     }
 

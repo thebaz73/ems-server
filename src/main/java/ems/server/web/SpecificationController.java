@@ -25,11 +25,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static java.lang.String.format;
@@ -54,6 +56,7 @@ public class SpecificationController {
 
     private String process;
     private String processStep;
+    private boolean locked;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -84,11 +87,12 @@ public class SpecificationController {
         process = "create";
         Specification currentSpecification = new Specification();
         session.setAttribute("currentSpecification", currentSpecification);
-        processStep = "specification";
+        processStep = "first";
         model.addAttribute("process", process);
         model.addAttribute("specification", currentSpecification);
         model.addAttribute("processStep", processStep);
-        model.addAttribute("locked", false);
+        locked = (deviceManager.findDeviceBySpecification(currentSpecification).size() > 0);
+        model.addAttribute("locked", locked);
         
         return "specifications";
     }
@@ -98,60 +102,92 @@ public class SpecificationController {
         process = "edit";
         Specification currentSpecification = specificationManager.findSpecification(id);
         session.setAttribute("currentSpecification", currentSpecification);
-        processStep = "specification";
+        processStep = "first";
         model.addAttribute("process", process);
         model.addAttribute("specification", currentSpecification);
         model.addAttribute("processStep", processStep);
-        model.addAttribute("locked", deviceManager.findDeviceBySpecification(currentSpecification).size() > 0);
+        locked = (deviceManager.findDeviceBySpecification(currentSpecification).size() > 0);
+        model.addAttribute("locked", locked);
 
         return "specifications";
     }
 
     @RequestMapping(value = "/specifications", method = POST)
-    public String createSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model) {
+    public String createSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("process", "create");
-            model.addAttribute("locked", false);
+            return logAndReturn(request.getSession(), bindingResult, model);
+        }
+        if(processStep.equalsIgnoreCase("first")) {
+            try {
+                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+                specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
+                specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
+            } catch (IOException e) {
+                String message = "Cannot load extension properties";
+                return logAndReturn(request.getSession(), bindingResult, model, e, message);
+            }
+            processStep = "final";
+            request.getSession().setAttribute("currentSpecification", specification);
+            model.addAttribute("process", process);
+            model.addAttribute("specification", specification);
+            model.addAttribute("processStep", processStep);
+            model.addAttribute("jsonDriverSchema", specification.getDriver());
             return "specifications";
         }
-        try {
-            Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-            specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
-            specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
+        else {
+            Specification currentSpecification = (Specification) request.getSession().getAttribute("currentSpecification");
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if(!entry.getKey().equalsIgnoreCase("_csrf") &&
+                        !entry.getKey().equalsIgnoreCase("status") &&
+                        !entry.getKey().equalsIgnoreCase("type") &&
+                        !entry.getKey().equalsIgnoreCase("location")) {
+                    currentSpecification.getProperties().put(entry.getKey(), entry.getValue()[0]);
+                }
+            }
 
-            specificationManager.createSpecification(specification);
+            specificationManager.createSpecification(currentSpecification);
             model.clear();
-        } catch (IOException e) {
-            logger.error("Cannot load properties", e);
-            bindingResult.reject(" Fatal! Cannot load extension properties.");
-            model.addAttribute("process", "create");
-            model.addAttribute("locked", false);
-            return "specifications";
+            return "redirect:/specifications";
         }
-
-        return "redirect:/specifications";
     }
 
     @RequestMapping(value = "/specifications", method = PUT)
-    public String editSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model) {
+    public String editSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
+            return logAndReturn(request.getSession(), bindingResult, model);
+        }
+        if(processStep.equalsIgnoreCase("first")) {
+            try {
+                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+                specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
+                specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
+            } catch (IOException e) {
+                String message = "Cannot load extension properties";
+                return logAndReturn(request.getSession(), bindingResult, model, e, message);
+            }
+            processStep = "final";
+            request.getSession().setAttribute("currentSpecification", specification);
+            model.addAttribute("process", process);
+            model.addAttribute("specification", specification);
+            model.addAttribute("processStep", processStep);
+            model.addAttribute("jsonDriverSchema", specification.getDriver());
             return "specifications";
         }
-        try {
-            Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-            specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
-            specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
+        else {
+            Specification currentSpecification = (Specification) request.getSession().getAttribute("currentSpecification");
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if(!entry.getKey().equalsIgnoreCase("_csrf") &&
+                        !entry.getKey().equalsIgnoreCase("status") &&
+                        !entry.getKey().equalsIgnoreCase("type") &&
+                        !entry.getKey().equalsIgnoreCase("location")) {
+                    currentSpecification.getProperties().put(entry.getKey(), entry.getValue()[0]);
+                }
+            }
 
-            specificationManager.editSpecification(specification);
+            specificationManager.editSpecification(currentSpecification);
             model.clear();
-        } catch (IOException e) {
-            logger.error("Cannot load properties", e);
-            bindingResult.reject(" Fatal! Cannot load extension properties.");
-            return "specifications";
+            return "redirect:/specifications";
         }
-
-        model.clear();
-        return "redirect:/specifications";
     }
 
     @RequestMapping(value = "/specifications/{id}", method = DELETE)
@@ -176,6 +212,7 @@ public class SpecificationController {
         }
         model.addAttribute("process", process);
         model.addAttribute("processStep", processStep);
+        model.addAttribute("locked", locked);
         Specification currentSpecification = (Specification) session.getAttribute("currentSpecification");
         if(currentSpecification != null) {
             model.addAttribute("jsonDriverSchema", currentSpecification.getDriver());
