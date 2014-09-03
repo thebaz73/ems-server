@@ -85,6 +85,16 @@ Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
     }
 });
 
+Handlebars.registerHelper('notEqual', function(lvalue, rvalue, options) {
+    if (arguments.length < 3)
+        throw new Error("Handlebars Helper equal needs 2 parameters");
+    if( lvalue==rvalue ) {
+        return options.inverse(this);
+    } else {
+        return options.fn(this);
+    }
+});
+
 //  format an ISO date using Moment.js
 //  http://momentjs.com/
 //  moment syntax example: moment(Date("2011-07-18T15:50:52")).format("MMMM YYYY")

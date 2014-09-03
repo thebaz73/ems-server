@@ -72,6 +72,10 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             registry.addResourceHandler("/webjars/**").addResourceLocations(
                     "classpath:/META-INF/resources/webjars/");
         }
+        if (!registry.hasMappingForPattern("/schema/**")) {
+            registry.addResourceHandler("/schema/**").addResourceLocations(
+                    "classpath:/schema/");
+        }
         if (!registry.hasMappingForPattern("/**")) {
             registry.addResourceHandler("/**").addResourceLocations(
                     RESOURCE_LOCATIONS);
@@ -97,9 +101,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Specification s1 = new Specification();
             s1.setName("AcmeProbe");
             s1.setDriverType(DriverType.fromValue("probe"));
-            s1.setDriver("probe.json");
+            s1.setDriver("schema/probe.json");
             s1.setProtocolType(ProtocolType.fromValue("snmp"));
-            s1.setProtocol("snmp_protocol.json");
+            s1.setProtocol("schema/snmp.json");
             specificationRepository.save(s1);
 
             String name = "Device001";
@@ -121,9 +125,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
             s2.setDriverType(DriverType.fromValue("modulator"));
-            s2.setDriver("/drivers/modulator.json");
+            s2.setDriver("schema/modulator.json");
             s2.setProtocolType(ProtocolType.fromValue("snmp"));
-            s2.setProtocol("snmp_protocol.json");
+            s2.setProtocol("schema/snmp.json");
             specificationRepository.save(s2);
 
             Location l1 = new Location();

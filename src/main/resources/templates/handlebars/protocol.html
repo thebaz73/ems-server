@@ -1,0 +1,29 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:th="http://www.thymeleaf.org">
+    {{#each properties}}
+    {{#equal @key 'protocolType'}}
+    <div class="form-group">
+        <label class="col-sm-2 control-label" th:text="#{device.protocol}">Protocol</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="{{@key}}" readonly="readonly" value="{{default}}"/>
+        </div>
+    </div>
+    {{/equal}}
+    {{#notEqual @key 'protocolType'}}
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{this.title}}</label>
+        <div class="col-sm-10">
+            {{#if this.enum}}
+            <select class="form-control" name="{{@key}}" style="text-transform: capitalize;">
+                {{#each enum}}
+                <option value="{{@index}}">{{this}}</option>
+                {{/each}}
+            </select>
+            {{else}}
+            <input type="text" class="form-control" name="{{@key}}" />
+            {{/if}}
+        </div>
+    </div>
+    {{/notEqual}}
+    {{/each}}
+</div>

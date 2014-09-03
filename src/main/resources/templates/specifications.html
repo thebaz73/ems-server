@@ -128,7 +128,7 @@
             <div class="col-sm-12 text-right">
                 <button type="submit" class="btn btn-primary" th:text="#{specification.create}" th:if="${process == 'create'}">Add Specification</button>
                 <button type="submit" class="btn btn-success" value="put" th:text="#{specification.edit}" th:if="${process == 'edit'}">Edit Specification</button>
-                <!--<button type="reset" class="btn btn-danger">Cancel</button>-->
+                <a role="button" class="btn btn-danger" th:href="@{/specifications}" href="#">Cancel</a>
             </div>
         </div>
     </form>

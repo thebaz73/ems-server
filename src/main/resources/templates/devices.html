@@ -84,28 +84,28 @@
                 <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
             </ul>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:if="${processStep == 'specification'}">
             <label for="name" class="col-sm-2 control-label" th:text="#{device.name}">Name</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:if="${processStep == 'specification'}">
             <label for="address" class="col-sm-2 control-label" th:text="#{device.address}">Address</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="address" th:field="*{address}" th:errorclass="has-error" required="required" pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:if="${processStep == 'specification'}">
             <label for="port" class="col-sm-2 control-label" th:text="#{device.port}">port</label>
             <div class="col-sm-10">
                 <input type="number" class="form-control" id="port" th:field="*{port}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:if="${processStep == 'specification'}">
             <label for="specification" class="col-sm-2 control-label" th:text="#{device.specification}">Specification</label>
             <div class="col-sm-10">
-                <select type="text" class="form-control" id="specification" name="specification" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
+                <select type="text" class="form-control" id="specification" name="specification" th:errorclass="has-error" required="required">
                     <option th:each="type : ${allSpecifications}"
                             th:value="${type.id}"
                             th:text="${type.name + ' [' + type.driverType + ']'}"
@@ -113,10 +113,16 @@
                 </select>
             </div>
         </div>
+        <div th:if="${processStep == 'protocol'}" id="protocol-placeholder">
+
+        </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
-                <button type="submit" class="btn btn-primary" th:text="#{device.create}" th:if="${process == 'create'}">Add Device</button>
-                <button type="submit" class="btn btn-success" value="put" th:text="#{device.edit}" th:if="${process == 'edit'}">Edit Device</button>
+                <button type="submit" class="btn btn-primary" th:text="#{device.create}" th:if="${(process == 'create') and (processStep == 'final')}">Add Device</button>
+                <button type="submit" class="btn btn-success" value="put" th:text="#{device.edit}" th:if="${(process == 'edit') and (processStep == 'final')}">Edit Device</button>
+                <button type="submit" class="btn btn-default" th:utext="#{device.next}" th:if="${(process == 'create') and (processStep != 'final')}">Next &raquo;</button>
+                <button type="submit" class="btn btn-default" value="put" th:utext="#{device.next}" th:if="${(process == 'edit') and (processStep != 'final')}">Next &raquo;</button>
+                <a role="button" class="btn btn-danger" th:href="@{/devices}" href="#">Cancel</a>
             </div>
         </div>
     </form>
@@ -124,17 +130,17 @@
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
-<!--<script type="application/javascript">
-    $.get("/drivers/modulator.json", function(data) {
+<script type="application/javascript" th:if="${processStep == 'protocol'}" th:inline="javascript">
+    $.get([[${jsonProtocolSchema}]], function(data) {
         var json = JSON.parse(data);
         if(json.type === "object") {
-            $.get("/template/object", function(template) {
+            $.get("/template/protocol", function(template) {
                 var t = Handlebars.compile(template);
-                //$("#view").append(t(json));
+                $("#protocol-placeholder").append(t(json));
                 console.log(t(json));
             });
         }
     });
-</script>-->
+</script>
 </body>
 </html>
