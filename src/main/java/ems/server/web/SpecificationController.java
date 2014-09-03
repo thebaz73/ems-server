@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.Arrays;
@@ -51,6 +52,9 @@ public class SpecificationController {
     @Value("classpath:/extension.properties")
     private Resource resource;
 
+    private String process;
+    private String processStep;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(DriverType.class,
@@ -76,19 +80,29 @@ public class SpecificationController {
     }
 
     @RequestMapping(value = "/specifications", method = GET)
-    public String show(Model model) {
-        model.addAttribute("process", "create");
-        model.addAttribute("specification", new Specification());
+    public String show(Model model, HttpSession session) {
+        process = "create";
+        Specification currentSpecification = new Specification();
+        session.setAttribute("currentSpecification", currentSpecification);
+        processStep = "specification";
+        model.addAttribute("process", process);
+        model.addAttribute("specification", currentSpecification);
+        model.addAttribute("processStep", processStep);
         model.addAttribute("locked", false);
+        
         return "specifications";
     }
 
     @RequestMapping(value = "/specifications/{id}", method = GET)
-    public String loadSpecification(Model model, @PathVariable("id") String id) {
-        Specification entry = specificationManager.findSpecification(id);
-        model.addAttribute("process", "edit");
-        model.addAttribute("specification", entry);
-        model.addAttribute("locked", deviceManager.findDeviceBySpecification(entry).size() > 0);
+    public String loadSpecification(Model model, @PathVariable("id") String id, HttpSession session) {
+        process = "edit";
+        Specification currentSpecification = specificationManager.findSpecification(id);
+        session.setAttribute("currentSpecification", currentSpecification);
+        processStep = "specification";
+        model.addAttribute("process", process);
+        model.addAttribute("specification", currentSpecification);
+        model.addAttribute("processStep", processStep);
+        model.addAttribute("locked", deviceManager.findDeviceBySpecification(currentSpecification).size() > 0);
 
         return "specifications";
     }
@@ -149,6 +163,24 @@ public class SpecificationController {
         }
         specificationManager.deleteSpecification(id);
         return "redirect:/specifications";
+    }
+
+    private String logAndReturn(HttpSession session, BindingResult bindingResult, ModelMap model) {
+        return logAndReturn(session, bindingResult, model, null, null);
+    }
+
+    private String logAndReturn(HttpSession session, BindingResult bindingResult, ModelMap model, Exception e, String message) {
+        if(e == null || message == null) {
+            logger.error(message, e);
+            bindingResult.reject(message);
+        }
+        model.addAttribute("process", process);
+        model.addAttribute("processStep", processStep);
+        Specification currentSpecification = (Specification) session.getAttribute("currentSpecification");
+        if(currentSpecification != null) {
+            model.addAttribute("jsonDriverSchema", currentSpecification.getDriver());
+        }
+        return "specifications";
     }
 
     public class DriverTypePropertyEditor extends PropertyEditorSupport {

@@ -93,6 +93,7 @@ public class DeviceController {
         model.addAttribute("process", process);
         model.addAttribute("device", currentDevice);
         model.addAttribute("processStep", processStep);
+
         return "devices";
     }
 
@@ -112,9 +113,7 @@ public class DeviceController {
     @RequestMapping(value = "/devices", method = POST)
     public String createDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("process", process);
-            model.addAttribute("processStep", processStep);
-            return "devices";
+            return logAndReturn(request.getSession(), bindingResult, model);
         }
         if(processStep.equalsIgnoreCase("specification")) {
             String driverClassName;
@@ -127,7 +126,7 @@ public class DeviceController {
                 protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
             } catch (IOException e) {
                 String message = "Cannot load extension properties";
-                return logAndReturn(bindingResult, model, e, message, request.getSession());
+                return logAndReturn(request.getSession(), bindingResult, model, e, message);
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
@@ -137,16 +136,16 @@ public class DeviceController {
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (InvocationTargetException e) {
                     String message = format("Cannot use class: %s invocation target", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
                 try {
                     Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
@@ -154,13 +153,13 @@ public class DeviceController {
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
             }
             processStep = "protocol";
@@ -181,10 +180,10 @@ public class DeviceController {
                         beanUtilsBean.setProperty(protocol, entry.getKey(), entry.getValue()[0]);
                     } catch (IllegalAccessException e) {
                         String message = format("Cannot set property: %s illegal method access", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message, request.getSession());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
                     } catch (InvocationTargetException e) {
                         String message = format("Cannot set property: %s invocation target", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message, request.getSession());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
                     }
                 }
             }
@@ -203,10 +202,10 @@ public class DeviceController {
                         beanUtilsBean.setProperty(driver, "location."+entry.getKey(), entry.getValue()[0]);
                     } catch (IllegalAccessException e) {
                         String message = format("Cannot set property: %s illegal method access", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message, request.getSession());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
                     } catch (InvocationTargetException e) {
                         String message = format("Cannot set property: %s invocation target", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message, request.getSession());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
                     }
                 }
             }
@@ -233,7 +232,7 @@ public class DeviceController {
                 protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
             } catch (IOException e) {
                 String message = "Cannot load extension properties";
-                return logAndReturn(bindingResult, model, e, message, request.getSession());
+                return logAndReturn(request.getSession(), bindingResult, model, e, message);
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
@@ -242,13 +241,13 @@ public class DeviceController {
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
                 try {
                     Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
@@ -256,13 +255,13 @@ public class DeviceController {
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message, request.getSession());
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
             }
             processStep = "protocol";
@@ -285,14 +284,20 @@ public class DeviceController {
     }
 
     @RequestMapping(value = "/devices/{id}", method = DELETE)
-    public String deleteDevice(Model model, @PathVariable("id") String id) {
+    public String deleteDevice(@PathVariable("id") String id) {
         deviceManager.deleteDevice(id);
         return "redirect:/devices";
     }
 
-    private String logAndReturn(BindingResult bindingResult, ModelMap model, Exception e, String message, HttpSession session) {
-        logger.error(message, e);
-        bindingResult.reject(message);
+    private String logAndReturn(HttpSession session, BindingResult bindingResult, ModelMap model) {
+        return logAndReturn(session, bindingResult, model, null, null);
+    }
+
+    private String logAndReturn(HttpSession session, BindingResult bindingResult, ModelMap model, Exception e, String message) {
+        if(e == null || message == null) {
+            logger.error(message, e);
+            bindingResult.reject(message);
+        }
         model.addAttribute("process", process);
         model.addAttribute("processStep", processStep);
         Device currentDevice = (Device) session.getAttribute("currentDevice");
