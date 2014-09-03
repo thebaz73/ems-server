@@ -193,9 +193,9 @@ public class DeviceController {
         if(processStep.equalsIgnoreCase("final")) {
             Driver driver = this.device.getDriver();
             for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-                if(!entry.getKey().equalsIgnoreCase("_csrf") && !entry.getKey().equalsIgnoreCase("driverType")) {
+                if(!entry.getKey().equalsIgnoreCase("_csrf")) {
                     try {
-                        beanUtilsBean.setProperty(driver, entry.getKey(), entry.getValue()[0]);
+                        beanUtilsBean.setProperty(driver, "location."+entry.getKey(), entry.getValue()[0]);
                     } catch (IllegalAccessException e) {
                         String message = format("Cannot set property: %s illegal method access", entry.getKey());
                         return logAndReturn(bindingResult, model, e, message);
@@ -206,7 +206,7 @@ public class DeviceController {
                 }
             }
 
-            deviceManager.createDevice(device);
+            deviceManager.createDevice(this.device);
             model.clear();
         }
         return "redirect:/devices";

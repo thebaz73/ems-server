@@ -22,6 +22,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,10 +32,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.sql.DataSource;
-import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Application
@@ -80,6 +84,24 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             registry.addResourceHandler("/**").addResourceLocations(
                     RESOURCE_LOCATIONS);
         }
+    }
+
+    @Bean
+    public SimpleUrlHandlerMapping myFaviconHandlerMapping()
+    {
+        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+        mapping.setOrder(Integer.MIN_VALUE);
+        mapping.setUrlMap(Collections.singletonMap("/favicon.ico", myFaviconRequestHandler()));
+        return mapping;
+    }
+
+    @Bean
+    protected ResourceHttpRequestHandler myFaviconRequestHandler()
+    {
+        ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
+        requestHandler.setLocations(Arrays.<Resource> asList(new ClassPathResource("/")));
+        requestHandler.setCacheSeconds(0);
+        return requestHandler;
     }
 
     @Bean

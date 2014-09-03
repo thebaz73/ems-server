@@ -114,7 +114,8 @@
             </div>
         </div>
         <div th:if="${processStep == 'protocol'}" id="protocol-placeholder">
-
+        </div>
+        <div th:if="${processStep == 'final'}" id="location-placeholder">
         </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
@@ -137,7 +138,19 @@
             $.get("/template/protocol", function(template) {
                 var t = Handlebars.compile(template);
                 $("#protocol-placeholder").append(t(json));
-                console.log(t(json));
+                //console.log(t(json));
+            });
+        }
+    });
+</script>
+<script type="application/javascript" th:if="${processStep == 'final'}" th:inline="javascript">
+    $.get("/schema/location.json", function(data) {
+        var json = JSON.parse(data);
+        if(json.type === "object") {
+            $.get("/template/location", function(template) {
+                var t = Handlebars.compile(template);
+                $("#location-placeholder").append(t(json));
+                //console.log(t(json));
             });
         }
     });

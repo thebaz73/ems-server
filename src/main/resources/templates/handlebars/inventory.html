@@ -21,7 +21,7 @@
                 {{#equal driver.status 'ERROR'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-danger col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
                 {{#equal driver.status 'UNKNOWN'}}<a rel="button" href="/inventory/show/{{id}}" class="btn btn-xs btn-default col-xs-6"><span class="glyphicon glyphicon-zoom-in"></span> {{driver.status}}</a>{{/equal}}
             </td>
-        </tr>Device
+        </tr>
         {{else}}
         <tr valign="middle">
             <td colspan="4" class="alert alert-info" role="alert">The Inventory is void.</td>
