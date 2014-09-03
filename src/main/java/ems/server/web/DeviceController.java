@@ -33,6 +33,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +65,6 @@ public class DeviceController {
 
     private String process;
     private String processStep;
-    protected Device device;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -83,24 +83,27 @@ public class DeviceController {
         return deviceManager.findAllDevices(pageable);
     }
 
+
     @RequestMapping(value = "/devices", method = GET)
-    public String show(Model model) {
+    public String show(Model model, HttpSession session) {
         process = "create";
-        device = new Device();
+        Device currentDevice = new Device();
+        session.setAttribute("currentDevice", currentDevice);
         processStep = "specification";
         model.addAttribute("process", process);
-        model.addAttribute("device", device);
+        model.addAttribute("device", currentDevice);
         model.addAttribute("processStep", processStep);
         return "devices";
     }
 
     @RequestMapping(value = "/devices/{id}", method = GET)
-    public String loadDevice(Model model, @PathVariable("id") String id) {
+    public String loadDevice(Model model, @PathVariable("id") String id, HttpSession session) {
         process = "edit";
-        device = deviceManager.findDevice(id);
+        Device currentDevice = deviceManager.findDevice(id);
+        session.setAttribute("currentDevice", currentDevice);
         processStep = "specification";
         model.addAttribute("process", process);
-        model.addAttribute("device", device);
+        model.addAttribute("device", currentDevice);
         model.addAttribute("processStep", processStep);
 
         return "devices";
@@ -124,7 +127,7 @@ public class DeviceController {
                 protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
             } catch (IOException e) {
                 String message = "Cannot load extension properties";
-                return logAndReturn(bindingResult, model, e, message);
+                return logAndReturn(bindingResult, model, e, message, request.getSession());
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
@@ -134,16 +137,16 @@ public class DeviceController {
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (InvocationTargetException e) {
                     String message = format("Cannot use class: %s invocation target", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 }
                 try {
                     Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
@@ -151,69 +154,71 @@ public class DeviceController {
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 }
             }
             processStep = "protocol";
-            this.device = device;
+            request.getSession().setAttribute("currentDevice", device);
             model.addAttribute("process", process);
-            model.addAttribute("device", this.device);
+            model.addAttribute("device", device);
             model.addAttribute("processStep", processStep);
-            model.addAttribute("jsonProtocolSchema", this.device.getSpecification().getProtocol());
+            model.addAttribute("jsonProtocolSchema", device.getSpecification().getProtocol());
             return "devices";
         }
         if(processStep.equalsIgnoreCase("protocol")) {
             processStep = "final";
-            Protocol protocol = this.device.getProtocol();
+            Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
+            Protocol protocol = currentDevice.getProtocol();
             for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
                 if(!entry.getKey().equalsIgnoreCase("_csrf") && !entry.getKey().equalsIgnoreCase("protocolType")) {
                     try {
                         beanUtilsBean.setProperty(protocol, entry.getKey(), entry.getValue()[0]);
                     } catch (IllegalAccessException e) {
                         String message = format("Cannot set property: %s illegal method access", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message);
+                        return logAndReturn(bindingResult, model, e, message, request.getSession());
                     } catch (InvocationTargetException e) {
                         String message = format("Cannot set property: %s invocation target", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message);
+                        return logAndReturn(bindingResult, model, e, message, request.getSession());
                     }
                 }
             }
             model.addAttribute("process", process);
-            model.addAttribute("device", this.device );
+            model.addAttribute("device", currentDevice);
             model.addAttribute("processStep", processStep);
-            model.addAttribute("jsonDriverSchema", this.device.getSpecification().getDriver());
+            model.addAttribute("jsonDriverSchema", currentDevice.getSpecification().getDriver());
             return "devices";
         }
         if(processStep.equalsIgnoreCase("final")) {
-            Driver driver = this.device.getDriver();
+            Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
+            Driver driver = currentDevice.getDriver();
             for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
                 if(!entry.getKey().equalsIgnoreCase("_csrf")) {
                     try {
                         beanUtilsBean.setProperty(driver, "location."+entry.getKey(), entry.getValue()[0]);
                     } catch (IllegalAccessException e) {
                         String message = format("Cannot set property: %s illegal method access", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message);
+                        return logAndReturn(bindingResult, model, e, message, request.getSession());
                     } catch (InvocationTargetException e) {
                         String message = format("Cannot set property: %s invocation target", entry.getKey());
-                        return logAndReturn(bindingResult, model, e, message);
+                        return logAndReturn(bindingResult, model, e, message, request.getSession());
                     }
                 }
             }
 
-            deviceManager.createDevice(this.device);
+            deviceManager.createDevice(currentDevice);
             model.clear();
         }
         return "redirect:/devices";
     }
 
     @RequestMapping(value = "/devices", method = PUT)
-    public String editDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model) {
+    public String editDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "devices";
         }
@@ -228,7 +233,7 @@ public class DeviceController {
                 protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
             } catch (IOException e) {
                 String message = "Cannot load extension properties";
-                return logAndReturn(bindingResult, model, e, message);
+                return logAndReturn(bindingResult, model, e, message, request.getSession());
             }
             if (driverClassName != null && protocolClassName != null) {
                 try {
@@ -237,13 +242,13 @@ public class DeviceController {
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 }
                 try {
                     Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, DeviceHelper.class.getClassLoader());
@@ -251,28 +256,25 @@ public class DeviceController {
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (InstantiationException e) {
                     String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 } catch (IllegalAccessException e) {
                     String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(bindingResult, model, e, message);
+                    return logAndReturn(bindingResult, model, e, message, request.getSession());
                 }
             }
             processStep = "protocol";
-            this.device = device;
+            request.getSession().setAttribute("currentDevice", device);
             model.addAttribute("process", process);
-            model.addAttribute("device", this.device );
+            model.addAttribute("device", device);
             model.addAttribute("processStep", processStep);
+            model.addAttribute("jsonProtocolSchema", device.getSpecification().getProtocol());
             return "devices";
         }
         if(processStep.equalsIgnoreCase("protocol")) {
             processStep = "final";
-            this.device = device;
-            model.addAttribute("process", process);
-            model.addAttribute("device", this.device );
-            model.addAttribute("processStep", processStep);
             return "devices";
         }
         if(processStep.equalsIgnoreCase("final")) {
@@ -288,16 +290,17 @@ public class DeviceController {
         return "redirect:/devices";
     }
 
-    private String logAndReturn(BindingResult bindingResult, ModelMap model, Exception e, String message) {
+    private String logAndReturn(BindingResult bindingResult, ModelMap model, Exception e, String message, HttpSession session) {
         logger.error(message, e);
         bindingResult.reject(message);
         model.addAttribute("process", process);
         model.addAttribute("processStep", processStep);
-        if(device.getSpecification() != null) {
-            model.addAttribute("jsonProtocolSchema", device.getSpecification().getProtocol());
+        Device currentDevice = (Device) session.getAttribute("currentDevice");
+        if(currentDevice.getSpecification() != null) {
+            model.addAttribute("jsonProtocolSchema", currentDevice.getSpecification().getProtocol());
         }
-        if(device.getSpecification() != null) {
-            model.addAttribute("jsonDriverSchema", device.getSpecification().getDriver());
+        if(currentDevice.getSpecification() != null) {
+            model.addAttribute("jsonDriverSchema", currentDevice.getSpecification().getDriver());
         }
         return "devices";
     }

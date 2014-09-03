@@ -45,10 +45,10 @@ public class DeviceHelper {
     /**
      * Creates a new Device
      *
-     * @param name device name
-     * @param specification device specification
-     * @param status initial device status
-     * @return created device
+     * @param name currentDevice name
+     * @param specification currentDevice specification
+     * @param status initial currentDevice status
+     * @return created currentDevice
      */
     public Device createDevice(String name, Specification specification, Status status) {
         Device device = null;
@@ -100,11 +100,11 @@ public class DeviceHelper {
     /**
      * Create a new Device
      *
-     * @param name device name
-     * @param specification device specification
-     * @param status initial device status
-     * @param location device WGS84 location
-     * @return created device
+     * @param name currentDevice name
+     * @param specification currentDevice specification
+     * @param status initial currentDevice status
+     * @param location currentDevice WGS84 location
+     * @return created currentDevice
      */
     public Device createDevice(String name, Specification specification, Status status, Location location) {
         Device device = null;
