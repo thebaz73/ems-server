@@ -32,6 +32,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.sql.DataSource;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 /**
@@ -104,11 +105,15 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             String name = "Device001";
             Status status = Status.OK;
             Device d1 = DeviceHelper.getInstance().createDevice(name, s1, status);
+            d1.setAddress("127.0.0.1");
+            d1.setPort(1061);
             deviceRepository.save(d1);
 
             EventHelper.getInstance().addEvents(eventRepository, d1);
 
             Device d2 = DeviceHelper.getInstance().createDevice("Device002", s1, Status.WARN);
+            d2.setAddress("127.0.0.1");
+            d2.setPort(1062);
             deviceRepository.save(d2);
 
             EventHelper.getInstance().addEvents(eventRepository, d2);
@@ -125,6 +130,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             l1.setLatitude(45.0);
             l1.setLongitude(10.0);
             Device d3 = DeviceHelper.getInstance().createDevice("Device003", s2, Status.OK, l1);
+            d3.setAddress("127.0.0.1");
+            d3.setPort(1063);
             deviceRepository.save(d3);
 
             EventHelper.getInstance().addEvents(eventRepository, d3);
@@ -133,6 +140,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             l2.setLatitude(45.123);
             l2.setLongitude(8.871);
             Device d4 = DeviceHelper.getInstance().createDevice("Device004", s2, Status.ERROR, l2);
+            d4.setAddress("127.0.0.1");
+            d4.setPort(1064);
             deviceRepository.save(d4);
 
             EventHelper.getInstance().addEvents(eventRepository, d4);

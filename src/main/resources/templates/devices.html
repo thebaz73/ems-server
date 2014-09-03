@@ -25,16 +25,16 @@
                 <thead>
                 <tr>
                     <th th:text="#{device.name}">Name</th>
-                    <th th:text="#{device.driver}">Driver</th>
-                    <th th:text="#{device.protocol}">Protocol</th>
+                    <th th:text="#{device.ipAddress}">Ip Address</th>
+                    <th th:text="#{device.specification}">Specification</th>
                     <th th:text="#{device.actions}" colspan="2">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="aDevice : ${allDevices}" valign="middle">
                     <td th:text="${aDevice.name}">Name</td>
-                    <td th:text="${aDevice.specification.driverType}" style="text-transform: capitalize;">Driver</td>
-                    <td th:text="${aDevice.specification.protocolType}" style="text-transform: capitalize;">Protocol</td>
+                    <td th:text="${aDevice.specification.protocolType + '://' + aDevice.address + ':'  + aDevice.port}" style="text-transform: lowercase;">Ip Address</td>
+                    <td th:text="${aDevice.specification.name + ' [' + aDevice.specification.driverType + ']' }" style="text-transform: capitalize;">Specification</td>
 
                     <td><form class="form-inline" role="form" th:action="@{/devices/} + ${aDevice.id}" action="#" method="GET">
                         <button type="submit" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span> <span th:text="#{device.edit}">Edit</span></button>
@@ -87,15 +87,36 @@
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label" th:text="#{device.name}">Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error"/>
+                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
-
+        <div class="form-group">
+            <label for="address" class="col-sm-2 control-label" th:text="#{device.address}">Address</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="address" th:field="*{address}" th:errorclass="has-error" required="required" pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="port" class="col-sm-2 control-label" th:text="#{device.port}">port</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="port" th:field="*{port}" th:errorclass="has-error" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="specification" class="col-sm-2 control-label" th:text="#{device.specification}">Specification</label>
+            <div class="col-sm-10">
+                <select type="text" class="form-control" id="specification" name="specification" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
+                    <option th:each="type : ${allSpecifications}"
+                            th:value="${type.id}"
+                            th:text="${type.name + ' [' + type.driverType + ']'}"
+                            th:selected="${(device.specification != null) and (device.specification.id == type.id)}">Specification</option>
+                </select>
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
                 <button type="submit" class="btn btn-primary" th:text="#{device.create}" th:if="${process == 'create'}">Add Device</button>
                 <button type="submit" class="btn btn-success" value="put" th:text="#{device.edit}" th:if="${process == 'edit'}">Edit Device</button>
-                <!--<button type="reset" class="btn btn-danger">Cancel</button>-->
             </div>
         </div>
     </form>

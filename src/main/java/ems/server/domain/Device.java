@@ -4,8 +4,6 @@ import ems.driver.domain.Driver;
 import ems.protocol.domain.Protocol;
 import org.springframework.data.annotation.Id;
 
-import java.net.Inet4Address;
-
 /**
  * Device
  * Created by thebaz on 25/08/14.
@@ -15,7 +13,7 @@ public class Device {
     private String id;
 
     private String name;
-    private java.net.Inet4Address address;
+    private String address;
     private Integer port;
     private Specification specification;
     private Driver driver;
@@ -37,11 +35,11 @@ public class Device {
         this.name = name;
     }
 
-    public Inet4Address getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Inet4Address address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 

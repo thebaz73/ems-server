@@ -70,7 +70,7 @@ public class DeviceController {
     }
 
     @RequestMapping(value = "/devices", method = POST)
-    public String createDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model) {
+    public String createDevice(@ModelAttribute Device device, @RequestParam(value = "specificationId") String specificationId, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("process", "create");
             model.addAttribute("locked", false);
@@ -83,7 +83,7 @@ public class DeviceController {
     }
 
     @RequestMapping(value = "/devices", method = PUT)
-    public String editDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model) {
+    public String editDevice(@ModelAttribute Device device, @RequestParam(value = "specificationId") String specificationId, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             return "devices";
         }

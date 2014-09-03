@@ -87,13 +87,13 @@
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label" th:text="#{specification.name}">Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error"/>
+                <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
         <div class="form-group" th:if="${locked == false}">
             <label for="driver" class="col-sm-2 control-label" th:text="#{specification.driver}">Driver</label>
             <div class="col-sm-10">
-                <select type="text" class="form-control" id="driver" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;">
+                <select type="text" class="form-control" id="driver" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
                 <option th:each="type : ${allDriverTypes}"
                             th:value="${type}"
                             th:text="${type}">Type</option>
@@ -110,7 +110,7 @@
         <div class="form-group" th:if="${locked == false}">
             <label for="protocol" class="col-sm-2 control-label" th:text="#{specification.protocol}">Protocol</label>
             <div class="col-sm-10">
-                <select type="text" class="form-control" id="protocol" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;">
+                <select type="text" class="form-control" id="protocol" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
                     <option th:each="type : ${allProtocolTypes}"
                             th:value="${type}"
                             th:text="${type}">Type</option>
