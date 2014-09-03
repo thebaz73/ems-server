@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -42,10 +41,5 @@ public class InventoryController {
     @RequestMapping(value = "/inventory/specifications", method = GET)
     List<Specification> specifications() {
         return specificationRepository.findAll();
-    }
-
-    @RequestMapping(value = "/devices/current", method = GET, produces = "application/json")
-    public Device getCurrentDevice(HttpSession session) {
-        return (Device) session.getAttribute("currentDevice");
     }
 }
