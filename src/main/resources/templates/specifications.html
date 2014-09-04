@@ -135,7 +135,7 @@
         </div>
     </form>
 </section>
-<section class="container" th:if="${(process != null)and (processStep != 'first')}">
+<section class="container" th:if="${(process != null) and (processStep != 'first')}">
     <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/specifications}" th:object="${driverConfiguration}" action="#" method="POST">
         <input type="hidden" name="_method" value="PUT" th:if="${process == 'edit'}"/>
         <div class="form-group">
@@ -169,9 +169,11 @@
             </div>
         </div>
         <div class="form-group has-feedback">
-            <label class="col-sm-2 control-label" th:text="#{driverConfiguration.function}">Measure</label>
+            <label class="col-sm-2 control-label" th:text="#{driverConfiguration.function}">Function</label>
             <div class="col-sm-10">
-                <textarea class="form-control" th:field="*{function}" th:errorclass="has-error" rows="5"></textarea>
+                <input id="function" type="hidden" th:field="*{function}"/>
+                <pre id="editor" spellcheck="false" style="height: 150px"></pre>
+                <div id="info" class="alert alert-success" title="">No result yet.</div>
             </div>
         </div>
         <div class="form-group">
@@ -185,8 +187,107 @@
         </div>
     </form>
 </section>
+<!-- Modal -->
+<div th:if="${(process != null) and (processStep != 'first')}" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Function validation</h4>
+            </div>
+            <div class="modal-body">
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
+
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/built-editor.min.js}" src="../public/js/built-editor.min.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/doctrine.js}" src="../public/js/contentassist/doctrine.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/esprima.js}" src="../public/js/contentassist/esprima.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/types.js}" src="../public/js/contentassist/types.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/esprimaJsContentAssist.js}" src="../public/js/contentassist/esprimaJsContentAssist.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/esprimaVisitor.js}" src="../public/js/contentassist/esprimaVisitor.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/contentassist/proposalUtils.js}" src="../public/js/contentassist/proposalUtils.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript" th:src="@{/js/customeditor.js}" src="../public/js/customeditor.js"></script>
+<script th:if="${(process != null) and (processStep != 'first')}" type="text/javascript">
+    /* <![CDATA[ */
+    var validateId;
+    var functionCode = '';
+    var isCodeValid = true;
+
+    function validate(delay) {
+        if (validateId) {
+            window.clearTimeout(validateId);
+        }
+
+        validateId = window.setTimeout(function () {
+            var result, syntax, errors, i;
+
+            if (typeof window.editor === 'undefined') {
+                functionCode = document.getElementById('editor').value;
+            } else {
+                functionCode = window.editor.getText();
+                window.editor.removeAllErrorMarkers();
+            }
+            result = document.getElementById('info');
+
+            try {
+                syntax = esprima.parse(functionCode, { tolerant: true, loc: true });
+                errors = syntax.errors;
+                if (errors.length > 0) {
+                    result.innerHTML = 'Invalid code. Total issues: ' + errors.length;
+                    for (i = 0; i < errors.length; i += 1) {
+                        window.editor.addErrorMarker(errors[i].index, errors[i].description);
+                    }
+                    result.setAttribute('class', 'alert alert-danger');
+                    isCodeValid = false;
+                } else {
+                    result.innerHTML = 'Code is syntactically valid.';
+                    result.setAttribute('class', 'alert alert-success');
+                    isCodeValid = true;
+                    if (syntax.body.length === 0) {
+                        result.innerHTML = 'Empty code. Nothing to validate.';
+                        isCodeValid = true;
+                    }
+                }
+            } catch (e) {
+                window.editor.addErrorMarker(e.index, e.description);
+                result.innerHTML = e.toString();
+                result.setAttribute('class', 'alert alert-danger');
+                isCodeValid = false;
+            }
+
+            validateId = undefined;
+        }, delay || 811);
+    }
+
+    $(document).ready(function () {
+        try {
+            require(['custom/editor'], function (editor) {
+                window.editor = editor({ parent: 'editor', lang: 'js' });
+                window.editor.getTextView().getModel().addEventListener("Changed", validate);
+            });
+            validate(55);
+        } catch (e) {
+        }
+        $('button[type="submit"]').click(function(event) {
+            if(!isCodeValid) {
+                event.preventDefault();
+                $('#myModal').find('.modal-body').html($('#info').text());
+                $('#myModal').modal();
+            }
+            else {
+                $('#function').val(functionCode);
+            }
+        });
+    });
+    /* ]]> */
+</script>
 </body>
 </html>

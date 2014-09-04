@@ -132,24 +132,24 @@
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
 <script type="application/javascript" th:if="${processStep == 'protocol'}" th:inline="javascript">
-    $.get([[${jsonProtocolSchema}]], function(data) {
+    $(document).ready($.get([[${jsonProtocolSchema}]], function(data) {
         var json = JSON.parse(data);
         $.get("/template/protocol", function(template) {
             var t = Handlebars.compile(template);
             $("#protocol-placeholder").append(t(json));
             //console.log(t(json));
         });
-    });
+    }));
 </script>
 <script type="application/javascript" th:if="${processStep == 'final'}" th:inline="javascript">
-    $.get("/schema/location.json", function(data) {
+    $(document).ready($.get("/schema/location.json", function(data) {
         var json = JSON.parse(data);
         $.get("/template/location", function(template) {
             var t = Handlebars.compile(template);
             $("#location-placeholder").append(t(json));
             //console.log(t(json));
         });
-    });
+    }));
 </script>
 </body>
 </html>
