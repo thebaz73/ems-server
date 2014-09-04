@@ -69,8 +69,8 @@
         </div>
     </div>
 </section>
-<section class="container" th:if="${process != null}">
-    <form class="form-horizontal col-xs-12 col-sm-6 col-md-8 col-md-offset-2" role="form" th:action="@{/specifications}" th:object="${specification}" action="#" method="POST">
+<section class="container" th:if="${(process != null)and (processStep == 'first')}">
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/specifications}" th:object="${specification}" action="#" method="POST">
         <input type="hidden" name="_method" value="PUT" th:if="${process == 'edit'}"/>
         <div class="form-group">
             <legend style="text-align:center;" th:text="#{specification.data}">Specification Data</legend>
@@ -84,30 +84,30 @@
                 <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
             </ul>
         </div>
-        <div class="form-group" th:if="${processStep == 'first'}">
+        <div class="form-group">
             <label for="name" class="col-sm-2 control-label" th:text="#{specification.name}">Name</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="name" th:field="*{name}" th:errorclass="has-error" required="required"/>
             </div>
         </div>
-        <div class="form-group" th:if="${(locked == false) and (processStep == 'first')}">
+        <div class="form-group" th:if="${locked == false}">
             <label for="driver" class="col-sm-2 control-label" th:text="#{specification.driver}">Driver</label>
             <div class="col-sm-10">
                 <select type="text" class="form-control" id="driver" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
-                <option th:each="type : ${allDriverTypes}"
+                    <option th:each="type : ${allDriverTypes}"
                             th:value="${type}"
                             th:text="${type}">Type</option>
                 </select>
             </div>
         </div>
-        <div class="form-group has-feedback" th:if="${(locked == true) and (processStep == 'first')}">
+        <div class="form-group has-feedback" th:if="${locked == true}">
             <label class="col-sm-2 control-label" th:text="#{specification.driver}">Driver</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" th:field="*{driverType}" th:errorclass="has-error" style="text-transform: capitalize;" readonly="readonly"/>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
         </div>
-        <div class="form-group" th:if="${(locked == false) and (processStep == 'first')}">
+        <div class="form-group" th:if="${locked == false}">
             <label for="protocol" class="col-sm-2 control-label" th:text="#{specification.protocol}">Protocol</label>
             <div class="col-sm-10">
                 <select type="text" class="form-control" id="protocol" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;" required="required">
@@ -117,14 +117,12 @@
                 </select>
             </div>
         </div>
-        <div class="form-group has-feedback" th:if="${(locked == true) and (processStep == 'first')}">
+        <div class="form-group has-feedback" th:if="${locked == true}">
             <label class="col-sm-2 control-label" th:text="#{specification.protocol}">Protocol</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" th:field="*{protocolType}" th:errorclass="has-error" style="text-transform: capitalize;" readonly="readonly"/>
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
-        </div>
-        <div th:if="${processStep == 'final'}" id="driver-placeholder">
         </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
@@ -137,18 +135,58 @@
         </div>
     </form>
 </section>
+<section class="container" th:if="${(process != null)and (processStep != 'first')}">
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/specifications}" th:object="${driverConfiguration}" action="#" method="POST">
+        <input type="hidden" name="_method" value="PUT" th:if="${process == 'edit'}"/>
+        <div class="form-group">
+            <legend style="text-align:center;" th:text="#{driverConfiguration.data}">Driver Configuration Data</legend>
+        </div>
+
+        <input type="hidden" th:field="*{id}" th:if="${process == 'edit'}"/>
+
+        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="configurationName" class="col-sm-2 control-label" th:text="#{driverConfiguration.name}">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="configurationName" th:field="*{name}" th:errorclass="has-error" readonly="readonly"/>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-sm-2 control-label" th:text="#{driverConfiguration.value}">Value</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" th:field="*{value}" th:errorclass="has-error" required="required"/>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-sm-2 control-label" th:text="#{driverConfiguration.measure}">Measure</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" th:field="*{measure}" th:errorclass="has-error"/>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-sm-2 control-label" th:text="#{driverConfiguration.function}">Measure</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" th:field="*{function}" th:errorclass="has-error" rows="5"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12 text-right">
+                <button type="submit" class="btn btn-primary" th:text="#{specification.create}" th:if="${(process == 'create') and (#lists.size(session.driverConfigurationList) lt (session.currentConfiguration + 2))}">Add Specification</button>
+                <button type="submit" class="btn btn-success" value="put" th:text="#{specification.edit}" th:if="${(process == 'edit') and (#lists.size(session.driverConfigurationList) lt (session.currentConfiguration + 2))}">Edit Specification</button>
+                <button type="submit" class="btn btn-default" th:utext="#{specification.next}" th:if="${(process == 'create') and (#lists.size(session.driverConfigurationList) ge (session.currentConfiguration + 2))}">Next &raquo;</button>
+                <button type="submit" class="btn btn-default" value="put" th:utext="#{specification.next}" th:if="${(process == 'edit') and (#lists.size(session.driverConfigurationList) ge (session.currentConfiguration + 2))}">Next &raquo;</button>
+                <a role="button" class="btn btn-danger" th:href="@{/specifications}" href="#">Cancel</a>
+            </div>
+        </div>
+    </form>
+</section>
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
-<script type="application/javascript" th:if="${processStep == 'final'}" th:inline="javascript">
-    $.get([[${jsonDriverSchema}]], function(data) {
-        var json = JSON.parse(data);
-        $.get("/template/driver", function(template) {
-            var t = Handlebars.compile(template);
-            $("#driver-placeholder").append(t(json));
-            //console.log(t(json));
-        });
-    });
-</script>
 </body>
 </html>

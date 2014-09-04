@@ -34,7 +34,7 @@
     </div>
 </section>
 <section class="container" th:if="${(process != null) and (process == 'edit')}">
-    <form class="form-horizontal col-xs-12 col-sm-6 col-md-8 col-md-offset-2" role="form" th:action="@{/admin/configuration}" th:object="${emsConfigurationEntry}" action="#" method="POST">
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/admin/configuration}" th:object="${emsConfigurationEntry}" action="#" method="POST">
         <input type="hidden" name="_method" value="PUT"/>
         <div class="form-group">
             <legend style="text-align:center;" th:text="#{configuration.data}">Configuration Data</legend>

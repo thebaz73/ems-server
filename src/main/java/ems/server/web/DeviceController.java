@@ -12,14 +12,12 @@ import ems.server.business.SpecificationManager;
 import ems.server.domain.Device;
 import ems.server.domain.Specification;
 import ems.server.utils.EnumAwareConvertUtilsBean;
+import ems.server.utils.InventoryHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,11 +33,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -59,9 +55,6 @@ public class DeviceController {
     private SpecificationManager specificationManager;
     @Autowired
     private DeviceManager deviceManager;
-
-    @Value("classpath:/extension.properties")
-    private Resource resource;
 
     private String process;
     private String processStep;
@@ -116,18 +109,9 @@ public class DeviceController {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
         if(processStep.equalsIgnoreCase("specification")) {
-            String driverClassName;
-            String protocolClassName;
-            Properties properties;
             Specification specification = device.getSpecification();
-            try {
-                properties = PropertiesLoaderUtils.loadProperties(resource);
-                driverClassName = (String) properties.get(format("extension.driver.%s.className", specification.getDriverType()));
-                protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
-            } catch (IOException e) {
-                String message = "Cannot load extension properties";
-                return logAndReturn(request.getSession(), bindingResult, model, e, message);
-            }
+            String driverClassName = InventoryHelper.getInstance().getDriverClassName(specification.getDriverType());
+            String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
             if (driverClassName != null && protocolClassName != null) {
                 try {
                     Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());
@@ -223,18 +207,9 @@ public class DeviceController {
             return "devices";
         }
         if(processStep.equalsIgnoreCase("specification")) {
-            String driverClassName;
-            String protocolClassName;
-            Properties properties;
-            try {
-                Specification specification = device.getSpecification();
-                properties = PropertiesLoaderUtils.loadProperties(resource);
-                driverClassName = (String) properties.get(format("extension.driver.%s.className", specification.getDriverType()));
-                protocolClassName = (String) properties.get(format("extension.protocol.%s.className", specification.getProtocolType()));
-            } catch (IOException e) {
-                String message = "Cannot load extension properties";
-                return logAndReturn(request.getSession(), bindingResult, model, e, message);
-            }
+            Specification specification = device.getSpecification();
+            String driverClassName = InventoryHelper.getInstance().getDriverClassName(specification.getDriverType());
+            String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
             if (driverClassName != null && protocolClassName != null) {
                 try {
                     Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());

@@ -6,14 +6,14 @@ package ems.server.web;
 import ems.driver.domain.DriverType;
 import ems.protocol.domain.ProtocolType;
 import ems.server.business.DeviceManager;
+import ems.server.business.DriverConfigurationManager;
 import ems.server.business.SpecificationManager;
+import ems.server.domain.DriverConfiguration;
 import ems.server.domain.Specification;
+import ems.server.utils.InventoryHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +28,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.PropertyEditorSupport;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
-import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
@@ -51,8 +47,8 @@ public class SpecificationController {
     private SpecificationManager specificationManager;
     @Autowired
     private DeviceManager deviceManager;
-    @Value("classpath:/extension.properties")
-    private Resource resource;
+    @Autowired
+    private DriverConfigurationManager driverConfigurationManager;
 
     private String process;
     private String processStep;
@@ -113,80 +109,107 @@ public class SpecificationController {
     }
 
     @RequestMapping(value = "/specifications", method = POST)
-    public String createSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+    public String createSpecification(@ModelAttribute Specification specification, @ModelAttribute DriverConfiguration driverConfiguration, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
         if(processStep.equalsIgnoreCase("first")) {
-            try {
-                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-                specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
-                specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
-            } catch (IOException e) {
-                String message = "Cannot load extension properties";
-                return logAndReturn(request.getSession(), bindingResult, model, e, message);
-            }
+            specification.setDriver(InventoryHelper.getInstance().getDriverJsonSchema(specification.getDriverType()));
+            specification.setProtocol(InventoryHelper.getInstance().getProtocolJsonSchema(specification.getProtocolType()));
+
+            List<DriverConfiguration> driverConfigurationList = InventoryHelper.getInstance().getDriverConfigurationList(specification.getDriverType());
+            request.getSession().setAttribute("driverConfigurationList", driverConfigurationList);
+            request.getSession().setAttribute("currentConfiguration", 0);
+
             processStep = "final";
             request.getSession().setAttribute("currentSpecification", specification);
             model.addAttribute("process", process);
             model.addAttribute("specification", specification);
+            model.addAttribute("driverConfiguration", driverConfigurationList.get(0));
             model.addAttribute("processStep", processStep);
             model.addAttribute("jsonDriverSchema", specification.getDriver());
             return "specifications";
         }
         else {
             Specification currentSpecification = (Specification) request.getSession().getAttribute("currentSpecification");
-            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-                if(!entry.getKey().equalsIgnoreCase("_csrf") &&
-                        !entry.getKey().equalsIgnoreCase("status") &&
-                        !entry.getKey().equalsIgnoreCase("type") &&
-                        !entry.getKey().equalsIgnoreCase("location")) {
-                    currentSpecification.getProperties().put(entry.getKey(), entry.getValue()[0]);
-                }
-            }
+            List<DriverConfiguration> driverConfigurationList = (List<DriverConfiguration>) request.getSession().getAttribute("driverConfigurationList");
+            Integer currentConfiguration = (Integer) request.getSession().getAttribute("currentConfiguration");
+            driverConfigurationList.set(currentConfiguration, driverConfiguration);
 
-            specificationManager.createSpecification(currentSpecification);
-            model.clear();
-            return "redirect:/specifications";
+            if(driverConfigurationList.size() == (currentConfiguration + 1)) {
+                specificationManager.createSpecification(currentSpecification);
+                for (DriverConfiguration configuration : driverConfigurationList) {
+                    configuration.setSpecificationId(currentSpecification.getId());
+                    driverConfigurationManager.createDriverConfiguration(configuration);
+                }
+                request.getSession().removeAttribute("driverConfigurationList");
+                request.getSession().removeAttribute("currentConfiguration");
+                model.clear();
+                return "redirect:/specifications";
+            }
+            else {
+                processStep = "final";
+                request.getSession().setAttribute("currentSpecification", currentSpecification);
+                request.getSession().setAttribute("currentConfiguration", ++currentConfiguration);
+                model.addAttribute("process", process);
+                model.addAttribute("specification", specification);
+                model.addAttribute("driverConfiguration", driverConfigurationList.get(currentConfiguration));
+                model.addAttribute("processStep", processStep);
+                model.addAttribute("jsonDriverSchema", specification.getDriver());
+                return "specifications";
+            }
         }
     }
 
     @RequestMapping(value = "/specifications", method = PUT)
-    public String editSpecification(@ModelAttribute Specification specification, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+    public String editSpecification(@ModelAttribute Specification specification, @ModelAttribute DriverConfiguration driverConfiguration, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
         if(processStep.equalsIgnoreCase("first")) {
-            try {
-                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-                specification.setDriver((String) properties.get(format("extension.driver.%s.json", specification.getDriverType())));
-                specification.setProtocol((String) properties.get(format("extension.protocol.%s.json", specification.getProtocolType())));
-            } catch (IOException e) {
-                String message = "Cannot load extension properties";
-                return logAndReturn(request.getSession(), bindingResult, model, e, message);
-            }
+            specification.setDriver(InventoryHelper.getInstance().getDriverJsonSchema(specification.getDriverType()));
+            specification.setProtocol(InventoryHelper.getInstance().getProtocolJsonSchema(specification.getProtocolType()));
+
+            List<DriverConfiguration> driverConfigurationList = driverConfigurationManager.findDriverConfigurationBySpecificationId(specification.getId());
+            request.getSession().setAttribute("driverConfigurationList", driverConfigurationList);
+            request.getSession().setAttribute("currentConfiguration", 0);
+
             processStep = "final";
             request.getSession().setAttribute("currentSpecification", specification);
             model.addAttribute("process", process);
             model.addAttribute("specification", specification);
+            model.addAttribute("driverConfiguration", driverConfigurationList.get(0));
             model.addAttribute("processStep", processStep);
             model.addAttribute("jsonDriverSchema", specification.getDriver());
             return "specifications";
         }
         else {
             Specification currentSpecification = (Specification) request.getSession().getAttribute("currentSpecification");
-            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-                if(!entry.getKey().equalsIgnoreCase("_csrf") &&
-                        !entry.getKey().equalsIgnoreCase("status") &&
-                        !entry.getKey().equalsIgnoreCase("type") &&
-                        !entry.getKey().equalsIgnoreCase("location")) {
-                    currentSpecification.getProperties().put(entry.getKey(), entry.getValue()[0]);
-                }
-            }
+            List<DriverConfiguration> driverConfigurationList = (List<DriverConfiguration>) request.getSession().getAttribute("driverConfigurationList");
+            Integer currentConfiguration = (Integer) request.getSession().getAttribute("currentConfiguration");
+            driverConfigurationList.set(currentConfiguration, driverConfiguration);
 
-            specificationManager.editSpecification(currentSpecification);
-            model.clear();
-            return "redirect:/specifications";
+            if(driverConfigurationList.size() == (currentConfiguration + 1)) {
+                specificationManager.editSpecification(currentSpecification);
+                for (DriverConfiguration configuration : driverConfigurationList) {
+                    driverConfigurationManager.editDriverConfiguration(configuration);
+                }
+                request.getSession().removeAttribute("driverConfigurationList");
+                request.getSession().removeAttribute("currentConfiguration");
+                model.clear();
+                return "redirect:/specifications";
+            }
+            else {
+                processStep = "final";
+                request.getSession().setAttribute("currentSpecification", currentSpecification);
+                request.getSession().setAttribute("currentConfiguration", ++currentConfiguration);
+                model.addAttribute("process", process);
+                model.addAttribute("specification", specification);
+                model.addAttribute("driverConfiguration", driverConfigurationList.get(currentConfiguration));
+                model.addAttribute("processStep", processStep);
+                model.addAttribute("jsonDriverSchema", specification.getDriver());
+                return "specifications";
+            }
         }
     }
 
@@ -216,6 +239,11 @@ public class SpecificationController {
         Specification currentSpecification = (Specification) session.getAttribute("currentSpecification");
         if(currentSpecification != null) {
             model.addAttribute("jsonDriverSchema", currentSpecification.getDriver());
+        }
+        List<DriverConfiguration> driverConfigurationList = (List<DriverConfiguration>) session.getAttribute("driverConfigurationList");
+        Integer currentConfiguration = (Integer) session.getAttribute("currentConfiguration");
+        if(driverConfigurationList != null && currentConfiguration != null) {
+            model.addAttribute("driverConfiguration", driverConfigurationList.get(currentConfiguration));
         }
         return "specifications";
     }

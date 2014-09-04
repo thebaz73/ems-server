@@ -16,5 +16,11 @@ import java.util.List;
  * Time: 3:32 PM
  */
 public interface EmsUserRepository extends MongoRepository<EmsUser, String> {
+    /**
+     * Finds @EmsUser given its username
+     *
+     * @param username user name
+     * @return list of @EmsUser
+     */
     List<EmsUser> findByUsername(String username);
 }

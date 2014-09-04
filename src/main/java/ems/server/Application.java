@@ -5,13 +5,10 @@ import ems.driver.domain.common.Location;
 import ems.driver.domain.common.Status;
 import ems.protocol.domain.ProtocolType;
 import ems.server.business.UserManager;
-import ems.server.data.DeviceRepository;
-import ems.server.data.EmsConfigurationRepository;
-import ems.server.data.EventRepository;
-import ems.server.data.SpecificationRepository;
+import ems.server.data.*;
 import ems.server.domain.*;
-import ems.server.utils.DeviceHelper;
 import ems.server.utils.EventHelper;
+import ems.server.utils.InventoryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -58,6 +55,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     DeviceRepository deviceRepository;
     @Autowired
     EmsConfigurationRepository configurationRepository;
+    @Autowired
+    DriverConfigurationRepository driverConfigurationRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -118,7 +117,9 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     public void run(String... args) throws Exception {
         eventRepository.deleteAll();
         deviceRepository.deleteAll();
+        driverConfigurationRepository.deleteAll();
         specificationRepository.deleteAll();
+
         if (specificationRepository.count() == 0) {
             Specification s1 = new Specification();
             s1.setName("AcmeProbe");
@@ -130,14 +131,14 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             String name = "Device001";
             Status status = Status.OK;
-            Device d1 = DeviceHelper.getInstance().createDevice(name, s1, status);
+            Device d1 = InventoryHelper.getInstance().createDevice(name, s1, status);
             d1.setAddress("127.0.0.1");
             d1.setPort(1061);
             deviceRepository.save(d1);
 
             EventHelper.getInstance().addEvents(eventRepository, d1);
 
-            Device d2 = DeviceHelper.getInstance().createDevice("Device002", s1, Status.WARN);
+            Device d2 = InventoryHelper.getInstance().createDevice("Device002", s1, Status.WARN);
             d2.setAddress("127.0.0.1");
             d2.setPort(1062);
             deviceRepository.save(d2);
@@ -155,7 +156,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Location l1 = new Location();
             l1.setLatitude(45.0);
             l1.setLongitude(10.0);
-            Device d3 = DeviceHelper.getInstance().createDevice("Device003", s2, Status.OK, l1);
+            Device d3 = InventoryHelper.getInstance().createDevice("Device003", s2, Status.OK, l1);
             d3.setAddress("127.0.0.1");
             d3.setPort(1063);
             deviceRepository.save(d3);
@@ -165,7 +166,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Location l2 = new Location();
             l2.setLatitude(45.123);
             l2.setLongitude(8.871);
-            Device d4 = DeviceHelper.getInstance().createDevice("Device004", s2, Status.ERROR, l2);
+            Device d4 = InventoryHelper.getInstance().createDevice("Device004", s2, Status.ERROR, l2);
             d4.setAddress("127.0.0.1");
             d4.setPort(1064);
             deviceRepository.save(d4);

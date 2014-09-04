@@ -3,6 +3,7 @@ package ems.server.business;
  * Copyright
  */
 
+import ems.server.data.DriverConfigurationRepository;
 import ems.server.data.SpecificationRepository;
 import ems.server.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import java.util.List;
 public class SpecificationManager {
     @Autowired
     private SpecificationRepository specificationRepository;
+    @Autowired
+    private DriverConfigurationRepository driverConfigurationRepository;
 
     public Specification findSpecification(String id) {
         return specificationRepository.findOne(id);
@@ -46,6 +49,7 @@ public class SpecificationManager {
     }
 
     public void deleteSpecification(String id) {
+        driverConfigurationRepository.deleteBySpecificationId(id);
         specificationRepository.delete(id);
     }
 
