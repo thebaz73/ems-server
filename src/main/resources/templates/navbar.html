@@ -33,8 +33,8 @@
                     <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/settings/users}" href="#">User Management</a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/settings/configuration}" href="#">Configuration Management</a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')" class="divider"></li>
-                    <li class="dropdown-header">Layout Management</li>
-                    <li><a th:href="@{/settings/layout}" href="#">Edit dashboard layout</a></li>
+                    <!--<li class="dropdown-header">Layout Management</li>
+                    <li><a th:href="@{/settings/layout}" href="#">Edit dashboard layout</a></li>-->
                 </ul>
             </li>
             <li th:class="${#httpServletRequest.requestURI.startsWith('/help')} ? 'active dropdown' : 'dropdown'">

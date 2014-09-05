@@ -7,38 +7,6 @@
  */
 var map;
 
-/**
- * Map utils
- *
- * @param data data
- */
-function fillMap(data) {
-    var markers_data = [];
-    if (data.length > 0) {
-        for (var i = 0; i < data.length; i++) {
-            var item = data[i];
-            if (item.driver.location != undefined && item.driver.location.latitude != undefined && item.driver.location.longitude != undefined) {
-                var icon = (item.driver.status == 'OK') ? '/imgs/status_ok.png' : (item.driver.status == 'ERROR') ? '/imgs/status_error.png' : (item.driver.status == 'WARN') ? '/imgs/status_warn.png' : '/imgs/status_unknown.png';
-                markers_data.push({
-                    lat : item.driver.location.latitude,
-                    lng : item.driver.location.longitude,
-                    title : item.name,
-                    icon : {
-                        size : new google.maps.Size(16, 16),
-                        url : icon
-                    },
-                    itemUrl: '/inventory/show/'+item.id,
-                    click: function(e) {
-                        window.location = this.itemUrl;
-                    }
-                });
-            }
-        }
-    }
-
-    map.addMarkers(markers_data);
-}
-
 function loadPagedData(uri, page, pageSize, callback) {
     var request = uri + "?page=" + page + "&pageSize=" + pageSize;
     var response = $.getJSON(request);
@@ -63,9 +31,6 @@ function fillInventory(data) {
  * @param data data
  */
 function fillEventLogs(data) {
-//    var json = {
-//        events: data
-//    };
     $.get("/template/log", function (template) {
         var t = Handlebars.compile(template);
         $('#log-placeholder').html(t(data));

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns="http://www.w3.org/1999/xhtml">
-<head th:replace="head"/>
+<head th:replace="head"></head>
 <body ng-controller="DashboardController">
-<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
+<header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"></header>
 
 <section class="container">
     <div id="system-alert" class="alert alert-info alert-dismissible" role="alert" th:if="${alert != null}">
@@ -12,82 +12,74 @@
         <span th:text="${alert}"><strong>Warning!</strong> Better check yourself, you're not looking too good.</span>
     </div>
 </section>
-<section class="container-fluid" id="dashboard">
+<section class="container-fluid">
     <div class="row">
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title" th:text="#{title.map}">Map view</h3>
-                </div>
-                <div id="map" style="height: 520px;"></div>
-            </div>
+        <div id="dashboard-commands" class="col-md-12 text-right text-primary">
+           <!--<b class="glyphicon glyphicon-th"></b><b class="glyphicon glyphicon-cog"></b>--><b class="glyphicon glyphicon-edit"></b>
         </div>
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.inventory}">Inventory</h3>
-                        <div class="col-lg-4">
-                            <form class="form-inline" th:action="@{/repo/search/inventory}" action="#" role="form" method="get">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search inventory..."/>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                                    </span>
-                                </div>
-                            </form>
-                        </div>
+    </div>
+    <div class="row" id="dashboard">
+    </div>
+</section>
+<!-- Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="modal-body">
+                <div class="btn-group-vertical">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="layout" id="optionsRadios1" value="0" checked="checked"/>
+                            2 rows, 2 column 100% and 2 columns 50% 50%
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="layout" id="optionsRadios2" value="1"/>
+                            1 row, 2 columns 50% 50%
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="layout" id="optionsRadios3" value="2"/>
+                            1 row, 2 columns 40% - 60%
+                        </label>
                     </div>
                 </div>
-                <div id="inventory-placeholder"></div>
             </div>
-        </div>
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <h3 class="panel-title col-lg-8" style="margin-top: 8px;" th:text="#{title.log}">Event log</h3>
-                        <div class="col-lg-4">
-                            <form class="form-inline" th:action="@{/repo/search/log}" action="#" role="form" method="get">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search log..."/>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                                    </span>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div id="log-placeholder"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-</section>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Add widgets</h4>
+            </div>
+            <div class="modal-body">
 
-<footer th:include="footer"/>
-<section th:replace="scripts"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:include="footer"></footer>
+<section th:replace="scripts"></section>
+<script  type="text/javascript"  th:src="@{/js/ems.dashboard.js}" src="../public/js/ems.dashboard.js"></script>
 <script type="text/javascript" th:inline="javascript">
-    $(document).ready(function () {
-        map = new GMaps({
-            div: '#map',
-            mapType: "satellite",
-            zoom: 5,
-            lat: [[${configuration.map_latitude}]],
-            lng: [[${configuration.map_longitude}]]
-        });
-    });
-</script>
-<script type="text/javascript">
-    /* <![CDATA[ */
-    $(document).ready(function () {
-        $('#search-div').toggle();
-        var devices = $.getJSON('/inventory/devices');
-        devices.done(fillMap);
-        loadPagedData('/inventory/devices', 0, 5, fillInventory);
-        loadPagedData('/inventory/events', 0, 5, fillEventLogs);
-    });
-    /* ]]> */
+var latitude = [[${configuration.map_latitude}]];
+var longitude = [[${configuration.map_longitude}]];
 </script>
 </body>
 </html>
