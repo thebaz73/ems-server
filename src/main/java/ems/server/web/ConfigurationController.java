@@ -35,14 +35,14 @@ public class ConfigurationController {
         return configurationManager.findAllEntries();
     }
 
-    @RequestMapping(value = "/admin/configuration", method = GET)
+    @RequestMapping(value = "/settings/configuration", method = GET)
     public String show(Model model) {
         model.addAttribute("process", "create");
         model.addAttribute("emsConfigurationEntry", new EmsConfigurationEntry());
         return "configuration";
     }
 
-    @RequestMapping(value = "/admin/configuration/{id}", method = GET)
+    @RequestMapping(value = "/settings/configuration/{id}", method = GET)
     public String loadEntry(Model model, @PathVariable("id") String id) {
         EmsConfigurationEntry entry = configurationManager.findEntry(id);
         model.addAttribute("process", "edit");
@@ -50,12 +50,12 @@ public class ConfigurationController {
         return "configuration";
     }
 
-    @RequestMapping(value = "/admin/configuration", method = POST)
+    @RequestMapping(value = "/settings/configuration", method = POST)
     public String createEntry(@ModelAttribute EmsConfigurationEntry emsConfigurationEntry, final BindingResult bindingResult, final ModelMap model) {
         throw new UnsupportedOperationException();
     }
 
-    @RequestMapping(value = "/admin/configuration", method = PUT)
+    @RequestMapping(value = "/settings/configuration", method = PUT)
     public String editEntry(@ModelAttribute EmsConfigurationEntry emsConfigurationEntry, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             return "configuration";
@@ -63,6 +63,6 @@ public class ConfigurationController {
 
         configurationManager.editEntry(emsConfigurationEntry);
         model.clear();
-        return "redirect:/admin/configuration";
+        return "redirect:/settings/configuration";
     }
 }

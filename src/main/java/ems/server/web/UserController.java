@@ -44,7 +44,7 @@ public class UserController {
         return userManager.findAllUsers();
     }
 
-    @RequestMapping(value = "/admin/users", method = POST)
+    @RequestMapping(value = "/settings/users", method = POST)
     public String createUser(@ModelAttribute EmsUser emsUser, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             return "users";
@@ -55,32 +55,32 @@ public class UserController {
 
         userManager.createUser(emsUser);
         model.clear();
-        return "redirect:/admin/users";
+        return "redirect:/settings/users";
     }
 
-    @RequestMapping(value = "/admin/users/{username}", method = DELETE)
+    @RequestMapping(value = "/settings/users/{username}", method = DELETE)
     public String removeUser(@ModelAttribute("aUser") EmsUser emsUser, @PathVariable("username") String username) {
         if (!userManager.userCreated(username)) {
-            return "redirect:/admin/users";
+            return "redirect:/settings/users";
         }
 
         userManager.deleteUserByUsername(username);
-        return "redirect:/admin/users";
+        return "redirect:/settings/users";
     }
 
-    @RequestMapping(value = "/admin/users", method = GET)
+    @RequestMapping(value = "/settings/users", method = GET)
     public String show(Model model) {
         model.addAttribute("emsUser", new EmsUser());
         return "users";
     }
 
-    @RequestMapping(value = "/admin/users", params = "addRole")
+    @RequestMapping(value = "/settings/users", params = "addRole")
     public String addRole(@ModelAttribute EmsUser emsUser, final BindingResult bindingResult) {
         emsUser.getRoles().add(new EmsRole());
         return "users";
     }
 
-    @RequestMapping(value = "/admin/users", params = "removeRole")
+    @RequestMapping(value = "/settings/users", params = "removeRole")
     public String removeRole(@ModelAttribute EmsUser emsUser, final BindingResult bindingResult, final HttpServletRequest req) {
         final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
         emsUser.getRoles().remove(rowId.intValue());

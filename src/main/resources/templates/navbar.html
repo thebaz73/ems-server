@@ -9,45 +9,41 @@
         <a class="navbar-brand" th:href="@{/}" href="/">EMS</a>
     </div>
     <div class="collapse navbar-collapse">
-        <!--<p sec:authorize="isAuthenticated()" class="navbar-text" th:inline="text">Welcome, [[${#httpServletRequest.remoteUser}]]!</p>-->
+        <p sec:authorize="isAuthenticated()" class="navbar-text" th:inline="text">Welcome, [[${#httpServletRequest.remoteUser}]]!</p>
         <ul class="nav navbar-nav navbar-right">
             <li th:class="${#httpServletRequest.requestURI == '/'} ? 'active'"><a th:href="@{/}" href="/">Home</a></li>
-            <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${#httpServletRequest.requestURI.startsWith('/devices')} ? 'active dropdown' : 'dropdown'">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Devices <span class="caret"></span></a>
+            <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${(#httpServletRequest.requestURI.startsWith('/monitor')) or (#httpServletRequest.requestURI.startsWith('/history')) or (#httpServletRequest.requestURI.startsWith('/protocols')) or (#httpServletRequest.requestURI.startsWith('/devices')) or (#httpServletRequest.requestURI.startsWith('/specifications'))} ? 'active dropdown' : 'dropdown'">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Inventory <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a th:href="@{/devices}" href="#">Manage devices</a></li>
-                    <li><a th:href="@{/devices/history}" href="#">Show data logs</a></li>
-                    <li class="divider"></li>
-                    <li class="dropdown-header">Manage Monitoring</li>
-                    <li><a th:href="@{/devices/monitor}" href="#">Configure</a></li>
-                    <li><a th:href="@{/devices/monitor/start}" href="#">Start</a></li>
-                    <li><a th:href="@{/devices/monitor/stop}" href="#">Stop</a></li>
+                    <li class="dropdown-header">Manage devices</li>
+                    <li><a th:href="@{/specifications}" href="#">Specifications</a></li>
+                    <li><a th:href="@{/devices}" href="#">Devices</a></li>
+                    <li><a th:href="@{/protocols}" href="#">Protocols</a></li>
+                    <li class="dropdown-header">Control devices</li>
+                    <li><a th:href="@{/history}" href="#">Show data logs</a></li>
+                    <li><a th:href="@{/monitor}" href="#">Configure monitoring</a></li>
+                    <!--<li><a th:href="@{/devices/monitor/start}" href="#">Start</a></li>
+                    <li><a th:href="@{/devices/monitor/stop}" href="#">Stop</a></li>-->
                 </ul>
             </li>
-            <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')" th:class="${#httpServletRequest.requestURI.startsWith('/specifications')} ? 'active dropdown' : 'dropdown'">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Device specifications <span class="caret"></span></a>
+            <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI.startsWith('/settings')} ? 'active dropdown' : 'dropdown'">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a th:href="@{/specifications}" href="#">Manage device specifications</a></li>
-                    <li class="divider"></li>
-                    <li class="dropdown-header">Manage protocols</li>
-                    <li><a th:href="@{/specifications/mibs}" href="#">MIBs</a></li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')" class="dropdown-header">Administration</li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/settings/users}" href="#">User Management</a></li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/settings/configuration}" href="#">Configuration Management</a></li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')" class="divider"></li>
+                    <li class="dropdown-header">Layout Management</li>
+                    <li><a th:href="@{/settings/layout}" href="#">Edit dashboard layout</a></li>
                 </ul>
             </li>
-            <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${#httpServletRequest.requestURI.startsWith('/admin')} ? 'active dropdown' : 'dropdown'">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li class="dropdown-header">User Management</li>
-                    <li><a th:href="@{/admin/users}" href="#">Show users</a></li>
-                    <li class="divider"></li>
-                    <li class="dropdown-header">Configuration</li>
-                    <li><a th:href="@{/admin/configuration}" href="#">Edit configuration</a></li>
-                </ul>
-            </li>
-            <li th:class="${#httpServletRequest.requestURI.startsWith('/mktg')} ? 'active dropdown' : 'dropdown'">
+            <li th:class="${#httpServletRequest.requestURI.startsWith('/help')} ? 'active dropdown' : 'dropdown'">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li th:class="${#httpServletRequest.requestURI == '/mktg/contact'} ? 'active'"><a th:href="@{/mktg/contact}" href="#">Contact</a></li>
-                    <li th:class="${#httpServletRequest.requestURI == '/mktg/about'} ? 'active'"><a th:href="@{/mktg/about}" href="#">About</a></li>
+                    <li><a th:href="@{/mktg/contents}" href="#">Contents</a></li>
+                    <li class="divider"></li>
+                    <li><a th:href="@{/mktg/contact}" href="#">Contact</a></li>
+                    <li><a th:href="@{/mktg/about}" href="#">About</a></li>
                 </ul>
             </li>
             <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI == '/logout'} ? 'active'"><a th:href="@{/logout}" href="#">Logout</a></li>

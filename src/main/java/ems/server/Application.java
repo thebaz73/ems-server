@@ -67,6 +67,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/mktg/about").setViewName("mktg");
         registry.addViewController("/mktg/contact").setViewName("mktg");
+        registry.addViewController("/mktg/contents").setViewName("mktg");
     }
 
     @Override
@@ -191,7 +192,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             http
                     .authorizeRequests()
                     .antMatchers("/webjars/**", "/about", "/contact").permitAll()
-                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers("/settings/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
             http
                     .formLogin()

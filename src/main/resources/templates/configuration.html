@@ -24,7 +24,7 @@
                 <tr th:each="aConfiguration : ${allEntries}" valign="middle">
                     <td th:text="${aConfiguration.key}">Key</td>
                     <td th:text="${aConfiguration.value}">Value</td>
-                    <td><form class="form-inline" role="form" th:action="@{/admin/configuration/} + ${aConfiguration.id}" action="#" method="GET">
+                    <td><form class="form-inline" role="form" th:action="@{/settings/configuration/} + ${aConfiguration.id}" action="#" method="GET">
                         <button type="submit" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-edit"></span> <span th:text="#{configuration.edit}">Edit</span></button>
                     </form></td>
                 </tr>
@@ -34,7 +34,7 @@
     </div>
 </section>
 <section class="container" th:if="${(process != null) and (process == 'edit')}">
-    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/admin/configuration}" th:object="${emsConfigurationEntry}" action="#" method="POST">
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/settings/configuration}" th:object="${emsConfigurationEntry}" action="#" method="POST">
         <input type="hidden" name="_method" value="PUT"/>
         <div class="form-group">
             <legend style="text-align:center;" th:text="#{configuration.data}">Configuration Data</legend>

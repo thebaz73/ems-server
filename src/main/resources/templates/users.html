@@ -39,7 +39,7 @@
                             </tbody>
                         </table>
                     </td>
-                    <td><form th:unless="${aUser.username == 'admin'}" class="form-inline" role="form" th:action="@{/admin/users/} + ${aUser.username}" action="#" method="POST">
+                    <td><form th:unless="${aUser.username == 'admin'}" class="form-inline" role="form" th:action="@{/settings/users/} + ${aUser.username}" action="#" method="POST">
                         <input type="hidden" name="_method" value="DELETE"/>
                         <button type="submit" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-trash"></span> <span th:text="#{user.delete}">Delete</span></button>
                     </form></td>
@@ -50,7 +50,7 @@
     </div>
 </section>
 <section class="container">
-    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/admin/users}" th:object="${emsUser}" action="#" method="POST">
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/settings/users}" th:object="${emsUser}" action="#" method="POST">
         <div class="form-group">
             <legend style="text-align:center;" th:text="#{user.data}">User Data</legend>
         </div>
