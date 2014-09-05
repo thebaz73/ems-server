@@ -73,6 +73,11 @@
             <version>2.8.1-1</version>
         </dependency>
         <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>ems.server</groupId>
             <artifactId>ems-extension</artifactId>
             <version>1.0-SNAPSHOT</version>
