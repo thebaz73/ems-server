@@ -109,6 +109,7 @@ And again the application UI adaptes to the specification
 ![protocol](docs/protocol.png)
 
 #### Configuration
+EMS Application allows a simple and usefull configuration as for example the access list definition.
 ![configuration](docs/configuration.png)
 
 
