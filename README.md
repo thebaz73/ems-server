@@ -9,10 +9,13 @@ In systems engineering, a system monitor (SM) is a process within a distributed 
 Project scope is creating an application that can monitor remote devices with different protocols. Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.
 
 #### Dashboard
+![dashboard](docs/dashboard.png)
 
 #### Data model
+![specification](docs/specification.png)
 
 #### Configuration
+![configuration](docs/configuration.png)
 
 
 ### Technology

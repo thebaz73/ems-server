@@ -59,7 +59,7 @@ var widgets = {
                 response.done(function(data) {
                     $.get(widget.template, function (template) {
                         var t = Handlebars.compile(template);
-                        element.html(t(data));
+                        element.append(t(data));
                         element.find("div[data-action='panel-buttons']").toggle();
                     });
                 });
@@ -76,7 +76,7 @@ var widgets = {
             response.done(function(data) {
                 $.get(widget.template, function (template) {
                     var t = Handlebars.compile(template);
-                    element.html(t(data));
+                    element.append(t(data));
                     element.find("div[data-action='panel-buttons']").toggle();
                 });
             });
@@ -95,13 +95,11 @@ var layouts = [
     }
 ];
 var dashboardConfig = {
-    layout: 0,
+    layout: 2,
     columns: [{
         widgets: ["map"]
     },{
-        widgets: ["inventory"]
-    },{
-        widgets: ["log"]
+        widgets: ["inventory","log"]
     }]
 };
 
