@@ -44,6 +44,116 @@
 
 <p>Project scope is creating an application that can monitor remote devices with different protocols. Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.</p>
 
+<h4>
+<a name="dashboard" class="anchor" href="#dashboard"><span class="octicon octicon-link"></span></a>Dashboard</h4>
+
+<p>Application home page is a dashboard, each user can customize its widgets position and layout.  </p>
+
+<p><img src="https://raw.githubusercontent.com/thebaz73/ems-server/master/docs/dashboard.png" alt="dashboard"></p>
+
+<p>Dashboard is a drill-down, straight-forward access point to remote device information, in order to allow operator reach the most important information in the fastest way. </p>
+
+<h4>
+<a name="data-model" class="anchor" href="#data-model"><span class="octicon octicon-link"></span></a>Data model</h4>
+
+<p>Application data model is pluggable and extensible each device is easly described by the notion of driver. The driver is, somehow, the hardware description of remote device. In the driver it is described the feature list of the device that has to be monitored.</p>
+
+<p>For example let's suppose we want to define a RF modulator we can prepare a JSON file that will be our new driver like this:</p>
+
+<div class="highlight highlight-JSON"><pre><span class="p">{</span>
+    <span class="nt">"type"</span><span class="p">:</span><span class="s2">"object"</span><span class="p">,</span>
+    <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Modulator"</span><span class="p">,</span>
+    <span class="nt">"javaInterfaces"</span> <span class="p">:</span> <span class="p">[</span><span class="s2">"ems.driver.domain.Driver"</span><span class="p">],</span>
+    <span class="nt">"javaType"</span><span class="p">:</span> <span class="s2">"ems.driver.domain.modulator.ModulatorDriver"</span><span class="p">,</span>
+    <span class="nt">"properties"</span><span class="p">:{</span>
+        <span class="nt">"status"</span><span class="p">:{</span>
+            <span class="nt">"$ref"</span><span class="p">:</span> <span class="s2">"status.json"</span>
+        <span class="p">},</span>
+        <span class="nt">"type"</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"$ref"</span><span class="p">:</span> <span class="s2">"driver_type.json"</span>
+        <span class="p">},</span>
+        <span class="nt">"power"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Power"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"number"</span>
+        <span class="p">},</span>
+        <span class="nt">"reflected-power"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Reflected power"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"number"</span>
+        <span class="p">},</span>
+        <span class="nt">"nominal-power"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Nominal power"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"integer"</span>
+        <span class="p">},</span>
+        <span class="nt">"location"</span><span class="p">:{</span>
+            <span class="nt">"$ref"</span><span class="p">:</span> <span class="s2">"location.json"</span>
+        <span class="p">},</span>
+        <span class="nt">"alarm"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Alarm"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"boolean"</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">"additionalProperties"</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>The driver must be compliant to <a href="http://json-schema.org/">JSON Schema and Hyper-Schema specification</a>. For futher information please referer to <a href="https://github.com/thebaz73/ems-extension">EMS Extension project</a>.</p>
+
+<p>Once the driver is defined and imported into the application the user will be allowed to add information for each feature defined into the driver as in following screenshot.</p>
+
+<p><img src="https://raw.githubusercontent.com/thebaz73/ems-server/master/docs/specification.png" alt="specification"></p>
+
+<p>Please note that each property defined in the driver specification can be "scripted" using Javascript. Infact once the property value is retrieved from the remote device a javascript code is executed in order to accomplish some custom operations. To explain better please follow this exmaple. Suppose, again, that the user purpose is monitoring a RF Modulator, he can "normalize" the power value using following code the converts the value in percentage value:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">power</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">power</span> <span class="o">/</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nominalPower</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+<p><strong>IMPORTANT:</strong> Javascript code is syntactically checked.</p>
+
+<p>The same solution is adopted for protocol configuration. Let's consider <a href="http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol">SNMP</a> which is actually integrated (other protocols to be integrated according to the plan are <a href="http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf">JMX</a> and <a href="http://www.modbus.org/specs.php">MODBUS</a>).</p>
+
+<div class="highlight highlight-JSON"><pre><span class="p">{</span>
+    <span class="nt">"type"</span><span class="p">:</span><span class="s2">"object"</span><span class="p">,</span>
+    <span class="nt">"title"</span><span class="p">:</span><span class="s2">"SNMP Protocol"</span><span class="p">,</span>
+    <span class="nt">"javaInterfaces"</span> <span class="p">:</span> <span class="p">[</span><span class="s2">"ems.protocol.domain.Protocol"</span><span class="p">],</span>
+    <span class="nt">"javaType"</span><span class="p">:</span> <span class="s2">"ems.protocol.domain.snmp.SnmpProtocol"</span><span class="p">,</span>
+    <span class="nt">"properties"</span><span class="p">:{</span>
+        <span class="nt">"protocolType"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"ProtocolType"</span><span class="p">,</span>
+            <span class="nt">"javaType"</span><span class="p">:</span> <span class="s2">"ems.protocol.domain.ProtocolType"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span><span class="p">,</span>
+            <span class="nt">"enum"</span><span class="p">:[</span> <span class="s2">"snmp"</span><span class="p">,</span> <span class="s2">"jmx"</span><span class="p">,</span> <span class="s2">"modbus"</span> <span class="p">],</span>
+            <span class="nt">"default"</span><span class="p">:</span> <span class="s2">"snmp"</span>
+        <span class="p">},</span>
+        <span class="nt">"version"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Version"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span><span class="p">,</span>
+            <span class="nt">"enum"</span><span class="p">:[</span> <span class="s2">"version 1"</span><span class="p">,</span> <span class="s2">"version 2"</span><span class="p">,</span> <span class="s2">"version 2c"</span> <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">"readCommunity"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Read Community"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span>
+        <span class="p">},</span>
+        <span class="nt">"writeCommunity"</span><span class="p">:{</span>
+            <span class="nt">"title"</span><span class="p">:</span><span class="s2">"Write Community"</span><span class="p">,</span>
+            <span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">"additionalProperties"</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>And again the application UI adaptes to the specification</p>
+
+<p><img src="https://raw.githubusercontent.com/thebaz73/ems-server/master/docs/protocol.png" alt="protocol"></p>
+
+<h4>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h4>
+
+<p>EMS Application allows a simple and usefull configuration as for example the access list definition.
+<img src="https://raw.githubusercontent.com/thebaz73/ems-server/master/docs/configuration.png" alt="configuration"></p>
+
 <h3>
 <a name="technology" class="anchor" href="#technology"><span class="octicon octicon-link"></span></a>Technology</h3>
 
