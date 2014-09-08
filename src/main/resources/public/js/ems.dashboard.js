@@ -1,4 +1,7 @@
 var editMode;
+/**
+ * Available widgets
+ */
 var widgets = {
     "map": {
         template: "/template/map",
@@ -32,7 +35,7 @@ var widgets = {
         loadFunction: function(widget, element) {
             $.get(widget.template, function (template) {
                 element.html(template);
-                element.find("div[data-action='panel-buttons']").toggle();
+                element.find("#map-widget div[data-action='panel-buttons']").toggle();
 
                 $("#map").ready(function () {
                     map = new GMaps({
@@ -60,7 +63,7 @@ var widgets = {
                     $.get(widget.template, function (template) {
                         var t = Handlebars.compile(template);
                         element.append(t(data));
-                        element.find("div[data-action='panel-buttons']").toggle();
+                        element.find("#inventory-widget div[data-action='panel-buttons']").toggle();
                     });
                 });
         }
@@ -77,12 +80,15 @@ var widgets = {
                 $.get(widget.template, function (template) {
                     var t = Handlebars.compile(template);
                     element.append(t(data));
-                    element.find("div[data-action='panel-buttons']").toggle();
+                    element.find("#log-widget div[data-action='panel-buttons']").toggle();
                 });
             });
         }
     }
 };
+/**
+ * Available layouts
+ */
 var layouts = [
     {
         classNames: ["col-md-12","col-md-6","col-md-6"]
@@ -94,6 +100,10 @@ var layouts = [
         classNames: ["col-md-4","col-md-8"]
     }
 ];
+/**
+ * Dashboard configuration object
+ * @type {{layout: number, columns: {widgets: string[]}[]}}
+ */
 var dashboardConfig = {
     layout: 2,
     columns: [{
@@ -103,26 +113,15 @@ var dashboardConfig = {
     }]
 };
 
+/**
+ * Initial activities
+ */
 $(document).ready(function () {
     editMode = false;
     $("#dashboard-commands .glyphicon-th").toggle();
     $("#dashboard-commands .glyphicon-cog").toggle();
 
-    var classNames = layouts[dashboardConfig.layout].classNames;
-    for (var i = 0; i < classNames.length; i++) {
-        $('<div/>', {
-            id: 'wrapper'+i,
-            class: classNames[i]
-        }).appendTo("#dashboard");
-    }
-    for (var col = 0; col < dashboardConfig.columns.length; col++) {
-        var column = dashboardConfig.columns[col];
-        for (var w = 0; w < column.widgets.length; w++) {
-            var widget = widgets[column.widgets[w]];
-            widget.loadFunction(widget, $('#wrapper'+col));
-        }
-    }
-
+    layoutPage();
 
     $('#dashboard-commands .glyphicon-edit').click(function(event){
         editMode = !editMode;
@@ -132,10 +131,25 @@ $(document).ready(function () {
         $("*[data-action='panel-buttons']").toggle();
 
         if(editMode) {
-            $("#dashboard > div" ).addClass( "editable-board" );
+            $(".wrapper" ).addClass( "editable-board" );
+            //$(".widget").css("max-width", "100px");
+            $(".widget").draggable({
+                revert: "invalid", // when not dropped, the item will revert back to its initial position
+                containment: "document",
+                snap: true,
+                cursor: "move"
+            });
+            $(".wrapper").droppable({
+                accept: ".widget",
+                drop: function( event, ui ) {
+                    updateConfig( ui.draggable, $(this) );
+                }
+            });
         }
         else {
-            $("#dashboard > div" ).removeClass( "editable-board" );
+            $(".wrapper" ).removeClass( "editable-board" );
+            $(".widget").draggable( "destroy" );
+            $(".wrapper").droppable( "destroy" );
         }
     });
     $('#dashboard-commands .glyphicon-cog').click(function(event) {
@@ -145,3 +159,70 @@ $(document).ready(function () {
         $('#addModal').modal();
     });
 });
+
+/**
+ * Function that renders layout
+ */
+function layoutPage() {
+    var classNames = layouts[dashboardConfig.layout].classNames;
+    for (var i = 0; i < classNames.length; i++) {
+        var wrapper = $("#wrapper" + i);
+        if(wrapper.length == 0) {
+            wrapper = $('<div/>', {
+                id: 'wrapper'+i
+            })
+        }
+        wrapper.addClass(classNames[i]);
+        wrapper.addClass("wrapper");
+        wrapper.appendTo("#dashboard");
+    }
+    for (var col = 0; col < dashboardConfig.columns.length; col++) {
+        var column = dashboardConfig.columns[col];
+        for (var w = 0; w < column.widgets.length; w++) {
+            var widget = widgets[column.widgets[w]];
+            widget.loadFunction(widget, $('#wrapper'+col));
+        }
+    }
+}
+
+/**
+ * Function that changes layout and dashboard configuration
+ *
+ * @param newLayout layout number shall be 0,1,2
+ */
+function changeLayout(newLayout) {
+    var configuration = {
+        layout:newLayout,
+        columns: []
+    };
+
+    var allWidgets = [];
+    for (var col = 0; col < dashboardConfig.columns.length; col++) {
+        var column = dashboardConfig.columns[col];
+        for (var w = 0; w < column.widgets.length; w++) {
+            allWidgets.push(column.widgets[w]);
+        }
+    }
+
+    configuration.columns.push({widgets:allWidgets});
+
+    var classNames = layouts[newLayout].classNames;
+    for (var i = 1; i < classNames.length; i++) {
+        configuration.columns.push({widgets:[]});
+    }
+
+    dashboardConfig = configuration;
+    console.log(configuration);
+}
+
+/**
+ * Updates dashboard configuration on DnD
+ * @param draggable draggable item
+ * @param droppable droppable item
+ */
+function updateConfig(draggable, droppable) {
+    draggable.appendTo(droppable);
+    draggable.css("position", "");
+    draggable.css("top", "");
+    draggable.css("left", "");
+}

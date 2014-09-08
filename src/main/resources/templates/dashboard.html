@@ -76,6 +76,7 @@
 
 <footer th:include="footer"></footer>
 <section th:replace="scripts"></section>
+<script  type="text/javascript" th:src="@{/webjars/jquery-ui/1.11.1/jquery-ui.min.js}" src="https://ajax.googleapis.com/ajax/libs/jquery-ui/1.11.1/jquery-ui.js"></script>
 <script  type="text/javascript"  th:src="@{/js/ems.dashboard.js}" src="../public/js/ems.dashboard.js"></script>
 <script type="text/javascript" th:inline="javascript">
 var latitude = [[${configuration.map_latitude}]];
