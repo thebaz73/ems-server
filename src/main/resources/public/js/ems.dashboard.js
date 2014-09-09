@@ -107,9 +107,10 @@ var layouts = [
     }
 ];
 /**
- * Dashboard configuration object
+ * Dashboard configuration objects
  */
-var dashboardConfig = {
+var dashboardConfig;
+var defaultConfig = {
     layout: 1,
     columns: [{
         widgets: []
@@ -126,6 +127,14 @@ var dashboardConfig = {
  * Initial activities
  */
 $(document).ready(function () {
+    if(typeof(Storage) === "undefined") {
+        console.log("Sorry! No Web Storage support..");
+        $("#dashboard-commands .glyphicon-floppy-save").toggle(false);
+    }
+    dashboardConfig = JSON.parse(localStorage.getItem("dashboardConfig"));
+    if(!dashboardConfig) {
+        dashboardConfig = defaultConfig;
+    }
     layoutPage(false);
 
     $('#dashboard-commands .glyphicon-edit').click(function(event){
@@ -134,10 +143,15 @@ $(document).ready(function () {
         applyEditMode(editMode, true);
     });
     $('#dashboard-commands .glyphicon-cog').click(function(event) {
+        event.preventDefault();
         $('#settingsModal').modal();
     });
-    $('#dashboard-commands .glyphicon-th').click(function(event) {
-        $('#addModal').modal();
+    $('#dashboard-commands .glyphicon-floppy-save').click(function(event) {
+        event.preventDefault();
+        localStorage.setItem("dashboardConfig", JSON.stringify(dashboardConfig));
+        editMode = false;
+        applyEditMode(editMode, true);
+        $('#saveModal').modal();
     });
     $("#closeSettings").click(function(event) {
         var layout = $( "#settingsModal input:checked" ).val();
@@ -160,6 +174,7 @@ function layoutPage(force) {
                 id: 'wrapper'+i
             });
             wrapper.appendTo("#dashboard");
+            wrapper.data("wrapper", i);
         }
         else {
             wrapper.removeClass();
@@ -195,7 +210,7 @@ function layoutPage(force) {
  * @param force force droppable and draggable destroy
  */
 function applyEditMode(mode, force) {
-    $("#dashboard-commands .glyphicon-th").toggle(mode);
+    $("#dashboard-commands .glyphicon-floppy-save").toggle(mode);
     $("#dashboard-commands .glyphicon-cog").toggle(mode);
     $("*[data-action='panel-buttons']").toggle(mode);
 
@@ -265,5 +280,18 @@ function updateConfig(draggable, droppable) {
     draggable.css("position", "");
     draggable.css("top", "");
     draggable.css("left", "");
-    map.refresh();
+    // save moves;
+    var widgetName = draggable.data("widget");
+    var wrapperId = droppable.data("wrapper");
+    for (var col = 0; col < dashboardConfig.columns.length; col++) {
+        var obj = dashboardConfig.columns[col].widgets;
+        var index = obj.indexOf(widgetName);
+        if(index > -1) {
+            dashboardConfig.columns[col].widgets = obj.splice(index, 1);
+        }
+    }
+    dashboardConfig.columns[wrapperId].widgets.push(widgetName);
+    if(widgetName === "map") {
+        map.refresh();
+    }
 }

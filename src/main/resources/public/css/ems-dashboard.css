@@ -3,9 +3,9 @@
 }
 
 .hoverWrapper {
-    background-color: blue;
+    background-color: #428bca;
 }
 
 .activeWrapper {
-    border-color: blue;
+    border-color: #428bca;
 }
