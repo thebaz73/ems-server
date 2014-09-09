@@ -91,25 +91,34 @@ var widgets = {
  */
 var layouts = [
     {
-        classNames: ["col-md-12","col-md-6","col-md-6"]
+        classNames: ["col-md-12","col-md-6","col-md-6","col-md-12"]
     },
     {
-        classNames: ["col-md-6","col-md-6"]
+        classNames: ["col-md-12","col-md-4","col-md-8","col-md-12"]
     },
     {
-        classNames: ["col-md-4","col-md-8"]
+        classNames: ["col-md-12","col-md-8","col-md-4","col-md-12"]
+    },
+    {
+        classNames: ["col-md-12","col-md-5","col-md-7","col-md-12"]
+    },
+    {
+        classNames: ["col-md-12","col-md-7","col-md-5","col-md-12"]
     }
 ];
 /**
  * Dashboard configuration object
- * @type {{layout: number, columns: {widgets: string[]}[]}}
  */
 var dashboardConfig = {
-    layout: 2,
+    layout: 1,
     columns: [{
+        widgets: []
+    },{
         widgets: ["map"]
     },{
         widgets: ["inventory","log"]
+    },{
+        widgets: []
     }]
 };
 
@@ -117,40 +126,12 @@ var dashboardConfig = {
  * Initial activities
  */
 $(document).ready(function () {
-    editMode = false;
-    $("#dashboard-commands .glyphicon-th").toggle();
-    $("#dashboard-commands .glyphicon-cog").toggle();
-
-    layoutPage();
+    layoutPage(false);
 
     $('#dashboard-commands .glyphicon-edit').click(function(event){
-        editMode = !editMode;
         event.preventDefault();
-        $("#dashboard-commands .glyphicon-th").toggle();
-        $("#dashboard-commands .glyphicon-cog").toggle();
-        $("*[data-action='panel-buttons']").toggle();
-
-        if(editMode) {
-            $(".wrapper" ).addClass( "editable-board" );
-            //$(".widget").css("max-width", "100px");
-            $(".widget").draggable({
-                revert: "invalid", // when not dropped, the item will revert back to its initial position
-                containment: "document",
-                snap: true,
-                cursor: "move"
-            });
-            $(".wrapper").droppable({
-                accept: ".widget",
-                drop: function( event, ui ) {
-                    updateConfig( ui.draggable, $(this) );
-                }
-            });
-        }
-        else {
-            $(".wrapper" ).removeClass( "editable-board" );
-            $(".widget").draggable( "destroy" );
-            $(".wrapper").droppable( "destroy" );
-        }
+        editMode = !editMode;
+        applyEditMode(editMode, true);
     });
     $('#dashboard-commands .glyphicon-cog').click(function(event) {
         $('#settingsModal').modal();
@@ -158,31 +139,90 @@ $(document).ready(function () {
     $('#dashboard-commands .glyphicon-th').click(function(event) {
         $('#addModal').modal();
     });
+    $("#closeSettings").click(function(event) {
+        var layout = $( "#settingsModal input:checked" ).val();
+        changeLayout(layout);
+        layoutPage(true);
+    });
 });
 
 /**
  * Function that renders layout
+ *
+ * @param force f
  */
-function layoutPage() {
+function layoutPage(force) {
     var classNames = layouts[dashboardConfig.layout].classNames;
     for (var i = 0; i < classNames.length; i++) {
         var wrapper = $("#wrapper" + i);
         if(wrapper.length == 0) {
             wrapper = $('<div/>', {
                 id: 'wrapper'+i
-            })
+            });
+            wrapper.appendTo("#dashboard");
         }
-        wrapper.addClass(classNames[i]);
+        else {
+            wrapper.removeClass();
+        }
         wrapper.addClass("wrapper");
-        wrapper.appendTo("#dashboard");
+        wrapper.addClass(classNames[i]);
     }
     for (var col = 0; col < dashboardConfig.columns.length; col++) {
         var column = dashboardConfig.columns[col];
         for (var w = 0; w < column.widgets.length; w++) {
-            var widget = widgets[column.widgets[w]];
-            widget.loadFunction(widget, $('#wrapper'+col));
+            var widget = $("#"+column.widgets[w]+"-widget");
+            if(widget.length == 0) {
+                widget = widgets[column.widgets[w]];
+                widget.loadFunction(widget, $('#wrapper'+col));
+            }
+            else {
+                widget.detach();
+                widget.appendTo('#wrapper'+col);
+            }
+            if(column.widgets[w] == "map" && map) {
+                map.refresh();
+            }
         }
     }
+    editMode = false;
+    applyEditMode(editMode, force);
+}
+
+/**
+ * Applies edit mode
+ *
+ * @param mode edit mode
+ * @param force force droppable and draggable destroy
+ */
+function applyEditMode(mode, force) {
+    $("#dashboard-commands .glyphicon-th").toggle(mode);
+    $("#dashboard-commands .glyphicon-cog").toggle(mode);
+    $("*[data-action='panel-buttons']").toggle(mode);
+
+    if(mode) {
+        $(".wrapper" ).addClass( "editable-board" );
+        //$(".widget").css("max-width", "100px");
+        $(".widget").draggable({
+            revert: "invalid", // when not dropped, the item will revert back to its initial position
+            cursor: "move"
+        });
+        $(".wrapper").droppable({
+            accept: ".widget",
+            activeClass: "activeWrapper",
+            hoverClass: "hoverWrapper",
+            drop: function( event, ui ) {
+                updateConfig( ui.draggable, $(this) );
+            }
+        });
+    }
+    else {
+        $(".wrapper" ).removeClass( "editable-board" );
+        if(force) {
+            $(".widget").draggable( "destroy" );
+            $(".wrapper").droppable( "destroy" );
+        }
+    }
+
 }
 
 /**
@@ -225,4 +265,5 @@ function updateConfig(draggable, droppable) {
     draggable.css("position", "");
     draggable.css("top", "");
     draggable.css("left", "");
+    map.refresh();
 }

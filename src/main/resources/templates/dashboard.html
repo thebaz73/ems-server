@@ -15,7 +15,7 @@
 <section class="container-fluid">
     <div class="row">
         <div id="dashboard-commands" class="col-md-12 text-right text-primary">
-           <!--<b class="glyphicon glyphicon-th"></b><b class="glyphicon glyphicon-cog"></b>--><b class="glyphicon glyphicon-edit"></b>
+           <!--<b class="glyphicon glyphicon-th"></b>--><b class="glyphicon glyphicon-cog"></b><b class="glyphicon glyphicon-edit"></b>
         </div>
     </div>
     <div class="row" id="dashboard">
@@ -33,26 +33,38 @@
                 <div class="btn-group-vertical">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="layout" id="optionsRadios1" value="0" checked="checked"/>
-                            2 rows, 2 column 100% and 2 columns 50% 50%
+                            <input type="radio" name="layout" value="0"/>
+                            2 rows, 1 column 100% and 2 columns 50% 50%
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="layout" id="optionsRadios2" value="1"/>
-                            1 row, 2 columns 50% 50%
+                            <input type="radio" name="layout" value="1" checked="checked"/>
+                            2 rows, 1 column 100% and 2 columns 33% 66%
                         </label>
                     </div>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="layout" id="optionsRadios3" value="2"/>
-                            1 row, 2 columns 40% - 60%
+                            <input type="radio" name="layout" value="2"/>
+                            2 rows, 1 column 100% and 2 columns 66% 33%
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="layout" value="2"/>
+                            2 rows, 1 column 100% and 2 columns 40% 60%
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="layout" value="2"/>
+                            2 rows, 1 column 100% and 2 columns 60% 40%
                         </label>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="closeSettings" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
