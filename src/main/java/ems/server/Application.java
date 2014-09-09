@@ -35,6 +35,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Application
@@ -129,6 +130,11 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             s1.setProtocolType(ProtocolType.fromValue("snmp"));
             s1.setProtocol("schema/snmp.json");
             specificationRepository.save(s1);
+            List<DriverConfiguration> dcl1 = InventoryHelper.getInstance().getDriverConfigurationList(s1.getDriverType());
+            for (DriverConfiguration configuration : dcl1) {
+                configuration.setSpecificationId(s1.getId());
+                driverConfigurationRepository.save(configuration);
+            }
 
             String name = "Device001";
             Status status = Status.OK;
@@ -153,6 +159,11 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             s2.setProtocolType(ProtocolType.fromValue("snmp"));
             s2.setProtocol("schema/snmp.json");
             specificationRepository.save(s2);
+            List<DriverConfiguration> dcl2 = InventoryHelper.getInstance().getDriverConfigurationList(s2.getDriverType());
+            for (DriverConfiguration configuration : dcl2) {
+                configuration.setSpecificationId(s2.getId());
+                driverConfigurationRepository.save(configuration);
+            }
 
             Location l1 = new Location();
             l1.setLatitude(45.0);
