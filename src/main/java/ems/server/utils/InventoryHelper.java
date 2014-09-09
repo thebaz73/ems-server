@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -220,9 +221,14 @@ public class InventoryHelper {
                     Class clazz = (Class) pt.getActualTypeArguments()[0];
                     logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
                     List list = (List) PropertyUtils.getProperty(object, entry.getKey());
-                    Object e = clazz.newInstance();
-                    list.add(e);
-                    fillDriverConfigurationList(driverConfigurations, e, format("%s%s[0].", parentProperty, entry.getKey()));
+                    Size size = field.getAnnotation(Size.class);
+                    if(size != null) {
+                        for (int i = 0; i < size.min(); i++) {
+                            Object e = clazz.newInstance();
+                            list.add(e);
+                            fillDriverConfigurationList(driverConfigurations, e, format("%s%s[%s].", parentProperty, entry.getKey(), i));
+                        }
+                    }
                 }
                 else {
                     //manage object
