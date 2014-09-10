@@ -171,7 +171,7 @@ public class DeviceController {
         }
         if(processStep.equalsIgnoreCase("specification")) {
             Device currentDevice = deviceManager.findDevice(device.getId());
-            if(currentDevice.getSpecification().getId().equals(device.getSpecification().getId())) {
+            if(!currentDevice.getSpecification().getId().equals(device.getSpecification().getId())) {
                 DriverFactory driverFactory = new DriverFactory(device, device.getSpecification()).create();
                 if (driverFactory.isFailed())
                     return logAndReturn(request.getSession(), bindingResult, model, driverFactory.getException(), driverFactory.getMessage());
