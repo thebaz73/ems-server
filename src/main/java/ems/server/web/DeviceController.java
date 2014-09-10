@@ -108,45 +108,9 @@ public class DeviceController {
         }
         if(processStep.equalsIgnoreCase("specification")) {
             Specification specification = device.getSpecification();
-            String driverClassName = InventoryHelper.getInstance().getDriverClassName(specification.getDriverType());
-            String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
-            if (driverClassName != null && protocolClassName != null) {
-                try {
-                    Driver driver = InventoryHelper.getInstance().createDriver(driverClassName, specification, Status.UNKNOWN, new Location());
-                    device.setDriver(driver);
-                } catch (ClassNotFoundException e) {
-                    String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (InstantiationException e) {
-                    String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (IllegalAccessException e) {
-                    String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (InvocationTargetException e) {
-                    String message = format("Cannot use class: %s invocation target", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (NoSuchMethodException e) {
-                    String message = format("Cannot allocate class: %s no such method", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (NoSuchFieldException e) {
-                    String message = format("Cannot allocate class: %s no such field", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                }
-                try {
-                    Protocol protocol = InventoryHelper.getInstance().createProtocol(protocolClassName);
-                    device.setProtocol(protocol);
-                } catch (ClassNotFoundException e) {
-                    String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (InstantiationException e) {
-                    String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (IllegalAccessException e) {
-                    String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                }
-            }
+            DriverFactory driverFactory = new DriverFactory(device, specification).create();
+            if (driverFactory.isFailed())
+                return logAndReturn(request.getSession(), bindingResult, model, driverFactory.getException(), driverFactory.getMessage());
             processStep = "protocol";
             request.getSession().setAttribute("currentDevice", device);
             model.addAttribute("process", process);
@@ -206,11 +170,18 @@ public class DeviceController {
             return "devices";
         }
         if(processStep.equalsIgnoreCase("specification")) {
-            //TODO Handle specification changes.
-            processStep = "protocol";
             Device currentDevice = deviceManager.findDevice(device.getId());
-            device.setDriver(currentDevice.getDriver());
-            device.setProtocol(currentDevice.getProtocol());
+            if(currentDevice.getSpecification().getId().equals(device.getSpecification().getId())) {
+                DriverFactory driverFactory = new DriverFactory(device, device.getSpecification()).create();
+                if (driverFactory.isFailed())
+                    return logAndReturn(request.getSession(), bindingResult, model, driverFactory.getException(), driverFactory.getMessage());
+            }
+            else {
+                device.setDriver(currentDevice.getDriver());
+                device.setProtocol(currentDevice.getProtocol());
+            }
+
+            processStep = "protocol";
             request.getSession().setAttribute("currentDevice", device);
             model.addAttribute("process", process);
             model.addAttribute("device", device);
@@ -300,6 +271,51 @@ public class DeviceController {
         @Override
         public void setAsText(String text) throws IllegalArgumentException {
             setValue(specificationManager.findSpecification(text));
+        }
+    }
+
+    private class DriverFactory {
+        private boolean failed;
+        private Device device;
+        private Specification specification;
+        private Exception exception;
+        private String message;
+
+        public DriverFactory(Device device, Specification specification) {
+            this.device = device;
+            this.specification = specification;
+        }
+
+        boolean isFailed() {
+            return failed;
+        }
+
+        public Exception getException() {
+            return exception;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public DriverFactory create() {
+            String driverClassName = InventoryHelper.getInstance().getDriverClassName(specification.getDriverType());
+            String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
+            if (driverClassName != null && protocolClassName != null) {
+                try {
+                    Driver driver = InventoryHelper.getInstance().createDriver(driverClassName, specification, Status.UNKNOWN, new Location());
+                    device.setDriver(driver);
+                    Protocol protocol = InventoryHelper.getInstance().createProtocol(protocolClassName);
+                    device.setProtocol(protocol);
+                } catch (Exception e) {
+                    exception = e;
+                    message = format("Cannot load class: %s class not found", driverClassName);
+                    failed = true;
+                    return this;
+                }
+            }
+            failed = false;
+            return this;
         }
     }
 }
