@@ -13,7 +13,6 @@ import ems.server.domain.Device;
 import ems.server.domain.Specification;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.InventoryHelper;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -114,11 +112,7 @@ public class DeviceController {
             String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
             if (driverClassName != null && protocolClassName != null) {
                 try {
-                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());
-                    Driver driver = driverClass.newInstance();
-                    BeanUtils.setProperty(driver, "status", Status.fromValue("unknown"));
-                    BeanUtils.setProperty(driver, "location", new Location());
-                    BeanUtils.setProperty(driver, "type", specification.getDriverType());
+                    Driver driver = InventoryHelper.getInstance().createDriver(driverClassName, specification, Status.UNKNOWN, new Location());
                     device.setDriver(driver);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", driverClassName);
@@ -132,10 +126,15 @@ public class DeviceController {
                 } catch (InvocationTargetException e) {
                     String message = format("Cannot use class: %s invocation target", driverClassName);
                     return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                } catch (NoSuchMethodException e) {
+                    String message = format("Cannot allocate class: %s no such method", driverClassName);
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                } catch (NoSuchFieldException e) {
+                    String message = format("Cannot allocate class: %s no such field", driverClassName);
+                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
                 }
                 try {
-                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, getClass().getClassLoader());
-                    Protocol protocol = protocolClass.newInstance();
+                    Protocol protocol = InventoryHelper.getInstance().createProtocol(protocolClassName);
                     device.setProtocol(protocol);
                 } catch (ClassNotFoundException e) {
                     String message = format("Cannot load class: %s class not found", protocolClassName);
@@ -207,40 +206,11 @@ public class DeviceController {
             return "devices";
         }
         if(processStep.equalsIgnoreCase("specification")) {
-            Specification specification = device.getSpecification();
-            String driverClassName = InventoryHelper.getInstance().getDriverClassName(specification.getDriverType());
-            String protocolClassName =  InventoryHelper.getInstance().getProtocolClassName(specification.getProtocolType());
-            if (driverClassName != null && protocolClassName != null) {
-                try {
-                    Class<Driver> driverClass = (Class<Driver>) ClassUtils.forName(driverClassName, getClass().getClassLoader());
-                    Driver driver = driverClass.newInstance();
-                    device.setDriver(driver);
-                } catch (ClassNotFoundException e) {
-                    String message = format("Cannot load class: %s class not found", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (InstantiationException e) {
-                    String message = format("Cannot load class: %s cannot instantiate", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (IllegalAccessException e) {
-                    String message = format("Cannot load class: %s illegal method access", driverClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                }
-                try {
-                    Class<Protocol> protocolClass = (Class<Protocol>) ClassUtils.forName(protocolClassName, getClass().getClassLoader());
-                    Protocol protocol = protocolClass.newInstance();
-                    device.setProtocol(protocol);
-                } catch (ClassNotFoundException e) {
-                    String message = format("Cannot load class: %s class not found", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (InstantiationException e) {
-                    String message = format("Cannot load class: %s cannot instantiate", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                } catch (IllegalAccessException e) {
-                    String message = format("Cannot load class: %s illegal method access", protocolClassName);
-                    return logAndReturn(request.getSession(), bindingResult, model, e, message);
-                }
-            }
+            //TODO Handle specification changes.
             processStep = "protocol";
+            Device currentDevice = deviceManager.findDevice(device.getId());
+            device.setDriver(currentDevice.getDriver());
+            device.setProtocol(currentDevice.getProtocol());
             request.getSession().setAttribute("currentDevice", device);
             model.addAttribute("process", process);
             model.addAttribute("device", device);
@@ -250,10 +220,44 @@ public class DeviceController {
         }
         else if(processStep.equalsIgnoreCase("protocol")) {
             processStep = "final";
+            Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
+            Protocol protocol = currentDevice.getProtocol();
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if(!entry.getKey().equalsIgnoreCase("_csrf") && !entry.getKey().equalsIgnoreCase("protocolType") && !entry.getKey().equalsIgnoreCase("_method") && !entry.getKey().equalsIgnoreCase("id")) {
+                    try {
+                        beanUtilsBean.setProperty(protocol, entry.getKey(), entry.getValue()[0]);
+                    } catch (IllegalAccessException e) {
+                        String message = format("Cannot set property: %s illegal method access", entry.getKey());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                    } catch (InvocationTargetException e) {
+                        String message = format("Cannot set property: %s invocation target", entry.getKey());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                    }
+                }
+            }
+            model.addAttribute("process", process);
+            model.addAttribute("device", currentDevice);
+            model.addAttribute("processStep", processStep);
             return "devices";
         }
         else {
-            deviceManager.createDevice(device);
+            Device currentDevice = (Device) request.getSession().getAttribute("currentDevice");
+            Driver driver = currentDevice.getDriver();
+            for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+                if(!entry.getKey().equalsIgnoreCase("_csrf") && !entry.getKey().equalsIgnoreCase("_method") && !entry.getKey().equalsIgnoreCase("id")) {
+                    try {
+                        beanUtilsBean.setProperty(driver, "location."+entry.getKey(), entry.getValue()[0]);
+                    } catch (IllegalAccessException e) {
+                        String message = format("Cannot set property: %s illegal method access", entry.getKey());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                    } catch (InvocationTargetException e) {
+                        String message = format("Cannot set property: %s invocation target", entry.getKey());
+                        return logAndReturn(request.getSession(), bindingResult, model, e, message);
+                    }
+                }
+            }
+
+            deviceManager.editDevice(currentDevice);
             model.clear();
             return "redirect:/devices";
         }

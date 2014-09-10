@@ -88,40 +88,7 @@ public class InventoryHelper {
      * @return created currentDevice
      */
     public Device createDevice(String name, Specification specification, Status status) {
-        Device device = null;
-        String driverClassName = getDriverClassName(specification.getDriverType());
-        String protocolClassName =  getProtocolClassName(specification.getProtocolType());
-        if(driverClassName != null && protocolClassName != null) {
-            device = new Device();
-            device.setName(name);
-            device.setSpecification(specification);
-            try {
-                Driver driver = loadDriverClass(driverClassName);
-                BeanUtils.setProperty(driver, "status", status);
-                device.setDriver(driver);
-            } catch (ClassNotFoundException e) {
-                logger.error(format("Cannot load class: %s class not found", driverClassName), e);
-            } catch (InstantiationException e) {
-                logger.error(format("Cannot load class: %s cannot instantiate", driverClassName), e);
-            } catch (IllegalAccessException e) {
-                logger.error(format("Cannot load class: %s illegal method access", driverClassName), e);
-            } catch (InvocationTargetException e) {
-                logger.error(format("Cannot use class: %s invocation target", driverClassName), e);
-            }
-            try {
-                Protocol protocol = loadProtocolClass(protocolClassName);
-                device.setProtocol(protocol);
-            } catch (ClassNotFoundException e) {
-                logger.error(format("Cannot load class: %s class not found", protocolClassName), e);
-            } catch (InstantiationException e) {
-                logger.error(format("Cannot load class: %s cannot instantiate", protocolClassName), e);
-            } catch (IllegalAccessException e) {
-                logger.error(format("Cannot load class: %s illegal method access", protocolClassName), e);
-            }
-
-        }
-
-        return device;
+        return createDevice(name, specification, status, null);
     }
 
     /**
@@ -142,9 +109,7 @@ public class InventoryHelper {
             device.setName(name);
             device.setSpecification(specification);
             try {
-                Driver driver = loadDriverClass(driverClassName);
-                BeanUtils.setProperty(driver, "status", status);
-                BeanUtils.setProperty(driver, "location", location);
+                Driver driver = createDriver(driverClassName, specification, status, location);
                 device.setDriver(driver);
             } catch (ClassNotFoundException e) {
                 logger.error(format("Cannot load class: %s class not found", driverClassName), e);
@@ -154,9 +119,14 @@ public class InventoryHelper {
                 logger.error(format("Cannot load class: %s illegal method access", driverClassName), e);
             } catch (InvocationTargetException e) {
                 logger.error(format("Cannot use class: %s invocation target", driverClassName), e);
+            } catch (NoSuchMethodException e) {
+                logger.error(format("Cannot allocate class: %s no such method", driverClassName), e);
+            } catch (NoSuchFieldException e) {
+                logger.error(format("Cannot allocate class: %s no such field", driverClassName), e);
             }
+
             try {
-                Protocol protocol = loadProtocolClass(protocolClassName);
+                Protocol protocol = createProtocol(protocolClassName);
                 device.setProtocol(protocol);
             } catch (ClassNotFoundException e) {
                 logger.error(format("Cannot load class: %s class not found", protocolClassName), e);
@@ -169,6 +139,46 @@ public class InventoryHelper {
         }
 
         return device;
+    }
+
+    /**
+     * Creates a full driver
+     *
+     * @param driverClassName driver class name
+     * @param specification specification
+     * @param status status
+     * @param location location
+     * @return created driver
+     * @throws ClassNotFoundException if error
+     * @throws IllegalAccessException if error
+     * @throws InstantiationException if error
+     * @throws InvocationTargetException if error
+     * @throws NoSuchMethodException if error
+     * @throws NoSuchFieldException if error
+     */
+    public Driver createDriver(String driverClassName, Specification specification, Status status, Location location) throws ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException {
+        Driver driver = loadDriverClass(driverClassName);
+        allocate(driver);
+        BeanUtils.setProperty(driver, "status", status);
+        BeanUtils.setProperty(driver, "type", specification.getDriverType());
+        if(location != null) {
+            BeanUtils.setProperty(driver, "location", location);
+        }
+
+        return driver;
+    }
+
+    /**
+     * creates a protocol class
+     *
+     * @param protocolClassName protocol class name
+     * @return created protocol
+     * @throws ClassNotFoundException if error
+     * @throws InstantiationException if error
+     * @throws IllegalAccessException if error
+     */
+    public Protocol createProtocol(String protocolClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        return loadProtocolClass(protocolClassName);
     }
 
     public List<DriverConfiguration> getDriverConfigurationList(DriverType driverType) {
@@ -192,6 +202,56 @@ public class InventoryHelper {
         }
 
         return driverConfigurations;
+    }
+
+    private void allocate(Object object) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
+        Map<String,String> properties = BeanUtils.describe(object);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            if(!entry.getKey().equalsIgnoreCase("status") &&
+                    !entry.getKey().equalsIgnoreCase("type") &&
+                    !entry.getKey().equalsIgnoreCase("location") &&
+                    !entry.getKey().equalsIgnoreCase("class")) {
+                Class<?> propertyType = PropertyUtils.getPropertyType(object, entry.getKey());
+
+                if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(String.class)) {
+                    //skip
+                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                }
+                else if(propertyType.isArray()) {
+                    //skip
+                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                }
+                else if(propertyType.isAssignableFrom(Map.class)) {
+                    //skip
+                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                }
+                else if(propertyType.isAssignableFrom(List.class)) {
+                    Field field = object.getClass().getDeclaredField(entry.getKey());
+                    ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                    Class clazz = (Class) pt.getActualTypeArguments()[0];
+                    logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
+                    List list = (List) PropertyUtils.getProperty(object, entry.getKey());
+                    Size size = field.getAnnotation(Size.class);
+                    if(size != null) {
+                        for (int i = 0; i < size.min(); i++) {
+                            Object e = clazz.newInstance();
+                            list.add(e);
+                            allocate(e);
+                        }
+                    }
+                }
+                else {
+                    //manage object
+                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    Object o = PropertyUtils.getProperty(object, entry.getKey());
+                    if(o == null) {
+                        o = propertyType.newInstance();
+                        BeanUtils.setProperty(object, entry.getKey(), o);
+                    }
+                    allocate(o);
+                }
+            }
+        }
     }
 
     private void fillDriverConfigurationList(List<DriverConfiguration> driverConfigurations, Object object, String parentProperty) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException {

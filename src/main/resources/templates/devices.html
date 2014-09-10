@@ -137,7 +137,15 @@
         $.get("/template/protocol", function(template) {
             var t = Handlebars.compile(template);
             $("#protocol-placeholder").append(t(json));
-            //console.log(t(json));
+            $.get("/devices/current", function(device) {
+                var protocol = device.protocol;
+                for (var property in protocol) {
+                    var value = protocol[property];
+                    if(value) {
+                        $("#"+property).val(value);
+                    }
+                }
+            });
         });
     }));
 </script>
@@ -147,7 +155,15 @@
         $.get("/template/location", function(template) {
             var t = Handlebars.compile(template);
             $("#location-placeholder").append(t(json));
-            //console.log(t(json));
+            $.get("/devices/current", function(device) {
+                var location = device.driver.location;
+                for (var property in location) {
+                    var value = location[property];
+                    if(value) {
+                        $("#"+property).val(value);
+                    }
+                }
+            });
         });
     }));
 </script>

@@ -5,20 +5,20 @@
         <label class="col-sm-2 control-label">{{this.title}}</label>
         <div class="col-sm-10">
             {{#if this.enum}}
-            <select class="form-control" name="{{@key}}" style="text-transform: capitalize;">
+            <select id="{{@key}}" class="form-control" name="{{@key}}" style="text-transform: capitalize;">
                 {{#each enum}}
                 <option value="{{@index}}">{{this}}</option>
                 {{/each}}
             </select>
             {{else}}
             {{#equal type 'string'}}
-            <input type="text" class="form-control" name="{{@key}}"/>
+            <input id="{{@key}}" type="text" class="form-control" name="{{@key}}"/>
             {{/equal}}
             {{#equal type 'integer'}}
-            <input type="number" class="form-control" name="{{@key}}"/>
+            <input id="{{@key}}" type="number" class="form-control" name="{{@key}}"/>
             {{/equal}}
             {{#equal type 'number'}}
-            <input type="number" class="form-control" name="{{@key}}" step="any"/>
+            <input id="{{@key}}" type="number" class="form-control" name="{{@key}}" step="any"/>
             {{/equal}}
             {{/if}}
         </div>
