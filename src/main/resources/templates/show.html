@@ -5,22 +5,43 @@
 <body>
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
-<section class="container" th:if="${deviceId}" id="device">
+<section class="container" th:if="${device}">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+        </div>
+        <div class="panel-body">
+            <h4 class="row">
+                <div class="col-md-6" th:inline="text">[[#{device.status}]]:</div>
+                <div class="col-md-4 label label-default" th:if="${#strings.toString(device.driver.status) == 'unknown'}" th:text="${device.driver.status}"></div>
+                <div class="col-md-4 label label-danger" th:if="${#strings.toString(device.driver.status) == 'error'}" th:text="${device.driver.status}"></div>
+                <div class="col-md-4 label label-warning" th:if="${#strings.toString(device.driver.status) == 'warn'}" th:text="${device.driver.status}"></div>
+                <div class="col-md-4 label label-success" th:if="${#strings.toString(device.driver.status) == 'ok'}" th:text="${device.driver.status}"></div>
+            </h4>
+            <div id="driver">
 
+            </div>
+        </div>
+    </div>
 </section>
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
-<script type="application/javascript" th:inline="javascript">
-    var deviceId = [[${deviceId}]];
-    var request = "/inventory/device/" + deviceId;
-    var response = $.getJSON(request);
+<script type="application/javascript" th:inline="javascript" th:if="${device}">
+    var deviceId = [[${device.id}]];
+    var schemaRequest = '/'+[[${device.specification.driver}]];
+    var response = $.getJSON(schemaRequest);
     response.done(function(data) {
-        $.get("/template/object", function (template) {
+        $.get("/template/device", function (template) {
             var t = Handlebars.compile(template);
-            $("#device").append(t(data));
+            $("#driver").append(t(data));
+            var request = "/inventory/device/" + deviceId;
+            $.get(request, function(device) {
+                //TODO usa data object to or json to access device and driver
+            });
         });
     });
+
 </script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+{{#each properties}}
+{{#validDriverProperty @key}}
+<h4 class="row">
+    <div class="col-md-6">{{this.title}}</div>
+    <div class="col-md-4" id="{{@key}}"></div>
+</h4>
+{{/validDriverProperty}}
+{{/each}}
