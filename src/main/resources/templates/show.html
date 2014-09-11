@@ -32,7 +32,7 @@
     var schemaRequest = '/'+[[${device.specification.driver}]];
     var response = $.getJSON(schemaRequest);
     response.done(function(data) {
-        $.get("/template/device", function (template) {
+        $.get("/template/driver", function (template) {
             var t = Handlebars.compile(template);
             $("#driver").append(t(data));
             var request = "/inventory/device/" + deviceId;

@@ -1,13 +1,8 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-        >
-    {{#each properties}}
-    {{#validDriverProperty @key}}
-    <div class="form-group">
-        <label class="col-sm-2 control-label">{{this.title}}</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="{{@key}}"/>
-        </div>
-    </div>
-    {{/validDriverProperty}}
-    {{/each}}
-</div>
+{{#each properties}}
+{{#validDriverProperty @key}}
+<h4 class="row">
+    <div class="col-md-6">{{this.title}}</div>
+    <div class="col-md-4" id="{{@key}}"></div>
+</h4>
+{{/validDriverProperty}}
+{{/each}}
