@@ -40,9 +40,9 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Logs</h3>
+                    <h3 class="panel-title" th:text="${device.name}+': '+#{title.log}">Event log</h3>
                 </div>
-                <div class="panel-body" id="log">
+                <div class="panel-body" id="log-page">
                 </div>
             </div>
         </div>
@@ -123,6 +123,7 @@
             // Retrieve with $('*[data-path="rfInput"] *[data-path="port"] ')
         });
     });
+    loadPagedData("/inventory/events/"+deviceId, 0, 5, fillEventLogs)
 </script>
 </body>
 </html>
