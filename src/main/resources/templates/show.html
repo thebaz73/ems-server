@@ -6,20 +6,44 @@
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section class="container" th:if="${device}">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default" th:if="${#strings.toString(device.driver.status) == 'unknown'}">
+                <div class="panel-heading">
+                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+                </div>
+                <div class="panel-body" id="driver">
+                </div>
+            </div>
+            <div class="panel panel-danger" th:if="${#strings.toString(device.driver.status) == 'error'}">
+                <div class="panel-heading">
+                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+                </div>
+                <div class="panel-body" id="driver">
+                </div>
+            </div>
+            <div class="panel panel-warning" th:if="${#strings.toString(device.driver.status) == 'warn'}">
+                <div class="panel-heading">
+                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+                </div>
+                <div class="panel-body" id="driver">
+                </div>
+            </div>
+            <div class="panel panel-success" th:if="${#strings.toString(device.driver.status) == 'ok'}">
+                <div class="panel-heading">
+                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
+                </div>
+                <div class="panel-body" id="driver">
+                </div>
+            </div>
         </div>
-        <div class="panel-body">
-            <h4 class="row">
-                <div class="col-md-6" th:inline="text">[[#{device.status}]]:</div>
-                <div class="col-md-4 label label-default" th:if="${#strings.toString(device.driver.status) == 'unknown'}" th:text="${device.driver.status}"></div>
-                <div class="col-md-4 label label-danger" th:if="${#strings.toString(device.driver.status) == 'error'}" th:text="${device.driver.status}"></div>
-                <div class="col-md-4 label label-warning" th:if="${#strings.toString(device.driver.status) == 'warn'}" th:text="${device.driver.status}"></div>
-                <div class="col-md-4 label label-success" th:if="${#strings.toString(device.driver.status) == 'ok'}" th:text="${device.driver.status}"></div>
-            </h4>
-            <div id="driver">
-
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Logs</h3>
+                </div>
+                <div class="panel-body" id="log">
+                </div>
             </div>
         </div>
     </div>
@@ -27,21 +51,78 @@
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
+<script id="object-template" type="x-handlebars-template">
+    {{#each properties}}
+    {{#validDriverProperty @key}}
+    {{#equal type 'array'}}
+    {{> array}}
+    {{/equal}}
+
+    {{#if this.enum}}
+    {{> simple}}
+    {{else}}
+    {{#equal type 'string'}}
+    {{> simple}}
+    {{/equal}}
+    {{#equal type 'integer'}}
+    {{> simple}}
+    {{/equal}}
+    {{#equal type 'number'}}
+    {{> simple}}
+    {{/equal}}
+    {{#equal type 'boolean'}}
+    {{> simple}}
+    {{/equal}}
+    {{/if}}
+    {{#equal type 'object'}}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <h4 class="col-md-12 page-header" style="padding-bottom: 0; margin-top: 0"><small>{{title}}</small></h4>
+                <div class="col-md-offset-1 col-md-11" data-path="{{@key}}">{{> object}}</div>
+            </div>
+        </div>
+    </div>
+    {{/equal}}
+    {{/validDriverProperty}}
+    {{/each}}
+</script>
+<script id="array-template" type="x-handlebars-template">
+    <div class="row">
+        <h4 class="col-md-12 page-header" style="padding-bottom: 0; margin-top: 0"><small>{{title}}</small></h4>
+        {{#with items}}
+        <div class="col-md-offset-1 col-md-11" data-path="{{@key}}">{{> object}}</div>
+        {{/with}}
+    </div>
+</script>
+<script id="simple-template" type="x-handlebars-template">
+    <div class="row">
+        <div class="col-md-6">{{this.title}}</div>
+        <div class="col-md-4" data-path="{{@key}}"></div>
+    </div>
+</script>
+<script id="main" type="x-handlebars-template">
+    {{> object}}
+</script>
 <script type="application/javascript" th:inline="javascript" th:if="${device}">
+    // The main template.
+    var main = Handlebars.compile( $("#main").html() );
+    // Register the list partial that "main" uses.
+    Handlebars.registerPartial( "simple", $( "#simple-template" ).html() );
+    Handlebars.registerPartial( "array", $( "#array-template" ).html() );
+    Handlebars.registerPartial( "object", $( "#object-template" ).html() );
+
     var deviceId = [[${device.id}]];
     var schemaRequest = '/'+[[${device.specification.driver}]];
     var response = $.getJSON(schemaRequest);
     response.done(function(data) {
-        $.get("/template/driver", function (template) {
-            var t = Handlebars.compile(template);
-            $("#driver").append(t(data));
-            var request = "/inventory/device/" + deviceId;
-            $.get(request, function(device) {
-                //TODO usa data object to or json to access device and driver
-            });
+        $("#driver").append(main(data));
+        var request = "/inventory/device/" + deviceId;
+        $.get(request, function(device) {
+            //TODO usa data object to or json to access device and driver
+            // Retrieve with $('*[data-path="rfInput"] *[data-path="port"] ')
         });
     });
-
 </script>
 </body>
 </html>
