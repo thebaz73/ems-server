@@ -51,6 +51,41 @@
 
 <footer th:include="footer"/>
 <section th:replace="scripts"/>
+<script id="js-object-template" type="x-handlebars-template">
+    {{#each properties}}
+    {{#validDriverProperty @key}}
+    {{#equal type 'array'}}
+    {{@key}}[0].
+    {{#with items}}
+    {{> js-object}}
+    {{/with}}
+    {{/equal}}
+
+    {{#if this.enum}}
+    {{@key}}
+    {{else}}
+    {{#equal type 'string'}}
+    {{@key}}
+    {{/equal}}
+    {{#equal type 'integer'}}
+    {{@key}}
+    {{/equal}}
+    {{#equal type 'number'}}
+    {{@key}}
+    {{/equal}}
+    {{#equal type 'boolean'}}
+    {{@key}}
+    {{/equal}}
+    {{/if}}
+    {{#equal type 'object'}}
+    {{@key}}. {{> js-object}}
+    {{/equal}}
+    {{/validDriverProperty}}
+    {{/each}}
+</script>
+<script id="js-main" type="x-handlebars-template">
+    {{> js-object}}
+</script>
 <script id="object-template" type="x-handlebars-template">
     {{#each properties}}
     {{#validDriverProperty @key}}
@@ -107,24 +142,28 @@
 <script type="application/javascript" th:inline="javascript" th:if="${device}">
     // The main template.
     var main = Handlebars.compile( $("#main").html() );
+    var jsMain = Handlebars.compile( $("#js-main").html() );
     // Register the list partial that "main" uses.
     Handlebars.registerPartial( "simple", $( "#simple-template" ).html() );
     Handlebars.registerPartial( "array", $( "#array-template" ).html() );
     Handlebars.registerPartial( "object", $( "#object-template" ).html() );
+    Handlebars.registerPartial( "js-object", $( "#js-object-template" ).html() );
 
     var deviceId = [[${device.id}]];
     var schemaRequest = '/'+[[${device.specification.driver}]];
     var response = $.getJSON(schemaRequest);
     response.done(function(data) {
         $("#driver").append(main(data));
+        console.log(jsMain(data));
         var request = "/inventory/device/" + deviceId;
         $.get(request, function(device) {
+            //console.log(JSON.stringify(device));
+            //traverse(device.driver);
             //TODO usa data object to or json to access device and driver
             // Retrieve with $('*[data-path="rfInput"] *[data-path="port"] ')
         });
     });
     loadDevicePagedData("/inventory/events/"+deviceId, "/template/deviceLogPage", 0, 5);
-
 </script>
 </body>
 </html>

@@ -60,6 +60,28 @@ function loadDevicePagedData(uri, template, page, pageSize) {
     });
 }
 
+function traverse(obj) {
+    if(typeof obj !== "undefined") {
+        for (var property in obj) {
+            if(property instanceof Array) {
+                for (var i = 0; i < property.length; i++) {
+                    traverse(property[i]);
+                }
+            }
+            else if(typeof property === "string" || typeof property === "boolean" || typeof property === "number") {
+                console.log(property);
+            }
+            else if(Object.prototype.toString(property) === "[object Object]") {
+                console.log(typeof property !== "undefined");
+                traverse(property);
+            }
+            else {
+                console.log(property);
+            }
+        }
+    }
+}
+
 //
 // Handlebars HELPERS
 //
