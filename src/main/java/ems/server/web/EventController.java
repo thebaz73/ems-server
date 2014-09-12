@@ -1,6 +1,5 @@
 package ems.server.web;
 
-import ems.server.data.DeviceRepository;
 import ems.server.data.EventRepository;
 import ems.server.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,6 @@ public class EventController {
     @Autowired
     EventRepository eventRepository;
 
-    @Autowired
-    DeviceRepository deviceRepository;
-
     @RequestMapping(value = "/inventory/events", params = {"page", "pageSize"}, method = GET)
     Page<Event> events(@RequestParam(value = "page") int page, @RequestParam(value = "pageSize") int pageSize) {
         Pageable pageable = new PageRequest(page, pageSize, Sort.Direction.DESC, "timestamp");
@@ -36,6 +32,6 @@ public class EventController {
     @RequestMapping(value = "/inventory/events/{id}", params = {"page", "pageSize"}, method = GET)
     Page<Event> eventsByDevice(@PathVariable("id") String id, @RequestParam(value = "page") int page, @RequestParam(value = "pageSize") int pageSize) {
         Pageable pageable = new PageRequest(page, pageSize, Sort.Direction.DESC, "timestamp");
-        return eventRepository.findByDevice(deviceRepository.findOne(id), pageable);
+        return eventRepository.findByDeviceId(id, pageable);
     }
 }

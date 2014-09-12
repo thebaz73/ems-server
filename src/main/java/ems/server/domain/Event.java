@@ -12,7 +12,8 @@ public class Event {
     private Long timestamp;
     private EventType eventType;
     private EventSeverity eventSeverity;
-    private Device device;
+    private String deviceId;
+    private String deviceName;
     private String description;
 
     public String getId() {
@@ -47,12 +48,20 @@ public class Event {
         this.eventSeverity = eventSeverity;
     }
 
-    public Device getDevice() {
-        return device;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setDevice(Device device) {
-        this.device = device;
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getDescription() {

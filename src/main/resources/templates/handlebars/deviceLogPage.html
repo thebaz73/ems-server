@@ -5,20 +5,18 @@
             <thead>
             <tr>
                 <th th:text="#{log.timestamp}">Timestamp</th>
-                <th th:text="#{log.device}">Device</th>
                 <th th:text="#{log.type}">Type</th>
                 <th th:text="#{log.severity}">Severity</th>
                 <th th:text="#{log.description}">Description</th>
             </tr>
             </thead>
             <tbody>
-            {{#each content}}
-            <tr valign="middle" onclick="window.location = '/inventory/show/{{deviceId}}'" class="{{#equal eventSeverity 'info'}}alert alert-info{{/equal}}
+            {{#each data.content}}
+            <tr valign="middle" class="{{#equal eventSeverity 'info'}}alert alert-info{{/equal}}
 {{#equal eventSeverity 'warn'}}alert alert-warning{{/equal}}
 {{#equal eventSeverity 'error'}}alert alert-danger{{/equal}}
 {{#equal eventSeverity 'fatal'}}active{{/equal}}">
                 <td>{{dateFormat timestamp}}</td>
-                <td>{{deviceName}}</td>
                 <td style="text-transform: capitalize;">{{eventType}}</td>
                 <td style="text-transform: capitalize;">
                     {{#equal eventSeverity 'info'}}<span class="glyphicon glyphicon-info-sign"></span> {{eventSeverity}}{{/equal}}
@@ -26,11 +24,11 @@
                     {{#equal eventSeverity 'error'}}<span class="glyphicon glyphicon-warning-sign"></span> {{eventSeverity}}{{/equal}}
                     {{#equal eventSeverity 'fatal'}}<span class="glyphicon glyphicon-exclamation-sign"></span> {{eventSeverity}}{{/equal}}
                 </td>
-                <td>{{description}}</td>
+                <td><a href="#" data-toggle="popover" title="Show " th:attrappend="title=#{log.description}" data-content="{{description}}"><span class="glyphicon glyphicon-zoom-in"></span></a></td>
             </tr>
             {{else}}
             <tr valign="middle">
-                <td colspan="5" class="alert alert-info" role="alert">The Log is void.</td>
+                <td colspan="4" class="alert alert-info" role="alert">The Log is void.</td>
             </tr>
             {{/each}}
             </tbody>
@@ -39,10 +37,10 @@
     <div class="panel-footer">
         <div class="row">
             <div class=" col-lg-6 text-center">
-                {{#pagination '/inventory/events' number totalPages size}}
+                {{#pagination uri data.number data.totalPages data.size}}
                 <ul class="pagination" style="margin:0">
                     {{#unless startFromFirstPage}}
-                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{previousPage}}, 5, fillEventLogs);return false;">&laquo;</a></li>
+                    <li><a href="{{uri}}" onclick="loadDevicePagedData(this.href, '/template/deviceLogPage', {{previousPage}}, 5);return false;">&laquo;</a></li>
                     {{/unless}}
 
                     {{#each pages}}
@@ -50,12 +48,12 @@
                     <li class="active"><a href="#" onclick="return false;">{{page}}</a></li>
                     {{/if}}
                     {{#unless isCurrent}}
-                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{pageIndex}}, 5, fillEventLogs);return false;">{{page}}</a></li>
+                    <li><a href="{{uri}}" onclick="loadDevicePagedData(this.href, '/template/deviceLogPage', {{pageIndex}}, 5);return false;">{{page}}</a></li>
                     {{/unless}}
                     {{/each}}
 
                     {{#unless endAtLastPage}}
-                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{nextPage}}, 5, fillEventLogs);return false;">&raquo;</a></li>
+                    <li><a href="{{uri}}" onclick="loadDevicePagedData(this.href, '/template/deviceLogPage', {{nextPage}}, 5);return false;">&raquo;</a></li>
                     {{/unless}}
                 </ul>
                 {{/pagination}}
@@ -64,9 +62,9 @@
                 <form class="form-inline" th:action="@{/repo/search/log}" action="#" role="form" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search log..."/>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                    </span>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
                     </div>
                 </form>
             </div>

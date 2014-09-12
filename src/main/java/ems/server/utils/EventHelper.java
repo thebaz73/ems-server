@@ -7,6 +7,7 @@ import ems.server.domain.EventSeverity;
 import ems.server.domain.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
@@ -25,6 +26,9 @@ public class EventHelper {
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     private static EventHelper instance;
 
+    @Autowired
+    EventRepository eventRepository;
+
     private EventHelper() {
         instance = this;
         format.setTimeZone(tz);
@@ -34,19 +38,29 @@ public class EventHelper {
         return instance;
     }
 
-    public void addEvents(EventRepository eventRepository, Device device) {
+    public void addEvents(Device device) {
         for (EventType eventType : EventType.ALL) {
             for (EventSeverity eventSeverity : EventSeverity.ALL) {
-                Event event = new Event();
-                event.setTimestamp(System.currentTimeMillis());
-                event.setEventType(eventType);
-                event.setEventSeverity(eventSeverity);
-                event.setDevice(device);
-                event.setDescription("Event of type: \'" + eventType + "\' at: " +
-                        format.format(new Date(event.getTimestamp())) + " with serverity: \'" +
-                        eventSeverity + "\' for device: " + device.getName());
-                eventRepository.save(event);
+                addEvent(device, eventType, eventSeverity);
             }
         }
+    }
+
+    public void addEvent(Device device, EventType eventType, EventSeverity eventSeverity) {
+        String description = "Event of type: \'" + eventType + "\' at: " +
+                format.format(new Date(System.currentTimeMillis())) + " with serverity: \'" +
+                eventSeverity + "\' for device: " + device.getName();
+        addEvent(device, eventType, eventSeverity, description);
+    }
+
+    public void addEvent(Device device, EventType eventType, EventSeverity eventSeverity, String description) {
+        Event event = new Event();
+        event.setTimestamp(System.currentTimeMillis());
+        event.setEventType(eventType);
+        event.setEventSeverity(eventSeverity);
+        event.setDeviceId(device.getId());
+        event.setDeviceName(device.getName());
+        event.setDescription(description);
+        eventRepository.save(event);
     }
 }

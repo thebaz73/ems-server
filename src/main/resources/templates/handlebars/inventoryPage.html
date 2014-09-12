@@ -34,10 +34,10 @@
     <div class="panel-footer">
         <div class="row">
             <div class=" col-lg-6 text-center">
-                {{#pagination number totalPages size}}
+                {{#pagination '/inventory/devices' number totalPages size}}
                 <ul class="pagination" style="margin:0">
                     {{#unless startFromFirstPage}}
-                    <li><a href="/inventory/devices" onclick="loadPagedData(this.href, {{previousPage}}, 5, fillInventory);return false;">&laquo;</a></li>
+                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{previousPage}}, 5, fillInventory);return false;">&laquo;</a></li>
                     {{/unless}}
 
                     {{#each pages}}
@@ -45,12 +45,12 @@
                     <li class="active"><a href="#" onclick="return false;">{{page}}</a></li>
                     {{/if}}
                     {{#unless isCurrent}}
-                    <li><a href="/inventory/devices" onclick="loadPagedData(this.href, {{pageIndex}}, 5, fillInventory);return false;">{{page}}</a></li>
+                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{pageIndex}}, 5, fillInventory);return false;">{{page}}</a></li>
                     {{/unless}}
                     {{/each}}
 
                     {{#unless endAtLastPage}}
-                    <li><a href="/inventory/devices" onclick="loadPagedData(this.href, {{nextPage}}, 5, fillInventory);return false;">&raquo;</a></li>
+                    <li><a href="{{uri}}" onclick="loadPagedData(this.href, {{nextPage}}, 5, fillInventory);return false;">&raquo;</a></li>
                     {{/unless}}
                 </ul>
                 {{/pagination}}

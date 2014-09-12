@@ -37,6 +37,29 @@ function fillEventLogs(data) {
     });
 }
 
+/**
+ * Loads device related data
+ *
+ * @param uri base uri
+ * @param template rendering template
+ * @param page page number
+ * @param pageSize page size
+ */
+function loadDevicePagedData(uri, template, page, pageSize) {
+    var request = uri + "?page=" + page + "&pageSize=" + pageSize;
+    var response = $.getJSON(request);
+    response.done(function(data, deviceId) {
+        var json = new Object();
+        json.uri = uri;
+        json.data = data;
+        $.get(template, function (template) {
+            var t = Handlebars.compile(template);
+            $('#log-page').html(t(json));
+            $("[data-toggle='popover']").popover();
+        });
+    });
+}
+
 //
 // Handlebars HELPERS
 //
@@ -84,10 +107,10 @@ Handlebars.registerHelper('dateFormat', function(context, block) {
     }
 });
 
-Handlebars.registerHelper('pagination', function(currentPage, totalPage, size, options) {
+Handlebars.registerHelper('pagination', function(uri, currentPage, totalPage, size, options) {
     var startPage, endPage, context;
 
-    if (arguments.length === 3) {
+    if (arguments.length === 4) {
         options = size;
         size = 5;
     }
@@ -112,6 +135,7 @@ Handlebars.registerHelper('pagination', function(currentPage, totalPage, size, o
     }
 
     context = {
+        uri: uri,
         startFromFirstPage: false,
         previousPage:currentPage-2,
         nextPage:currentPage,
@@ -123,6 +147,7 @@ Handlebars.registerHelper('pagination', function(currentPage, totalPage, size, o
     }
     for (var i = startPage; i <= endPage; i++) {
         context.pages.push({
+            uri: uri,
             page: i,
             pageIndex: i-1,
             isCurrent: i === currentPage
