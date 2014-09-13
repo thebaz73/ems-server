@@ -63,18 +63,42 @@ public class InventoryHelper {
         return instance;
     }
 
+    /**
+     * Reads driver class name
+     *
+     * @param driverType driver type
+     * @return class name
+     */
     public String getDriverClassName(DriverType driverType) {
         return (String) properties.get(format("extension.driver.%s.className", driverType));
     }
 
+    /**
+     * Reads protocol class name
+     *
+     * @param protocolType protocol type
+     * @return class name
+     */
     public String getProtocolClassName(ProtocolType protocolType) {
         return (String) properties.get(format("extension.protocol.%s.className", protocolType));
     }
 
+    /**
+     * Reads driver JSON schema
+     *
+     * @param driverType driver type
+     * @return JSON schema
+     */
     public String getDriverJsonSchema(DriverType driverType) {
         return (String) properties.get(format("extension.driver.%s.json", driverType));
     }
 
+    /**
+     * Reads protocol JSON schema
+     *
+     * @param protocolType protocol type
+     * @return JSON schema
+     */
     public String getProtocolJsonSchema(ProtocolType protocolType) {
         return (String) properties.get(format("extension.protocol.%s.json", protocolType));
     }
@@ -181,6 +205,12 @@ public class InventoryHelper {
         return loadProtocolClass(protocolClassName);
     }
 
+    /**
+     * Retrieve driver configurations list given driver type
+     *
+     * @param driverType driver type
+     * @return driver configuration list
+     */
     public List<DriverConfiguration> getDriverConfigurationList(DriverType driverType) {
         List<DriverConfiguration> driverConfigurations = new ArrayList<DriverConfiguration>();
         String driverClassName = getDriverClassName(driverType);
@@ -283,10 +313,10 @@ public class InventoryHelper {
                     List list = (List) PropertyUtils.getProperty(object, entry.getKey());
                     Size size = field.getAnnotation(Size.class);
                     if(size != null) {
-                        for (int i = 0; i < size.min(); i++) {
+                        for (int i = 0; i < size.max(); i++) {
                             Object e = clazz.newInstance();
                             list.add(e);
-                            fillDriverConfigurationList(driverConfigurations, e, format("%s%s[%s].", parentProperty, entry.getKey(), i));
+                            fillDriverConfigurationList(driverConfigurations, e, format("%s%s.[%s].", parentProperty, entry.getKey(), i));
                         }
                     }
                 }

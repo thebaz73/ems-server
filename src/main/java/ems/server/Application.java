@@ -7,8 +7,11 @@ import ems.protocol.domain.ProtocolType;
 import ems.server.business.UserManager;
 import ems.server.data.*;
 import ems.server.domain.*;
+import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.EventHelper;
 import ems.server.utils.InventoryHelper;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -141,6 +144,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             Device d1 = InventoryHelper.getInstance().createDevice(name, s1, status);
             d1.setAddress("127.0.0.1");
             d1.setPort(1061);
+            BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumAwareConvertUtilsBean());
+            beanUtilsBean.setProperty(d1.getDriver(), "rfInput.[0].port", 0);
             deviceRepository.save(d1);
 
             EventHelper.getInstance().addEvents(d1);

@@ -154,13 +154,18 @@
     var response = $.getJSON(schemaRequest);
     response.done(function(data) {
         $("#driver").append(main(data));
-        console.log(jsMain(data));
+        var pathCursor = [];
+        var paths = [];
+        var selectorCursor = [];
+        var selectors = [];
+        traverse(data, pathCursor, paths, selectorCursor, selectors);
         var request = "/inventory/device/" + deviceId;
         $.get(request, function(device) {
-            //console.log(JSON.stringify(device));
+            console.log(JSON.stringify(device));
             //traverse(device.driver);
             //TODO usa data object to or json to access device and driver
             // Retrieve with $('*[data-path="rfInput"] *[data-path="port"] ')
+            assignValues(device.driver, selectors, paths);
         });
     });
     loadDevicePagedData("/inventory/events/"+deviceId, "/template/deviceLogPage", 0, 5);

@@ -60,28 +60,53 @@ function loadDevicePagedData(uri, template, page, pageSize) {
     });
 }
 
-function traverse(obj) {
-    if(typeof obj !== "undefined") {
-        for (var property in obj) {
-            if(property instanceof Array) {
-                for (var i = 0; i < property.length; i++) {
-                    traverse(property[i]);
+function traverse(obj, pathCursor, paths, selectorCursor, selectors) {
+    if(obj.type === 'object') {
+        var tmpObj = obj.properties;
+        for(var key in tmpObj) {
+            if(key !== 'status' && key !== 'type' && key !== 'location') {
+                if(tmpObj[key].type !== 'object' &&  tmpObj[key].type !== 'array') {
+                    paths.push(pathCursor.join('.') + '.' + key);
+                    selectors.push(selectorCursor.join(' ') + ' ' + '*[data-path="'+key+'"]');
+                }
+                else {
+                    pathCursor.push(key);
+                    selectorCursor.push('*[data-path="'+key+'"]');
+                    traverse(tmpObj[key], pathCursor, paths, selectorCursor, selectors);
+                    pathCursor.pop();
+                    selectorCursor.pop();
                 }
             }
-            else if(typeof property === "string" || typeof property === "boolean" || typeof property === "number") {
-                console.log(property);
-            }
-            else if(Object.prototype.toString(property) === "[object Object]") {
-                console.log(typeof property !== "undefined");
-                traverse(property);
-            }
-            else {
-                console.log(property);
-            }
+        }
+    }
+    else if(obj.type === 'array') {
+        var tmpObj = obj.items;
+        for(var i = 0; i < obj.maxItems;i++) {
+            pathCursor.push(i);
+            //selectorCursor.push("["+i+"]");
+            traverse(tmpObj, pathCursor, paths, selectorCursor, selectors);
+            pathCursor.pop();
+            //selectorCursor.pop();
         }
     }
 }
 
+function getObjectPath(obj, path) {
+    var parts = path.split('.');
+    while (parts.length && (obj = obj[parts.shift()]));
+    return obj;
+}
+
+function assignValues(driver, selectors, paths) {
+    for (var i = 0; i < paths.length; i++) {
+        var path = paths[i];
+        var selector = selectors[i];
+        var value = getObjectPath(driver, path);
+        //console.log(value);
+        //console.log($(selector).html());
+        $(selector).text(value);
+    }
+}
 //
 // Handlebars HELPERS
 //
