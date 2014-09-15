@@ -48,7 +48,7 @@ public class EventHelper {
 
     public void addEvent(Device device, EventType eventType, EventSeverity eventSeverity) {
         String description = "Event of type: \'" + eventType + "\' at: " +
-                format.format(new Date(System.currentTimeMillis())) + " with serverity: \'" +
+                format.format(new Date(System.currentTimeMillis())) + " with severity: \'" +
                 eventSeverity + "\' for device: " + device.getName();
         addEvent(device, eventType, eventSeverity, description);
     }

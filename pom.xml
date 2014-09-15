@@ -91,6 +91,12 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>
+        <!-- #######  SNMP4J   ####### -->
+        <dependency>
+            <groupId>org.snmp4j</groupId>
+            <artifactId>snmp4j</artifactId>
+            <version>2.0.3</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -118,6 +124,11 @@
             <id>spring-releases</id>
             <name>Spring Releases</name>
             <url>http://repo.spring.io/libs-release</url>
+        </repository>
+        <repository>
+            <id>snmp4j-repository</id>
+            <name>Snmp4j Repository</name>
+            <url>https://oosnmp.net/dist/release</url>
         </repository>
     </repositories>
     <pluginRepositories>
