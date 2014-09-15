@@ -6,7 +6,7 @@ import ems.driver.domain.Driver;
  * ScriptingFunction
  * Created by thebaz on 15/09/14.
  */
-public interface ScriptingFunction {
+public interface VariableFunction {
     /**
      * Check if it is in error
      *
@@ -20,13 +20,6 @@ public interface ScriptingFunction {
      * @return true if is in warning
      */
     public boolean isWarn();
-
-    /**
-     * Check if it is ok
-     *
-     * @return true if is ok
-     */
-    public boolean isOk();
 
     /**
      * Convert value

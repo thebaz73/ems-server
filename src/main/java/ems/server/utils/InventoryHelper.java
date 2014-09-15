@@ -39,6 +39,16 @@ import static java.lang.String.format;
  */
 @Component
 public class InventoryHelper {
+    private static final String TEMPLATE_FUNCTION = "var obj = new VariableFunction();\n" +
+            "obj.isError() {\n" +
+            "\treturn false;\n" +
+            "}\n" +
+            "obj.isWarn() {\n" +
+            "\treturn false;" +
+            "}\n" +
+            "obj.convert(value, driver) {\n" +
+            "\treturn value;" +
+            "}";
     private final Log logger = LogFactory.getLog(InventoryHelper.class);
     private static InventoryHelper instance;
 
@@ -295,6 +305,7 @@ public class InventoryHelper {
                 if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(String.class)) {
                     DriverConfiguration driverConfiguration = new DriverConfiguration();
                     driverConfiguration.setName(parentProperty+entry.getKey());
+                    driverConfiguration.setFunction(TEMPLATE_FUNCTION);
                     driverConfigurations.add(driverConfiguration);
                 }
                 else if(propertyType.isArray()) {

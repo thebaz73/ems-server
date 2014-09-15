@@ -6,7 +6,7 @@ import ems.server.domain.Device;
 import ems.server.domain.DriverConfiguration;
 import ems.server.domain.EventSeverity;
 import ems.server.domain.EventType;
-import ems.server.monitor.ScriptingFunction;
+import ems.server.monitor.VariableFunction;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.EventHelper;
 import ems.server.utils.GenericException;
@@ -130,7 +130,8 @@ public abstract class ProtocolEnquirer {
                 scriptEngine.put("driver",device.getDriver());
                 scriptEngine.eval(propertyConfiguration.getFunction());
                 Invocable invocable = (Invocable) scriptEngine;
-                ScriptingFunction function = invocable.getInterface(ScriptingFunction.class);
+                Object obj = scriptEngine.get("obj");
+                VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
                 Status status = (Status) beanUtilsBean.getConvertUtils().convert(beanUtilsBean.getProperty(device.getDriver(), "status"), Status.class);
                 if(!status.equals(Status.ERROR)) {
                     status = function.isError() ? Status.ERROR : function.isWarn() ? Status.WARN : Status.OK;
