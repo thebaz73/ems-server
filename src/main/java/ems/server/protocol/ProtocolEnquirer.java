@@ -127,7 +127,7 @@ public abstract class ProtocolEnquirer {
         //Invoking function
         if(!propertyConfiguration.getFunction().isEmpty() && !propertyConfiguration.getFunction().equals("\n\r")) {
             try {
-                scriptEngine.put("driver",device.getDriver());
+                //scriptEngine.put("driver",device.getDriver());
                 scriptEngine.eval(propertyConfiguration.getFunction());
                 Invocable invocable = (Invocable) scriptEngine;
                 Object obj = scriptEngine.get("obj");
