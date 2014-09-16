@@ -1,6 +1,7 @@
 package ems.server.data;
 
-import ems.server.domain.Event;
+
+import ems.server.domain.TaskConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -9,24 +10,24 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.List;
 
 /**
- * EventRepository
- * Created by thebaz on 31/08/14.
+ * TaskConfigurationRepository
+ * Created by thebaz on 9/16/14.
  */
-public interface EventRepository extends MongoRepository<Event, String>, PagingAndSortingRepository<Event, String> {
+public interface TaskConfigurationRepository extends MongoRepository<TaskConfiguration, String>, PagingAndSortingRepository<TaskConfiguration, String> {
     /**
      * Find a slice of events give device id, page number, size and sort
      *
      * @param deviceId device id
      * @param pageable page number, size and sort
-     * @return events
+     * @return task configuration
      */
-    Page<Event> findByDeviceId(String deviceId, Pageable pageable);
+    Page<TaskConfiguration> findByDeviceId(String deviceId, Pageable pageable);
 
     /**
      * Find a slice of events give device id
      *
      * @param deviceId device id
-     * @return events
+     * @return task configuration
      */
-    List<Event> findByDeviceId(String deviceId);
+    List<TaskConfiguration> findByDeviceId(String deviceId);
 }
