@@ -39,7 +39,7 @@ public class ConfigurationController {
     public String show(Model model) {
         model.addAttribute("process", "create");
         model.addAttribute("emsConfigurationEntry", new EmsConfigurationEntry());
-        return "configuration";
+        return "configurations";
     }
 
     @RequestMapping(value = "/settings/configuration/{id}", method = GET)
@@ -47,7 +47,7 @@ public class ConfigurationController {
         EmsConfigurationEntry entry = configurationManager.findEntry(id);
         model.addAttribute("process", "edit");
         model.addAttribute("emsConfigurationEntry", entry);
-        return "configuration";
+        return "configurations";
     }
 
     @RequestMapping(value = "/settings/configuration", method = POST)
@@ -58,7 +58,7 @@ public class ConfigurationController {
     @RequestMapping(value = "/settings/configuration", method = PUT)
     public String editEntry(@ModelAttribute EmsConfigurationEntry emsConfigurationEntry, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
-            return "configuration";
+            return "configurations";
         }
 
         configurationManager.editEntry(emsConfigurationEntry);

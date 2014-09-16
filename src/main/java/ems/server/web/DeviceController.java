@@ -74,7 +74,6 @@ public class DeviceController {
         return deviceManager.findAllDevices(pageable);
     }
 
-
     @RequestMapping(value = "/devices", method = GET)
     public String show(Model model, HttpSession session) {
         process = "create";
