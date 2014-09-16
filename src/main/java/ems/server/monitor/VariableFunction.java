@@ -28,5 +28,5 @@ public interface VariableFunction {
      * @param driver driver
      * @return converted value
      */
-    public Object convert(Object value, Driver driver);
+    public <T> T convert(T value, Driver driver);
 }

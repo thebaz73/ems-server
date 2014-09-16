@@ -67,7 +67,7 @@ public class VariableFunctionTest {
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
         Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
         assertEquals(Status.OK, status);
-        Object value = function.convert("value", null);
+        String value = function.convert("value", null);
         assertEquals("value", value);
     }
 
@@ -80,8 +80,8 @@ public class VariableFunctionTest {
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
         Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
         assertEquals(Status.ERROR, status);
-        Object value = function.convert(1, null);
-        assertEquals(1.0, value);
+        Number value = function.convert((Number)1, null);
+        assertEquals(1, value.intValue());
     }
 
     @org.junit.Test
@@ -93,8 +93,8 @@ public class VariableFunctionTest {
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
         Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
         assertEquals(Status.WARN, status);
-        Object value = function.convert(1.1, null);
-        assertEquals(1.1, value);
+        Number value = function.convert((Number)1.1, null);
+        assertEquals(1.1, value.doubleValue(), 0.0);
     }
 
     @org.junit.Test
@@ -108,8 +108,8 @@ public class VariableFunctionTest {
         assertEquals(Status.OK, status);
         SampleDriver d = new SampleDriver();
         d.setProperty(1);
-        Object value = function.convert(1, d);
-        assertEquals(2.0, value);
+        Number value = function.convert((Number)1.0, d);
+        assertEquals(2.0, value.doubleValue(), 0.0);
     }
 
     private class SampleDriver implements Driver {
