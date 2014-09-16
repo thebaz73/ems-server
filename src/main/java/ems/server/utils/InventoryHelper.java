@@ -39,15 +39,15 @@ import static java.lang.String.format;
  */
 @Component
 public class InventoryHelper {
-    private static final String TEMPLATE_FUNCTION = "var obj = new VariableFunction();\n" +
-            "obj.isError() {\n" +
+    private static final String TEMPLATE_FUNCTION = "var obj = new Object();\n" +
+            "obj.isError = function(value) {\n" +
             "\treturn false;\n" +
             "}\n" +
-            "obj.isWarn() {\n" +
-            "\treturn false;" +
+            "obj.isWarn = function(value) {\n" +
+            "\treturn false;\n" +
             "}\n" +
-            "obj.convert(value, driver) {\n" +
-            "\treturn value;" +
+            "obj.convert = function(value, driver) {\n" +
+            "\treturn value;\n" +
             "}";
     private final Log logger = LogFactory.getLog(InventoryHelper.class);
     private static InventoryHelper instance;

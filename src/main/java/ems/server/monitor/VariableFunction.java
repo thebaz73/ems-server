@@ -12,14 +12,14 @@ public interface VariableFunction {
      *
      * @return true if is in error
      */
-    public boolean isError();
+    public boolean isError(Object value);
 
     /**
      * Check if it is in warning
      *
      * @return true if is in warning
      */
-    public boolean isWarn();
+    public boolean isWarn(Object value);
 
     /**
      * Convert value

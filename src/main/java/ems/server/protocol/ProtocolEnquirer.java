@@ -127,15 +127,11 @@ public abstract class ProtocolEnquirer {
         //Invoking function
         if(!propertyConfiguration.getFunction().isEmpty() && !propertyConfiguration.getFunction().equals("\n\r")) {
             try {
-                //scriptEngine.put("driver",device.getDriver());
                 scriptEngine.eval(propertyConfiguration.getFunction());
                 Invocable invocable = (Invocable) scriptEngine;
                 Object obj = scriptEngine.get("obj");
                 VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-                Status status = (Status) beanUtilsBean.getConvertUtils().convert(beanUtilsBean.getProperty(device.getDriver(), "status"), Status.class);
-                if(!status.equals(Status.ERROR)) {
-                    status = function.isError() ? Status.ERROR : function.isWarn() ? Status.WARN : Status.OK;
-                }
+                Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
                 beanUtilsBean.setProperty(device.getDriver(), "status", status);
                 value = function.convert(value, device.getDriver());
             } catch (ScriptException e) {
