@@ -18,12 +18,12 @@
                     <li class="dropdown-header">Manage devices</li>
                     <li><a th:href="@{/specifications}" href="#">Specifications</a></li>
                     <li><a th:href="@{/devices}" href="#">Devices</a></li>
-                    <li><a th:href="@{/protocols}" href="#">Protocols</a></li>
+                    <!--<li><a th:href="@{/protocols}" href="#">Protocols</a></li>-->
                     <li class="dropdown-header">Control devices</li>
-                    <li><a th:href="@{/history}" href="#">Show data logs</a></li>
-                    <li><a th:href="@{/monitor}" href="#">Configure monitoring</a></li>
-                    <!--<li><a th:href="@{/devices/monitor/start}" href="#">Start</a></li>
-                    <li><a th:href="@{/devices/monitor/stop}" href="#">Stop</a></li>-->
+                    <!--<li><a th:href="@{/history}" href="#">Show data logs</a></li>-->
+                    <li><a th:href="@{/tasks}" href="#">Configure monitoring</a></li>
+                    <li><a th:href="@{/monitor/start}" href="#">Start monitoring</a></li>
+                    <li><a th:href="@{/monitor/stop}" href="#">Stop monitoring</a></li>
                 </ul>
             </li>
             <li sec:authorize="isAuthenticated()" th:class="${#httpServletRequest.requestURI.startsWith('/settings')} ? 'active dropdown' : 'dropdown'">

@@ -61,6 +61,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
     EmsConfigurationRepository configurationRepository;
     @Autowired
     DriverConfigurationRepository driverConfigurationRepository;
+    @Autowired
+    TaskConfigurationRepository taskConfigurationRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -124,6 +126,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
         deviceRepository.deleteAll();
         driverConfigurationRepository.deleteAll();
         specificationRepository.deleteAll();
+        taskConfigurationRepository.deleteAll();
 
         if (specificationRepository.count() == 0) {
             Specification s1 = new Specification();
@@ -147,6 +150,14 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumAwareConvertUtilsBean());
             beanUtilsBean.setProperty(d1.getDriver(), "rfInput.[0].port", 0);
             deviceRepository.save(d1);
+
+            TaskConfiguration taskConfiguration = new TaskConfiguration();
+            taskConfiguration.setDeviceId(d1.getId());
+            taskConfiguration.setVariable("rfInput.[0].port");
+            taskConfiguration.setFrequency(1000);
+            taskConfiguration.setDelay(1000);
+            taskConfiguration.setRecurrent(true);
+            taskConfigurationRepository.save(taskConfiguration);
 
             EventHelper.getInstance().addEvents(d1);
 

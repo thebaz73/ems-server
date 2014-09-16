@@ -49,6 +49,10 @@ public class TaskConfigurationManager {
         return  taskConfigurationRepository.findByDeviceId(device.getId());
     }
 
+    public Page<TaskConfiguration> findTaskConfigurationByDevice(Device device, Pageable pageable) {
+        return  taskConfigurationRepository.findByDeviceId(device.getId(), pageable);
+    }
+
     public Page<TaskConfiguration> findAllTaskConfigurations(Pageable pageable) {
         return taskConfigurationRepository.findAll(pageable);
     }
