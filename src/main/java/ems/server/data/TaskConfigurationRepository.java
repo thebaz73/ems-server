@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface TaskConfigurationRepository extends MongoRepository<TaskConfiguration, String>, PagingAndSortingRepository<TaskConfiguration, String> {
     /**
-     * Find a slice of events give device id, page number, size and sort
+     * Find a slice of task configuration given device id, page number, size and sort
      *
      * @param deviceId device id
      * @param pageable page number, size and sort
@@ -24,10 +24,18 @@ public interface TaskConfigurationRepository extends MongoRepository<TaskConfigu
     Page<TaskConfiguration> findByDeviceId(String deviceId, Pageable pageable);
 
     /**
-     * Find a slice of events give device id
+     * Find task configuration given device id
      *
      * @param deviceId device id
      * @return task configuration
      */
     List<TaskConfiguration> findByDeviceId(String deviceId);
+
+    /**
+     * Delete task configuration given device id
+     *
+     * @param deviceId device id
+     * @return task configuration
+     */
+    List<TaskConfiguration> deleteByDeviceId(String deviceId);
 }

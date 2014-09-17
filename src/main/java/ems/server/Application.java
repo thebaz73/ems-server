@@ -10,6 +10,7 @@ import ems.server.domain.*;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.EventHelper;
 import ems.server.utils.InventoryHelper;
+import ems.server.utils.TaskConfigurationHelper;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Application
@@ -151,16 +153,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             beanUtilsBean.setProperty(d1.getDriver(), "rfInput.[0].port", 0);
             deviceRepository.save(d1);
 
-            List<String> driverPropertyNames = InventoryHelper.getInstance().getDriverPropertyNames(d1.getSpecification().getDriverType());
-            for (String driverPropertyName : driverPropertyNames) {
-                TaskConfiguration taskConfiguration = new TaskConfiguration();
-                taskConfiguration.setDeviceId(d1.getId());
-                taskConfiguration.setVariable(driverPropertyName);
-                taskConfiguration.setFrequency(1);
-                taskConfiguration.setDelay(1);
-                taskConfiguration.setRecurrent(true);
-                taskConfigurationRepository.save(taskConfiguration);
-            }
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(d1);
 
             EventHelper.getInstance().addEvents(d1);
 
@@ -168,6 +161,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d2.setAddress("127.0.0.1");
             d2.setPort(1062);
             deviceRepository.save(d2);
+
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(d2);
 
             EventHelper.getInstance().addEvents(d2);
 
@@ -192,6 +187,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d3.setPort(1063);
             deviceRepository.save(d3);
 
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(d3);
+
             EventHelper.getInstance().addEvents(d3);
 
             Location l2 = new Location();
@@ -201,6 +198,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             d4.setAddress("127.0.0.1");
             d4.setPort(1064);
             deviceRepository.save(d4);
+
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(d4);
 
             EventHelper.getInstance().addEvents(d4);
         }

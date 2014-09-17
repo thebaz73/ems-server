@@ -13,6 +13,7 @@ import ems.server.domain.Device;
 import ems.server.domain.Specification;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.InventoryHelper;
+import ems.server.utils.TaskConfigurationHelper;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -159,6 +160,8 @@ public class DeviceController {
 
             deviceManager.createDevice(currentDevice);
             model.clear();
+            TaskConfigurationHelper.getInstance().removeTaskConfigurations(currentDevice);
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(currentDevice);
             return "redirect:/devices";
         }
     }
@@ -229,6 +232,8 @@ public class DeviceController {
 
             deviceManager.editDevice(currentDevice);
             model.clear();
+            TaskConfigurationHelper.getInstance().removeTaskConfigurations(currentDevice);
+            TaskConfigurationHelper.getInstance().addTaskConfigurations(currentDevice);
             return "redirect:/devices";
         }
     }

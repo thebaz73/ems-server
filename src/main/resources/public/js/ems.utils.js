@@ -7,6 +7,19 @@
  */
 var map;
 
+function doOperation(uri, elementId, operation) {
+    $.getJSON(uri, function(data) {
+        if(data.result) {
+            $(elementId + ' .modal-body').html(operation + ' succeeded.');
+            $(elementId).modal();
+        }
+        else {
+            $(elementId + ' .modal-body').html(operation + ' failed.');
+            $(elementId).modal();
+        }
+    });
+}
+
 function loadPagedData(uri, page, pageSize, callback) {
     var request = uri + "?page=" + page + "&pageSize=" + pageSize;
     var response = $.getJSON(request);

@@ -28,17 +28,15 @@ public class TaskConfigurationManager {
         return taskConfigurationRepository.findAll();
     }
 
+    public Page<TaskConfiguration> findAllTaskConfigurations(Pageable pageable) {
+        return taskConfigurationRepository.findAll(pageable);
+    }
+
     public void createTaskConfiguration(TaskConfiguration taskConfiguration) {
         if(taskConfiguration.getId() != null) {
             taskConfiguration.setId(null);
         }
         taskConfigurationRepository.save(taskConfiguration);
-    }
-
-    public void editTaskConfiguration(TaskConfiguration taskConfiguration) {
-        if(taskConfiguration.getId() != null && taskConfigurationRepository.findOne(taskConfiguration.getId()) != null ) {
-            taskConfigurationRepository.save(taskConfiguration);
-        }
     }
 
     public void deleteTaskConfiguration(String id) {
@@ -53,7 +51,7 @@ public class TaskConfigurationManager {
         return  taskConfigurationRepository.findByDeviceId(device.getId(), pageable);
     }
 
-    public Page<TaskConfiguration> findAllTaskConfigurations(Pageable pageable) {
-        return taskConfigurationRepository.findAll(pageable);
+    public void deleteTaskConfigurationByDevice(Device device) {
+        taskConfigurationRepository.deleteByDeviceId(device.getId());
     }
 }
