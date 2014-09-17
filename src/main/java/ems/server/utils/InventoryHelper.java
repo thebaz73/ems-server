@@ -244,6 +244,29 @@ public class InventoryHelper {
         return driverConfigurations;
     }
 
+    public List<String> getDriverPropertyNames(DriverType driverType) {
+        List<String> propertyNames = new ArrayList<String>();
+        String driverClassName = getDriverClassName(driverType);
+        try {
+            Driver driver = loadDriverClass(getDriverClassName(driverType));
+            fillPropertyNameList(propertyNames, driver, "");
+        } catch (ClassNotFoundException e) {
+            logger.error(format("Cannot load driver configuration list: %s class not found", driverClassName), e);
+        } catch (InstantiationException e) {
+            logger.error(format("Cannot load driver configuration list: %s cannot instantiate", driverClassName), e);
+        } catch (IllegalAccessException e) {
+            logger.error(format("Cannot load driver configuration list: %s illegal method access", driverClassName), e);
+        } catch (InvocationTargetException e) {
+            logger.error(format("Cannot use driver configuration list: %s invocation target", driverClassName), e);
+        } catch (NoSuchMethodException e) {
+            logger.error(format("Cannot load driver configuration list: %s no such method", driverClassName), e);
+        } catch (NoSuchFieldException e) {
+            logger.error(format("Cannot load driver configuration list: %s no such field", driverClassName), e);
+        }
+
+        return propertyNames;
+    }
+
     private void allocate(Object object) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
         Map<String,String> properties = BeanUtils.describe(object);
         for (Map.Entry<String, String> entry : properties.entrySet()) {
@@ -254,22 +277,23 @@ public class InventoryHelper {
                 Class<?> propertyType = PropertyUtils.getPropertyType(object, entry.getKey());
 
                 if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(String.class)) {
-                    //skip
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    continue;
+                    //skip no operation
+                    //logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                 }
                 else if(propertyType.isArray()) {
                     //skip
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    logger.warn(format("Skipping Array Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                 }
                 else if(propertyType.isAssignableFrom(Map.class)) {
                     //skip
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    logger.warn(format("Skipping Map Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                 }
                 else if(propertyType.isAssignableFrom(List.class)) {
                     Field field = object.getClass().getDeclaredField(entry.getKey());
                     ParameterizedType pt = (ParameterizedType) field.getGenericType();
                     Class clazz = (Class) pt.getActualTypeArguments()[0];
-                    logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
+                    //logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
                     List list = (List) PropertyUtils.getProperty(object, entry.getKey());
                     Size size = field.getAnnotation(Size.class);
                     if(size != null) {
@@ -282,13 +306,60 @@ public class InventoryHelper {
                 }
                 else {
                     //manage object
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    //logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                     Object o = PropertyUtils.getProperty(object, entry.getKey());
                     if(o == null) {
                         o = propertyType.newInstance();
                         BeanUtils.setProperty(object, entry.getKey(), o);
                     }
                     allocate(o);
+                }
+            }
+        }
+    }
+
+    private void fillPropertyNameList(List<String> propertyNames, Object object, String parentProperty) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException, InstantiationException {
+        Map<String,String> properties = BeanUtils.describe(object);
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            if(!entry.getKey().equalsIgnoreCase("status") &&
+                    !entry.getKey().equalsIgnoreCase("type") &&
+                    !entry.getKey().equalsIgnoreCase("location") &&
+                    !entry.getKey().equalsIgnoreCase("class")) {
+                Class<?> propertyType = PropertyUtils.getPropertyType(object, entry.getKey());
+                if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(String.class)) {
+                    propertyNames.add(parentProperty+entry.getKey());
+                }
+                else if(propertyType.isArray()) {
+                    //skip
+                    logger.warn(format("Skipping Array Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                }
+                else if(propertyType.isAssignableFrom(Map.class)) {
+                    //skip
+                    logger.warn(format("Skipping Map Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                }
+                else if(propertyType.isAssignableFrom(List.class)) {
+                    Field field = object.getClass().getDeclaredField(entry.getKey());
+                    ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                    Class clazz = (Class) pt.getActualTypeArguments()[0];
+                    //logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
+                    List list = (List) PropertyUtils.getProperty(object, entry.getKey());
+                    Size size = field.getAnnotation(Size.class);
+                    if(size != null) {
+                        for (int i = 0; i < size.max(); i++) {
+                            Object e = clazz.newInstance();
+                            list.add(e);
+                            fillPropertyNameList(propertyNames, e, format("%s%s.[%s].", parentProperty, entry.getKey(), i));
+                        }
+                    }
+                }
+                else {
+                    //manage object
+                    //logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    Object o = PropertyUtils.getProperty(object, entry.getKey());
+                    if(o == null) {
+                        o = propertyType.newInstance();
+                    }
+                    fillPropertyNameList(propertyNames, o, format("%s%s.", parentProperty, entry.getKey()));
                 }
             }
         }
@@ -310,17 +381,17 @@ public class InventoryHelper {
                 }
                 else if(propertyType.isArray()) {
                     //skip
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    logger.warn(format("Skipping Array Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                 }
                 else if(propertyType.isAssignableFrom(Map.class)) {
                     //skip
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    logger.warn(format("Map Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                 }
                 else if(propertyType.isAssignableFrom(List.class)) {
                     Field field = object.getClass().getDeclaredField(entry.getKey());
                     ParameterizedType pt = (ParameterizedType) field.getGenericType();
                     Class clazz = (Class) pt.getActualTypeArguments()[0];
-                    logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
+                    //logger.debug(format("Entry %s property type: %s and generics: %s", entry.getKey(), propertyType.getSimpleName(), clazz.getSimpleName()));
                     List list = (List) PropertyUtils.getProperty(object, entry.getKey());
                     Size size = field.getAnnotation(Size.class);
                     if(size != null) {
@@ -333,7 +404,7 @@ public class InventoryHelper {
                 }
                 else {
                     //manage object
-                    logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
+                    //logger.debug(format("Entry %s property type: %s", entry.getKey(), propertyType.getSimpleName()));
                     Object o = PropertyUtils.getProperty(object, entry.getKey());
                     if(o == null) {
                         o = propertyType.newInstance();

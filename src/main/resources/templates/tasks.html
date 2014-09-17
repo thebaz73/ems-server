@@ -6,22 +6,27 @@
 <header th:include="navbar" class="navbar navbar-inverse navbar-static-top" role="navigation"/>
 
 <section class="container">
-    <form class="form-inline" role="form" th:action="@{/tasks/}" action="#" method="GET">
-        <div class="form-group">
-            <select name="id" class="form-control input-sm">
-                <option th:each="var : ${allDevices}" th:value="${var.id}" th:text="${var.name}">Device</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-default btn-sm" value="delete"><span class="glyphicon glyphicon-ok"></span> <span th:text="#{task.select.device}">Select</span></button>
-    </form>    
-</section>
-<section class="container" th:unless="${#lists.isEmpty(allEntries)}">
     <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">
-            <h3 class="panel-title" th:text="#{title.task.list}">List of</h3>
+            <div class="row">
+                <h3 class="panel-title col-lg-2" style="height: 30px; padding-top:7px" th:text="#{title.task.list}">List of</h3>
+                <div class="col-lg-4">
+                    <form class="form-inline" role="form" th:action="@{/tasks/}" action="#" method="GET">
+                        <div class="form-group">
+                            <select name="deviceId" class="form-control input-sm">
+                                <option th:each="var : ${allDevices}"
+                                        th:value="${var.id}"
+                                        th:text="${var.name}"
+                                        th:selected="${(currentDevice != null) and (currentDevice.id == var.id)}">Device</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-default btn-sm" value="delete"><span class="glyphicon glyphicon-ok"></span> <span th:text="#{task.select.device}">Select</span></button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive" th:if="${allEntries.getTotalElements() != 0}">
             <table class="table table-condensed table-hover">
                 <thead>
                 <tr>
@@ -40,22 +45,42 @@
                     <td th:text="${aTask.recurrent? 'true' : 'false'}">Recurrent</td>
                     <td><form class="form-inline" role="form" th:action="@{/tasks/} + ${aTask.id}" action="#" method="POST">
                         <input type="hidden" name="_method" value="DELETE"/>
-                        <button type="submit" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-trash"></span> <span th:text="#{user.delete}">Delete</span></button>
+                        <button type="submit" class="btn btn-danger btn-xs" value="delete"><span class="glyphicon glyphicon-trash"></span> <span th:text="#{task.delete}">Delete</span></button>
                     </form></td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <div class="panel-footer text-center" th:if="${allEntries.getTotalPages() > 1}">
+            <ul class="pagination" style="margin:0">
+                <li th:class="${allEntries.number eq 0} ? 'disabled' : ''">
+                    <a th:if="${not allEntries.first}" th:href="@{${'tasks'}(page=${allEntries.number-1},pageSize=${allEntries.size})}">&laquo;</a>
+                </li>
+
+                <li th:each="pageNo : ${#numbers.sequence(0, allEntries.totalPages - 1)}" th:class="${allEntries.number eq pageNo}? 'active' : ''">
+                    <a th:if="${allEntries.number  eq pageNo}" href="javascript:void(0);" th:text="${pageNo + 1}">
+                        1
+                    </a>
+                    <a th:if="${not (allEntries.number  eq pageNo)}" th:href="@{${'tasks'}(page=${pageNo},pageSize=${allEntries.size})}" th:text="${pageNo + 1}">
+                        1
+                    </a>
+
+                </li>
+                <li th:class="${allEntries.number + 1 ge allEntries.totalPages} ? 'disabled' : ''">
+                    <a th:if="${not allEntries.last}" th:href="@{${'tasks'}(page=${allEntries.number+1},pageSize=${allEntries.size})}">&raquo;</a>
+                </li>
+            </ul>
+
+        </div>
     </div>
 </section>
 <section class="container">
-    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{tasks}" th:object="${task}" action="#" method="POST">
-        <input type="hidden" name="_method" value="PUT"/>
+    <form class="form-horizontal col-md-8 col-md-offset-2" role="form" th:action="@{/tasks}" th:object="${task}" action="#" method="POST">
         <div class="form-group">
             <legend style="text-align:center;" th:text="#{task.data}">Task Data</legend>
         </div>
 
-        <input type="hidden" id="id" th:field="*{id}"/>
+        <input type="hidden" id="deviceId" th:field="*{deviceId}"/>
         <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <ul>
@@ -65,7 +90,11 @@
         <div class="form-group">
             <label for="variable" class="col-sm-2 control-label" th:text="#{task.variable}">Variable</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="variable" th:field="*{variable}" th:errorclass="has-error"/>
+                <select type="text" class="form-control" id="variable" name="variable" th:errorclass="has-error" required="required">
+                    <option th:each="propertyName : ${driverPropertyNames}"
+                            th:value="${propertyName}"
+                            th:text="${propertyName}">Property name</option>
+                </select>
             </div>
         </div>
         <div class="form-group">
@@ -84,7 +113,7 @@
             <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" class="form-control" id="recurrent" th:field="*{recurrent}" th:errorclass="has-error"/>
+                        <input type="checkbox" id="recurrent" th:field="*{recurrent}" th:errorclass="has-error"/>
                         <span th:text="#{task.recurrent}">Recurrent</span>
                     </label>
                 </div>
@@ -92,7 +121,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-12 text-right">
-                <button type="submit" class="btn btn-primary" value="put" th:text="#{task.create}">Create Task</button>
+                <button type="submit" class="btn btn-primary" th:text="#{task.create}">Create Task</button>
                 <button type="reset" class="btn btn-danger">Cancel</button>
             </div>
         </div>

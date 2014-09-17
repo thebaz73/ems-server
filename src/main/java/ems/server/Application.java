@@ -151,13 +151,16 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             beanUtilsBean.setProperty(d1.getDriver(), "rfInput.[0].port", 0);
             deviceRepository.save(d1);
 
-            TaskConfiguration taskConfiguration = new TaskConfiguration();
-            taskConfiguration.setDeviceId(d1.getId());
-            taskConfiguration.setVariable("rfInput.[0].port");
-            taskConfiguration.setFrequency(1000);
-            taskConfiguration.setDelay(1000);
-            taskConfiguration.setRecurrent(true);
-            taskConfigurationRepository.save(taskConfiguration);
+            List<String> driverPropertyNames = InventoryHelper.getInstance().getDriverPropertyNames(d1.getSpecification().getDriverType());
+            for (String driverPropertyName : driverPropertyNames) {
+                TaskConfiguration taskConfiguration = new TaskConfiguration();
+                taskConfiguration.setDeviceId(d1.getId());
+                taskConfiguration.setVariable(driverPropertyName);
+                taskConfiguration.setFrequency(1);
+                taskConfiguration.setDelay(1);
+                taskConfiguration.setRecurrent(true);
+                taskConfigurationRepository.save(taskConfiguration);
+            }
 
             EventHelper.getInstance().addEvents(d1);
 

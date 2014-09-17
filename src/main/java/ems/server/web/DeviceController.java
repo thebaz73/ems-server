@@ -244,7 +244,7 @@ public class DeviceController {
     }
 
     private String logAndReturn(HttpSession session, BindingResult bindingResult, ModelMap model, Exception e, String message) {
-        if(e == null || message == null) {
+        if(e != null && message != null) {
             logger.error(message, e);
             bindingResult.reject(message);
         }
