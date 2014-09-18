@@ -103,7 +103,6 @@ public class SnmpEnquirer extends ProtocolEnquirer {
                 notifyResponse(response, propertyConfiguration.getName());
             }
         } catch (Exception e) {
-            EventHelper.getInstance().addEvent(device, EventType.EVENT_CONFIGURATION, EventSeverity.EVENT_FATAL);
             throw new GenericException(e);
         }
     }

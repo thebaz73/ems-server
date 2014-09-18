@@ -9,7 +9,7 @@ import ems.server.utils.GenericException;
  * ModBusProtocolEnquirer
  * Created by thebaz on 9/15/14.
  */
-public class ModBusProtocolEnquirer extends ProtocolEnquirer {
+public class ModBusEnquirer extends ProtocolEnquirer {
     /**
      * Executed after load to execute custom configurations
      */

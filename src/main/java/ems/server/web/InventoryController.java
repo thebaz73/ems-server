@@ -57,16 +57,14 @@ public class InventoryController {
     @RequestMapping(value = "/monitor/start", method = GET)
     public Map<String, Object> startMonitoring() {
         Map<String, Object> response = new HashMap<String, Object>();
-        monitorService.startMonitoring();
-        response.put("result", true);
+        response.put("result", monitorService.startMonitoring());
         return response;
     }
 
     @RequestMapping(value = "/monitor/stop", method = GET)
     public Map<String, Object> stopMonitoring() {
         Map<String, Object> response = new HashMap<String, Object>();
-        monitorService.stopMonitoring();
-        response.put("result", true);
+        response.put("result", monitorService.stopMonitoring());
         return response;
     }
 }
