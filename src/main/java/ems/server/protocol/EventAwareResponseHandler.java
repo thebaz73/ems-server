@@ -16,13 +16,12 @@ import java.util.TimeZone;
  * Created by thebaz on 9/15/14.
  */
 public class EventAwareResponseHandler implements ResponseHandler {
-    private final TimeZone tz = TimeZone.getTimeZone("UTC");
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     private final Device device;
 
     public EventAwareResponseHandler(Device device) {
         this.device = device;
-        format.setTimeZone(tz);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @Override

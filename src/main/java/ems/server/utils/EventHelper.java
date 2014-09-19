@@ -5,8 +5,6 @@ import ems.server.domain.Device;
 import ems.server.domain.Event;
 import ems.server.domain.EventSeverity;
 import ems.server.domain.EventType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +19,6 @@ import java.util.TimeZone;
  */
 @Component
 public class EventHelper {
-    private final Log logger = LogFactory.getLog(EventHelper.class);
-    private final TimeZone tz = TimeZone.getTimeZone("UTC");
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     private static EventHelper instance;
 
@@ -31,7 +27,7 @@ public class EventHelper {
 
     private EventHelper() {
         instance = this;
-        format.setTimeZone(tz);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     public static EventHelper getInstance() {

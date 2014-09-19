@@ -135,8 +135,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             s1.setName("AcmeProbe");
             s1.setDriverType(DriverType.fromValue("probe"));
             s1.setDriver("schema/probe.json");
-            s1.setProtocolType(ProtocolType.fromValue("snmp"));
-            s1.setProtocol("schema/snmp.json");
+            s1.setProtocolType(ProtocolType.fromValue("demo"));
+            s1.setProtocol("schema/demo.json");
             specificationRepository.save(s1);
             List<DriverConfiguration> dcl1 = InventoryHelper.getInstance().getDriverConfigurationList(s1.getDriverType());
             for (DriverConfiguration configuration : dcl1) {
@@ -170,8 +170,8 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
             s2.setName("AcmeModulator");
             s2.setDriverType(DriverType.fromValue("modulator"));
             s2.setDriver("schema/modulator.json");
-            s2.setProtocolType(ProtocolType.fromValue("snmp"));
-            s2.setProtocol("schema/snmp.json");
+            s2.setProtocolType(ProtocolType.fromValue("demo"));
+            s2.setProtocol("schema/demo.json");
             specificationRepository.save(s2);
             List<DriverConfiguration> dcl2 = InventoryHelper.getInstance().getDriverConfigurationList(s2.getDriverType());
             for (DriverConfiguration configuration : dcl2) {

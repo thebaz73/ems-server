@@ -1,7 +1,7 @@
 package ems.server.monitor;
 
 import ems.server.domain.*;
-import ems.server.protocol.DefaultEnquirer;
+import ems.server.protocol.DemoEnquirer;
 import ems.server.protocol.EventAwareResponseHandler;
 import ems.server.protocol.LoggingResponseHandler;
 import ems.server.protocol.ProtocolEnquirer;
@@ -106,7 +106,7 @@ public class MonitoringTask {
                 enquirer = new ModBusEnquirer();
                 break;
             default:
-                enquirer = new DefaultEnquirer();
+                enquirer = new DemoEnquirer();
         }
         enquirer.loadConfiguration(device, (Integer)retries.getValue(), (Integer)timeout.getValue());
         enquirer.addResponseHandler(new LoggingResponseHandler(device));
