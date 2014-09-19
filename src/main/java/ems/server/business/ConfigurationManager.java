@@ -30,8 +30,12 @@ public class ConfigurationManager {
         return configurationRepository.findAll();
     }
 
-    public List<EmsConfigurationEntry> findEntryByKey(String key) {
-        return configurationRepository.findByKey(key);
+    public EmsConfigurationEntry findEntryByKey(String key) {
+        List<EmsConfigurationEntry> configurationEntries = configurationRepository.findByKey(key);
+        if(!configurationEntries.isEmpty()) {
+            return configurationEntries.get(0);
+        }
+        return null;
     }
 
     public void editEntry(EmsConfigurationEntry entry) {

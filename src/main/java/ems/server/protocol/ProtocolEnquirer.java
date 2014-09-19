@@ -28,7 +28,6 @@ import java.util.*;
  * Created by thebaz on 9/15/14.
  */
 public abstract class ProtocolEnquirer {
-    private final TimeZone tz = TimeZone.getTimeZone("UTC");
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -42,7 +41,7 @@ public abstract class ProtocolEnquirer {
     protected final ScriptEngine scriptEngine;
 
     public ProtocolEnquirer() {
-        format.setTimeZone(tz);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
     }
 
@@ -74,15 +73,15 @@ public abstract class ProtocolEnquirer {
      * @throws ems.server.utils.GenericException if configuration fatal error
      */
     public abstract void readValue(DriverConfiguration propertyConfiguration) throws GenericException;
-
-    /**
-     * Return response handlers
-     *
-     * @return response handlers
-     */
-    public List<ResponseHandler> getResponseHandlers() {
-        return responseHandlers;
-    }
+//
+//    /**
+//     * Return response handlers
+//     *
+//     * @return response handlers
+//     */
+//    public List<ResponseHandler> getResponseHandlers() {
+//        return responseHandlers;
+//    }
 
     /**
      * Adds a @ResponseHandler response handler
@@ -94,25 +93,25 @@ public abstract class ProtocolEnquirer {
             responseHandlers.add(responseHandler);
         }
     }
-
-    /**
-     * Remove a@ResponseHandler response handler
-     *
-     * @param responseHandler a response handler
-     */
-    public void removeResponseHandler(ResponseHandler responseHandler) {
-        synchronized (responseHandlers) {
-            responseHandlers.remove(responseHandler);
-        }
-    }
-
-    /**
-     * Returns session id
-     * @return session id
-     */
-    public String getSessionId() {
-        return sessionId;
-    }
+//
+//    /**
+//     * Remove a@ResponseHandler response handler
+//     *
+//     * @param responseHandler a response handler
+//     */
+//    public void removeResponseHandler(ResponseHandler responseHandler) {
+//        synchronized (responseHandlers) {
+//            responseHandlers.remove(responseHandler);
+//        }
+//    }
+//
+//    /**
+//     * Returns session id
+//     * @return session id
+//     */
+//    public String getSessionId() {
+//        return sessionId;
+//    }
 
     /**
      * Sets read value to the @Driver object of the device if a valid JavaScript function is provided
@@ -132,7 +131,13 @@ public abstract class ProtocolEnquirer {
                 Object obj = scriptEngine.get("obj");
                 VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
                 Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
-                beanUtilsBean.setProperty(device.getDriver(), "status", status);
+
+                try {
+                    beanUtilsBean.setProperty(device.getDriver(), "status", status);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+
                 value = function.convert(value, device.getDriver());
             } catch (ScriptException e) {
                 EventType eventType = EventType.EVENT_CONFIGURATION;

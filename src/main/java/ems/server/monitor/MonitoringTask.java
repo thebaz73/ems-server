@@ -29,6 +29,7 @@ public class MonitoringTask {
     private List<DriverConfiguration> driverConfigurations;
     private EmsConfigurationEntry retries;
     private EmsConfigurationEntry timeout;
+    private Runnable saveTask;
 
     public void setDevice(Device device) {
         this.device = device;
@@ -42,6 +43,10 @@ public class MonitoringTask {
         this.driverConfigurations = driverConfigurations;
     }
 
+    public void setSaveTask(Runnable saveTask) {
+        this.saveTask = saveTask;
+    }
+
     public void setRetries(EmsConfigurationEntry retries) {
         this.retries = retries;
     }
@@ -51,7 +56,7 @@ public class MonitoringTask {
     }
 
     public void start() throws GenericException {
-        assert device != null && taskConfigurations != null && driverConfigurations != null;
+        assert device != null && saveTask != null && taskConfigurations != null && driverConfigurations != null;
         executor = Executors.newScheduledThreadPool(taskConfigurations.size());
         ProtocolEnquirer enquirer = createProtocolEnquirer();
         for (TaskConfiguration taskConfiguration : taskConfigurations) {
@@ -69,6 +74,7 @@ public class MonitoringTask {
             }
             futures.add(scheduledFuture);
         }
+        futures.add(executor.scheduleWithFixedDelay(saveTask, 1, 1, TimeUnit.SECONDS));
     }
 
     private DriverConfiguration findConfiguration(String variable) {

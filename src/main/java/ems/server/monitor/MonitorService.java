@@ -35,15 +35,21 @@ public class MonitorService {
     public boolean startMonitoring() {
         try {
             List<Device> devices = deviceManager.findAllDevices();
-            for (Device device : devices) {
+            for (final Device device : devices) {
                 List<TaskConfiguration> taskConfigurations = taskConfigurationManager.findTaskConfigurationByDevice(device);
                 List<DriverConfiguration> driverConfigurations = driverConfigurationManager.findDriverConfigurationBySpecificationId(device.getSpecification().getId());
                 MonitoringTask monitoringTask = new MonitoringTask();
                 monitoringTask.setDevice(device);
                 monitoringTask.setTaskConfigurations(taskConfigurations);
                 monitoringTask.setDriverConfigurations(driverConfigurations);
-                monitoringTask.setRetries(configurationManager.findEntry("retries"));
-                monitoringTask.setTimeout(configurationManager.findEntry("timeout"));
+                monitoringTask.setSaveTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        deviceManager.editDevice(device);
+                    }
+                });
+                monitoringTask.setRetries(configurationManager.findEntryByKey("retries"));
+                monitoringTask.setTimeout(configurationManager.findEntryByKey("timeout"));
                 monitoringTask.start();
                 monitoringTasks.add(monitoringTask);
             }

@@ -124,6 +124,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
     @Override
     public void run(String... args) throws Exception {
+        configurationRepository.deleteAll();
         eventRepository.deleteAll();
         deviceRepository.deleteAll();
         driverConfigurationRepository.deleteAll();
@@ -203,7 +204,6 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             EventHelper.getInstance().addEvents(d4);
         }
-        configurationRepository.deleteAll();
         if (configurationRepository.count() == 0) {
             configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
             configurationRepository.save(new EmsConfigurationEntry("map_longitude", 10.52626));
