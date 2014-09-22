@@ -30,7 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Time: 1:14 PM
  */
 @Controller
-public class UserController {
+public class UserController extends StatusAwareController {
     @Autowired
     private UserManager userManager;
 

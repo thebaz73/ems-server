@@ -5,6 +5,7 @@ package ems.server.web;
 
 import ems.server.business.ConfigurationManager;
 import ems.server.domain.EmsConfigurationEntry;
+import ems.server.monitor.MonitoringStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Time: 1:14 PM
  */
 @Controller
-public class ConfigurationController {
+public class ConfigurationController extends StatusAwareController {
     @Autowired
     private ConfigurationManager configurationManager;
 
@@ -59,6 +60,9 @@ public class ConfigurationController {
     public String editEntry(@ModelAttribute EmsConfigurationEntry emsConfigurationEntry, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             return "configurations";
+        }
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/settings/configuration";
         }
 
         configurationManager.editEntry(emsConfigurationEntry);

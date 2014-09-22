@@ -21,6 +21,7 @@ import java.util.List;
  */
 @Service
 public class MonitorService {
+    private MonitoringStatus monitoringStatus = MonitoringStatus.STOPPED;
     @Autowired
     private DeviceManager deviceManager;
     @Autowired
@@ -32,44 +33,55 @@ public class MonitorService {
 
     private final List<MonitoringTask> monitoringTasks = new ArrayList<MonitoringTask>();
 
+    public MonitoringStatus getMonitoringStatus() {
+        return monitoringStatus;
+    }
+
     public boolean startMonitoring() {
-        try {
-            List<Device> devices = deviceManager.findAllDevices();
-            for (final Device device : devices) {
-                List<TaskConfiguration> taskConfigurations = taskConfigurationManager.findTaskConfigurationByDevice(device);
-                List<DriverConfiguration> driverConfigurations = driverConfigurationManager.findDriverConfigurationBySpecificationId(device.getSpecification().getId());
-                MonitoringTask monitoringTask = new MonitoringTask();
-                monitoringTask.setDevice(device);
-                monitoringTask.setTaskConfigurations(taskConfigurations);
-                monitoringTask.setDriverConfigurations(driverConfigurations);
-                monitoringTask.setSaveTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceManager.editDevice(device);
-                    }
-                });
-                monitoringTask.setUpdateFrequency(configurationManager.findEntryByKey("update_frequency_sec"));
-                monitoringTask.setRetries(configurationManager.findEntryByKey("retries"));
-                monitoringTask.setTimeout(configurationManager.findEntryByKey("timeout"));
-                monitoringTask.start();
-                monitoringTasks.add(monitoringTask);
+        if(monitoringStatus != MonitoringStatus.RUNNING) {
+            try {
+                List<Device> devices = deviceManager.findAllDevices();
+                for (final Device device : devices) {
+                    List<TaskConfiguration> taskConfigurations = taskConfigurationManager.findTaskConfigurationByDevice(device);
+                    List<DriverConfiguration> driverConfigurations = driverConfigurationManager.findDriverConfigurationBySpecificationId(device.getSpecification().getId());
+                    MonitoringTask monitoringTask = new MonitoringTask();
+                    monitoringTask.setDevice(device);
+                    monitoringTask.setTaskConfigurations(taskConfigurations);
+                    monitoringTask.setDriverConfigurations(driverConfigurations);
+                    monitoringTask.setSaveTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            deviceManager.editDevice(device);
+                        }
+                    });
+                    monitoringTask.setUpdateFrequency(configurationManager.findEntryByKey("update_frequency_sec"));
+                    monitoringTask.setRetries(configurationManager.findEntryByKey("retries"));
+                    monitoringTask.setTimeout(configurationManager.findEntryByKey("timeout"));
+                    monitoringTask.start();
+                    monitoringTasks.add(monitoringTask);
+                }
+                monitoringStatus = MonitoringStatus.RUNNING;
+            } catch (GenericException e) {
+                stopMonitoring();
+                monitoringStatus = MonitoringStatus.STOPPED;
             }
-        } catch (GenericException e) {
-            return false;
         }
-        return true;
+        return monitoringStatus == MonitoringStatus.RUNNING;
     }
 
     public boolean stopMonitoring() {
-        try {
-            for (MonitoringTask monitoringTask : monitoringTasks) {
-                monitoringTask.stop();
-                monitoringTask.join();
+        if(monitoringStatus == MonitoringStatus.RUNNING) {
+            try {
+                for (MonitoringTask monitoringTask : monitoringTasks) {
+                    monitoringTask.stop();
+                    monitoringTask.join();
+                }
+                monitoringTasks.clear();
+                monitoringStatus = MonitoringStatus.STOPPED;
+            } catch (InterruptedException e) {
+                monitoringStatus = MonitoringStatus.RUNNING;
             }
-            monitoringTasks.clear();
-        } catch (InterruptedException e) {
-            return false;
         }
-        return true;
+        return monitoringStatus == MonitoringStatus.STOPPED;
     }
 }

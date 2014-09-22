@@ -10,6 +10,7 @@ import ems.server.business.DriverConfigurationManager;
 import ems.server.business.SpecificationManager;
 import ems.server.domain.DriverConfiguration;
 import ems.server.domain.Specification;
+import ems.server.monitor.MonitoringStatus;
 import ems.server.utils.InventoryHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Time: 1:14 PM
  */
 @Controller
-public class SpecificationController {
+public class SpecificationController extends StatusAwareController {
     private final Log logger = LogFactory.getLog(SpecificationController.class);
     @Autowired
     private SpecificationManager specificationManager;
@@ -110,6 +111,9 @@ public class SpecificationController {
 
     @RequestMapping(value = "/specifications", method = POST)
     public String createSpecification(@ModelAttribute Specification specification, @ModelAttribute DriverConfiguration driverConfiguration, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/specifications";
+        }
         if (bindingResult.hasErrors()) {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
@@ -163,6 +167,9 @@ public class SpecificationController {
 
     @RequestMapping(value = "/specifications", method = PUT)
     public String editSpecification(@ModelAttribute Specification specification, @ModelAttribute DriverConfiguration driverConfiguration, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/specifications";
+        }
         if (bindingResult.hasErrors()) {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
@@ -215,6 +222,9 @@ public class SpecificationController {
 
     @RequestMapping(value = "/specifications/{id}", method = DELETE)
     public String deleteSpecification(Model model, @PathVariable("id") String id) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/specifications";
+        }
         Specification specification = specificationManager.findSpecification(id);
         if(deviceManager.findDeviceBySpecification(specification).size() > 0) {
             model.addAttribute("warning", "Cannot delete specification " + specification.getName() + ", because devices are build on it.");

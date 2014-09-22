@@ -83,9 +83,8 @@
 <script id="main" type="x-handlebars-template">
     {{> object}}
 </script>
+<script  type="text/javascript"  th:src="@{/js/ems.device.js}" src="../public/js/ems.device.js"></script>
 <script type="application/javascript" th:inline="javascript" th:if="${device}">
-    var paths = [];
-    var selectors = [];
     // The main template.
     var main = Handlebars.compile( $("#main").html() );
     // Register the list partial that "main" uses.
@@ -93,45 +92,9 @@
     Handlebars.registerPartial( "array", $( "#array-template" ).html() );
     Handlebars.registerPartial( "object", $( "#object-template" ).html() );
 
+    var updateFrequency = [[${configuration.update_frequency_sec*1000}]];
     var deviceId = [[${device.id}]];
     var schemaRequest = '/'+[[${device.specification.driver}]];
-    var response = $.getJSON(schemaRequest);
-    response.done(function(data) {
-        var pathCursor = [];
-        var selectorCursor = [];
-        traverse(data, pathCursor, paths, selectorCursor, selectors);
-        $("#driver").append(main(data));
-    });
-
-    function updateData() {
-        var request = "/inventory/device/" + deviceId;
-        $.get(request, function(device) {
-            $("#devicePanel").removeClass();
-            $("#devicePanel").addClass("panel");
-            addStatusClass($("#devicePanel"), device.driver.status);
-            assignValues(device.driver, selectors, paths);
-            //console.log(JSON.stringify(device));
-        });
-        loadDevicePagedData("/inventory/events/"+deviceId, "/template/deviceLogPage");
-
-        setTimeout(updateData, [[${configuration.update_frequency_sec*1000}]]);
-    }
-
-    function addStatusClass(element, status) {
-        if(status === 'OK') {
-            element.addClass("panel-success");
-        }
-        else if(status === 'WARN') {
-            element.addClass("panel-warning");
-        }
-        else if(status === 'ERROR') {
-            element.addClass("panel-danger");
-        }
-        else {
-            element.addClass("panel-default");
-        }
-    }
-    updateData();
 </script>
 </body>
 </html>

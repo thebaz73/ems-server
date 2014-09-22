@@ -11,6 +11,7 @@ import ems.server.business.DeviceManager;
 import ems.server.business.SpecificationManager;
 import ems.server.domain.Device;
 import ems.server.domain.Specification;
+import ems.server.monitor.MonitoringStatus;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.InventoryHelper;
 import ems.server.utils.TaskConfigurationHelper;
@@ -47,7 +48,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  * Time: 1:14 PM
  */
 @Controller
-public class DeviceController {
+public class DeviceController extends StatusAwareController {
     private final Log logger = LogFactory.getLog(DeviceController.class);
     private final BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumAwareConvertUtilsBean());
     @Autowired
@@ -103,6 +104,9 @@ public class DeviceController {
 
     @RequestMapping(value = "/devices", method = POST)
     public String createDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/devices";
+        }
         if (bindingResult.hasErrors()) {
             return logAndReturn(request.getSession(), bindingResult, model);
         }
@@ -168,6 +172,9 @@ public class DeviceController {
 
     @RequestMapping(value = "/devices", method = PUT)
     public String editDevice(@ModelAttribute Device device, final BindingResult bindingResult, final ModelMap model, HttpServletRequest request) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/devices";
+        }
         if (bindingResult.hasErrors()) {
             return "devices";
         }
@@ -240,6 +247,9 @@ public class DeviceController {
 
     @RequestMapping(value = "/devices/{id}", method = DELETE)
     public String deleteDevice(@PathVariable("id") String id) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/devices";
+        }
         deviceManager.deleteDevice(id);
         return "redirect:/devices";
     }

@@ -5,6 +5,7 @@ import ems.server.business.DeviceManager;
 import ems.server.business.TaskConfigurationManager;
 import ems.server.domain.Device;
 import ems.server.domain.TaskConfiguration;
+import ems.server.monitor.MonitoringStatus;
 import ems.server.utils.InventoryHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * Created by thebaz on 9/16/14.
  */
 @Controller
-public class TaskConfigurationController {
+public class TaskConfigurationController extends StatusAwareController {
     private final Log logger = LogFactory.getLog(DeviceController.class);
     @Autowired
     private TaskConfigurationManager taskConfigurationManager;
@@ -41,7 +42,6 @@ public class TaskConfigurationController {
     private Device currentDevice;
     private int page;
     private int pageSize;
-
 
     @ModelAttribute("allDevices")
     public List<Device> allDevices() {
@@ -75,6 +75,9 @@ public class TaskConfigurationController {
         if (bindingResult.hasErrors()) {
             return logAndReturn(bindingResult, model);
         }
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/tasks";
+        }
         taskConfigurationManager.createTaskConfiguration(taskConfiguration);
         model.clear();
         return "redirect:/tasks";
@@ -82,6 +85,9 @@ public class TaskConfigurationController {
 
     @RequestMapping(value = "/tasks/{id}", method = DELETE)
     public String deleteTask(@PathVariable("id") String id) {
+        if(getMonitoringStatus().equals(MonitoringStatus.RUNNING)) {
+            return "redirect:/tasks";
+        }
         taskConfigurationManager.deleteTaskConfiguration(id);
         return "redirect:/tasks";
     }

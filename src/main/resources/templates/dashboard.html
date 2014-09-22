@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="closeSettings" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="closeSettings" type="button" class="btn btn-default" data-dismiss="modal">Apply</button>
             </div>
         </div>
     </div>
@@ -91,7 +91,6 @@
 <script  type="text/javascript" th:src="@{/webjars/jquery-ui/1.11.1/jquery-ui.min.js}" src="https://ajax.googleapis.com/ajax/libs/jquery-ui/1.11.1/jquery-ui.js"></script>
 <script  type="text/javascript"  th:src="@{/js/ems.dashboard.js}" src="../public/js/ems.dashboard.js"></script>
 <script type="text/javascript" th:inline="javascript">
-    //var map = {};
     var latitude = [[${configuration.map_latitude}]];
     var longitude = [[${configuration.map_longitude}]];
     var updateFrequency = [[${configuration.update_frequency_sec*1000}]];

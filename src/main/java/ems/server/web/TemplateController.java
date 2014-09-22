@@ -12,7 +12,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by thebaz on 9/1/14.
  */
 @Controller
-public class TemplateController {
+public class TemplateController extends StatusAwareController {
 
     @RequestMapping(value = "/template/{name}", method = GET)
     public String show(@PathVariable("name") String name) {

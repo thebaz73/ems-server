@@ -17,20 +17,18 @@ import java.util.Map;
  * Created by thebaz on 8/25/14.
  */
 @Controller
-public class NavigationController extends ConfigurationAwareController {
+public class NavigationController extends StatusAwareController {
     @Autowired
     private DeviceManager deviceManager;
 
     @RequestMapping("/")
     public String dashboard(Map<String, Object> model) {
-        model.put("configuration", getConfiguration());
         model.put("date", new Date());
         return "dashboard";
     }
 
     @RequestMapping("/inventory/show/{id}")
     public String show(Map<String, Object> model, @PathVariable("id") String id) {
-        model.put("configuration", getConfiguration());
         model.put("device", deviceManager.findDevice(id));
         return "show";
     }
