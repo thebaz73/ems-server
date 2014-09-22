@@ -1,9 +1,10 @@
 var editMode;
+var map;
 /**
  * Available widgets
  */
 var widgets = {
-    "map": {
+    map: {
         template: "/template/map",
         data: "/inventory/devices",
         callback: function(data) {
@@ -49,9 +50,18 @@ var widgets = {
                     response.done(widget.callback);
                 });
             });
+        },
+        refresh: function(widget) {
+            var response = $.getJSON(widget.data);
+            response.done(widget.callback);
+        },
+        refreshMap: function () {
+            if(map) {
+                map.refresh();
+            }
         }
     },
-    "inventory": {
+    inventory: {
         template: "/template/inventory",
         data: "/inventory/devices",
         page: 0,
@@ -66,9 +76,19 @@ var widgets = {
                         element.find("#inventory-widget div[data-action='panel-buttons']").toggle();
                     });
                 });
+        },
+        refresh: function(widget) {
+            var request = widget.data + "?page=" + widget.page + "&pageSize=" + widget.pageSize;
+            var response = $.getJSON(request);
+            response.done(function(data) {
+                $.get("/template/inventoryPage", function (template) {
+                    var t = Handlebars.compile(template);
+                    $('#inventory-page').html(t(data));
+                });
+            });
         }
     },
-    "log": {
+    log: {
         template: "/template/log",
         data: "/inventory/events",
         page: 0,
@@ -81,6 +101,16 @@ var widgets = {
                     var t = Handlebars.compile(template);
                     element.append(t(data));
                     element.find("#log-widget div[data-action='panel-buttons']").toggle();
+                });
+            });
+        },
+        refresh: function(widget) {
+            var request = widget.data + "?page=" + widget.page + "&pageSize=" + widget.pageSize;
+            var response = $.getJSON(request);
+            response.done(function(data) {
+                $.get("/template/logPage", function (template) {
+                    var t = Handlebars.compile(template);
+                    $('#log-page').html(t(data));
                 });
             });
         }
@@ -137,6 +167,8 @@ $(document).ready(function () {
     }
     layoutPage(false);
 
+    updateWidgetData();
+
     $('#dashboard-commands .glyphicon-edit').click(function(event){
         event.preventDefault();
         editMode = !editMode;
@@ -159,6 +191,23 @@ $(document).ready(function () {
         layoutPage(true);
     });
 });
+
+function updateWidgetData() {
+    for (var col = 0; col < dashboardConfig.columns.length; col++) {
+        var column = dashboardConfig.columns[col];
+        for (var w = 0; w < column.widgets.length; w++) {
+            if(editMode) {
+                break;
+            }
+            else {
+                var widget = widgets[column.widgets[w]];
+                widget.refresh(widget);
+            }
+        }
+    }
+
+    setTimeout(updateWidgetData, updateFrequency);
+}
 
 /**
  * Function that renders layout
@@ -194,8 +243,8 @@ function layoutPage(force) {
                 widget.detach();
                 widget.appendTo('#wrapper'+col);
             }
-            if(column.widgets[w] == "map" && map) {
-                map.refresh();
+            if(column.widgets[w] === "map") {
+                widgets["map"].refreshMap();
             }
         }
     }
@@ -292,6 +341,6 @@ function updateConfig(draggable, droppable) {
     }
     dashboardConfig.columns[wrapperId].widgets.push(widgetName);
     if(widgetName === "map") {
-        map.refresh();
+        widgets["map"].refreshMap();
     }
 }

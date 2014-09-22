@@ -30,6 +30,7 @@ public class MonitoringTask {
     private EmsConfigurationEntry retries;
     private EmsConfigurationEntry timeout;
     private Runnable saveTask;
+    private EmsConfigurationEntry updateFrequency;
 
     public void setDevice(Device device) {
         this.device = device;
@@ -47,6 +48,10 @@ public class MonitoringTask {
         this.saveTask = saveTask;
     }
 
+    public void setUpdateFrequency(EmsConfigurationEntry updateFrequency) {
+        this.updateFrequency = updateFrequency;
+    }
+
     public void setRetries(EmsConfigurationEntry retries) {
         this.retries = retries;
     }
@@ -59,6 +64,7 @@ public class MonitoringTask {
         assert device != null && saveTask != null && taskConfigurations != null && driverConfigurations != null;
         executor = Executors.newScheduledThreadPool(taskConfigurations.size());
         ProtocolEnquirer enquirer = createProtocolEnquirer();
+        Integer updateFrequencyValue = (Integer) updateFrequency.getValue();
         for (TaskConfiguration taskConfiguration : taskConfigurations) {
             ScheduledFuture scheduledFuture;
             DriverConfiguration driverConfiguration = findConfiguration(taskConfiguration.getVariable());
@@ -67,14 +73,14 @@ public class MonitoringTask {
             }
             Runnable task = new EnquiryTask(enquirer, driverConfiguration);
             if(taskConfiguration.isRecurrent()) {
-                scheduledFuture = executor.scheduleWithFixedDelay(task, taskConfiguration.getDelay(), taskConfiguration.getFrequency(), TimeUnit.SECONDS);
+                scheduledFuture = executor.scheduleWithFixedDelay(task, updateFrequencyValue *taskConfiguration.getDelay(), updateFrequencyValue *taskConfiguration.getFrequency(), TimeUnit.SECONDS);
             }
             else {
-                scheduledFuture = executor.schedule(task, taskConfiguration.getDelay(), TimeUnit.SECONDS);
+                scheduledFuture = executor.schedule(task, updateFrequencyValue *taskConfiguration.getDelay(), TimeUnit.SECONDS);
             }
             futures.add(scheduledFuture);
         }
-        futures.add(executor.scheduleWithFixedDelay(saveTask, 1, 1, TimeUnit.SECONDS));
+        futures.add(executor.scheduleWithFixedDelay(saveTask, 1, updateFrequencyValue, TimeUnit.SECONDS));
     }
 
     private DriverConfiguration findConfiguration(String variable) {

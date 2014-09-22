@@ -8,28 +8,7 @@
 <section class="container" th:if="${device}">
     <div class="row">
         <div class="col-md-6">
-            <div class="panel panel-default" th:if="${#strings.toString(device.driver.status) == 'unknown'}">
-                <div class="panel-heading">
-                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
-                </div>
-                <div class="panel-body" id="driver">
-                </div>
-            </div>
-            <div class="panel panel-danger" th:if="${#strings.toString(device.driver.status) == 'error'}">
-                <div class="panel-heading">
-                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
-                </div>
-                <div class="panel-body" id="driver">
-                </div>
-            </div>
-            <div class="panel panel-warning" th:if="${#strings.toString(device.driver.status) == 'warn'}">
-                <div class="panel-heading">
-                    <h3 class="panel-title" th:text="${device.name}">Device name</h3>
-                </div>
-                <div class="panel-body" id="driver">
-                </div>
-            </div>
-            <div class="panel panel-success" th:if="${#strings.toString(device.driver.status) == 'ok'}">
+            <div class="panel panel-default" id="devicePanel">
                 <div class="panel-heading">
                     <h3 class="panel-title" th:text="${device.name}">Device name</h3>
                 </div>
@@ -122,14 +101,37 @@
         var selectorCursor = [];
         traverse(data, pathCursor, paths, selectorCursor, selectors);
         $("#driver").append(main(data));
-        //TODO USE Html5 WebWorkers to implement updates and Html5 Server-Sent Events to be notified of changes
+    });
+
+    function updateData() {
         var request = "/inventory/device/" + deviceId;
         $.get(request, function(device) {
+            $("#devicePanel").removeClass();
+            $("#devicePanel").addClass("panel");
+            addStatusClass($("#devicePanel"), device.driver.status);
             assignValues(device.driver, selectors, paths);
-            console.log(JSON.stringify(device));
+            //console.log(JSON.stringify(device));
         });
-    });
-    loadDevicePagedData("/inventory/events/"+deviceId, "/template/deviceLogPage", 0, 5);
+        loadDevicePagedData("/inventory/events/"+deviceId, "/template/deviceLogPage");
+
+        setTimeout(updateData, [[${configuration.update_frequency_sec*1000}]]);
+    }
+
+    function addStatusClass(element, status) {
+        if(status === 'OK') {
+            element.addClass("panel-success");
+        }
+        else if(status === 'WARN') {
+            element.addClass("panel-warning");
+        }
+        else if(status === 'ERROR') {
+            element.addClass("panel-danger");
+        }
+        else {
+            element.addClass("panel-default");
+        }
+    }
+    updateData();
 </script>
 </body>
 </html>

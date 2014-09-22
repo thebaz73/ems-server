@@ -207,6 +207,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
         if (configurationRepository.count() == 0) {
             configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
             configurationRepository.save(new EmsConfigurationEntry("map_longitude", 10.52626));
+            configurationRepository.save(new EmsConfigurationEntry("update_frequency_sec", 2));
             configurationRepository.save(new EmsConfigurationEntry("retries", 3));
             configurationRepository.save(new EmsConfigurationEntry("timeout", 1000));
         }

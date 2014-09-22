@@ -30,6 +30,7 @@ public class NavigationController extends ConfigurationAwareController {
 
     @RequestMapping("/inventory/show/{id}")
     public String show(Map<String, Object> model, @PathVariable("id") String id) {
+        model.put("configuration", getConfiguration());
         model.put("device", deviceManager.findDevice(id));
         return "show";
     }

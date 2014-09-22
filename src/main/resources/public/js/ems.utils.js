@@ -5,7 +5,12 @@
 /**
  * Vars
  */
-var map;
+var deviceData = {
+    uri: "",
+    data: {},
+    page: 0,
+    pageSize: 5
+};
 
 function doOperation(uri, elementId, operation) {
     $.getJSON(uri, function(data) {
@@ -59,15 +64,20 @@ function fillEventLogs(data) {
  * @param pageSize page size
  */
 function loadDevicePagedData(uri, template, page, pageSize) {
-    var request = uri + "?page=" + page + "&pageSize=" + pageSize;
+    if(page) {
+        deviceData.page = page;
+    }
+    if(pageSize) {
+        deviceData.pageSize = pageSize;
+    }
+    var request = uri + "?page=" + deviceData.page + "&pageSize=" + deviceData.pageSize;
     var response = $.getJSON(request);
     response.done(function(data, deviceId) {
-        var json = new Object();
-        json.uri = uri;
-        json.data = data;
+        deviceData.uri = uri;
+        deviceData.data = data;
         $.get(template, function (template) {
             var t = Handlebars.compile(template);
-            $('#log-page').html(t(json));
+            $('#log-page').html(t(deviceData));
             $("[data-toggle='popover']").popover();
         });
     });
@@ -93,11 +103,11 @@ function traverse(obj, pathCursor, paths, selectorCursor, selectors) {
         }
     }
     else if(obj.type === 'array') {
-        var tmpObj = obj.items;
+        var tmpArrayObj = obj.items;
         for(var i = 0; i < obj.maxItems;i++) {
             pathCursor.push(i);
             //selectorCursor.push("["+i+"]");
-            traverse(tmpObj, pathCursor, paths, selectorCursor, selectors);
+            traverse(tmpArrayObj, pathCursor, paths, selectorCursor, selectors);
             pathCursor.pop();
             //selectorCursor.pop();
         }

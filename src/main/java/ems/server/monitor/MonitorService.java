@@ -48,6 +48,7 @@ public class MonitorService {
                         deviceManager.editDevice(device);
                     }
                 });
+                monitoringTask.setUpdateFrequency(configurationManager.findEntryByKey("update_frequency_sec"));
                 monitoringTask.setRetries(configurationManager.findEntryByKey("retries"));
                 monitoringTask.setTimeout(configurationManager.findEntryByKey("timeout"));
                 monitoringTask.start();
