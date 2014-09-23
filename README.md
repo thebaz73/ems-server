@@ -124,5 +124,11 @@ EMS Application allows a simple and usefull configuration as for example the acc
 ### Status & Notes
 Project is still in its early stages.
 
+#### TODOs
+ * Implement widget like page on device detail page
+ * Implement MODBUS protocol
+ * Extract data from MongoDB using Hadoop technologies
+ * Use BIG DATA technologies
+
 ### Demo
 Planned...
