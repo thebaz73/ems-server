@@ -87,7 +87,7 @@ function loadDevicePagedData(uri, template, page, pageSize) {
 function doLoad(uri, template) {
     var request = uri + "?page=" + deviceEventsData.page + "&pageSize=" + deviceEventsData.pageSize;
     var response = $.getJSON(request);
-    response.done(function(data, deviceId) {
+    response.done(function(data) {
         deviceEventsData.uri = uri;
         deviceEventsData.data = data;
         $.get(template, function (template) {
