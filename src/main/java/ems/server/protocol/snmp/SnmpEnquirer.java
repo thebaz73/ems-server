@@ -37,10 +37,6 @@ public class SnmpEnquirer extends ProtocolEnquirer {
     private String deviceAddress;
     private SnmpProtocol configuration;
 
-    public SnmpEnquirer() {
-        super();
-    }
-
     /**
      * Executed after load to execute custom configurations
      */
