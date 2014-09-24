@@ -30,7 +30,7 @@ public class JmxEnquirer extends ProtocolEnquirer {
     @Override
     protected void postLoadConfiguration() {
         try {
-            if(device.getSpecification().getProtocolType().equals(ProtocolType.SNMP)) {
+            if(device.getSpecification().getProtocolType().equals(ProtocolType.JMX)) {
                 deviceAddress = "service:jmx:rmi:///jndi/rmi://"+device.getAddress()+":"+device.getPort()+"/jmxrmi";
                 configuration = (JmxProtocol) device.getProtocol();
                 createSession();
