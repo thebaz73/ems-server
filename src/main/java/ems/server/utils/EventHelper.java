@@ -30,10 +30,21 @@ public class EventHelper {
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public static EventHelper getInstance() {
+    /**
+     * Singleton instance method to access
+     * helper class
+     *
+     * @return class instance
+     */
+    public static synchronized EventHelper getInstance() {
         return instance;
     }
 
+    /**
+     * Helper method to add an event to repository
+     *
+     * @param device device event is related to
+     */
     public void addEvents(Device device) {
         for (EventType eventType : EventType.ALL) {
             for (EventSeverity eventSeverity : EventSeverity.ALL) {
@@ -42,6 +53,13 @@ public class EventHelper {
         }
     }
 
+    /**
+     * Helper method to add an event to repository
+     *
+     * @param device device event is related to
+     * @param eventType event type
+     * @param eventSeverity event severity
+     */
     public void addEvent(Device device, EventType eventType, EventSeverity eventSeverity) {
         String description = "Event of type: \'" + eventType + "\' at: " +
                 format.format(new Date(System.currentTimeMillis())) + " with severity: \'" +
@@ -49,7 +67,38 @@ public class EventHelper {
         addEvent(device, eventType, eventSeverity, description);
     }
 
+    /**
+     * Helper method to add an event to repository
+     *
+     * @param device device event is related to
+     * @param eventType event type
+     * @param eventSeverity event severity
+     * @param description event description
+     */
     public void addEvent(Device device, EventType eventType, EventSeverity eventSeverity, String description) {
+        Event event = createEvent(device, eventType, eventSeverity, description);
+        addEvent(event);
+    }
+
+    /**
+     * Helper method to add an event to repository
+     *
+     * @param event event to be added
+     */
+    public void addEvent(Event event) {
+        eventRepository.save(event);
+    }
+
+    /**
+     * Helper method to create a event
+     *
+     * @param device device event is related to
+     * @param eventType event type
+     * @param eventSeverity event severity
+     * @param description event description
+     * @return created event
+     */
+    public Event createEvent(Device device, EventType eventType, EventSeverity eventSeverity, String description) {
         Event event = new Event();
         event.setTimestamp(System.currentTimeMillis());
         event.setEventType(eventType);
@@ -57,6 +106,6 @@ public class EventHelper {
         event.setDeviceId(device.getId());
         event.setDeviceName(device.getName());
         event.setDescription(description);
-        eventRepository.save(event);
+        return event;
     }
 }

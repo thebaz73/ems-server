@@ -48,12 +48,12 @@ public class MonitorService {
                     monitoringTask.setDevice(device);
                     monitoringTask.setTaskConfigurations(taskConfigurations);
                     monitoringTask.setDriverConfigurations(driverConfigurations);
-                    monitoringTask.setSaveTask(new Runnable() {
-                        @Override
-                        public void run() {
-                            deviceManager.editDevice(device);
-                        }
-                    });
+
+                    SaveTask saveTask = new SaveTask();
+                    saveTask.setDevice(device);
+                    saveTask.setDeviceManager(deviceManager);
+                    monitoringTask.setSaveTask(saveTask);
+
                     monitoringTask.setUpdateFrequency(configurationManager.findEntryByKey("update_frequency_sec"));
                     monitoringTask.setRetries(configurationManager.findEntryByKey("retries"));
                     monitoringTask.setTimeout(configurationManager.findEntryByKey("timeout"));
@@ -84,4 +84,5 @@ public class MonitorService {
         }
         return monitoringStatus == MonitoringStatus.STOPPED;
     }
+
 }

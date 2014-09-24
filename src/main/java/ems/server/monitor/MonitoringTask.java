@@ -29,7 +29,7 @@ public class MonitoringTask {
     private List<DriverConfiguration> driverConfigurations;
     private EmsConfigurationEntry retries;
     private EmsConfigurationEntry timeout;
-    private Runnable saveTask;
+    private SaveTask saveTask;
     private EmsConfigurationEntry updateFrequency;
 
     public void setDevice(Device device) {
@@ -44,7 +44,7 @@ public class MonitoringTask {
         this.driverConfigurations = driverConfigurations;
     }
 
-    public void setSaveTask(Runnable saveTask) {
+    public void setSaveTask(SaveTask saveTask) {
         this.saveTask = saveTask;
     }
 
@@ -80,6 +80,7 @@ public class MonitoringTask {
             }
             futures.add(scheduledFuture);
         }
+        saveTask.setEnquirer(enquirer);
         futures.add(executor.scheduleWithFixedDelay(saveTask, 1, updateFrequencyValue, TimeUnit.SECONDS));
     }
 

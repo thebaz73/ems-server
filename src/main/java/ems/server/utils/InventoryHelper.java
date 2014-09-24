@@ -49,6 +49,16 @@ public class InventoryHelper {
             "obj.convert = function(value, driver) {\n" +
             "\treturn value;\n" +
             "}";
+    private static final String BOOLEAN_TEMPLATE_FUNCTION = "var obj = new Object();\n" +
+            "obj.isError = function(value) {\n" +
+            "\treturn value;\n" +
+            "}\n" +
+            "obj.isWarn = function(value) {\n" +
+            "\treturn value;\n" +
+            "}\n" +
+            "obj.convert = function(value, driver) {\n" +
+            "\treturn value;\n" +
+            "}";
     private final Log logger = LogFactory.getLog(InventoryHelper.class);
     private static InventoryHelper instance;
 
@@ -373,10 +383,16 @@ public class InventoryHelper {
                     !entry.getKey().equalsIgnoreCase("location") &&
                     !entry.getKey().equalsIgnoreCase("class")) {
                 Class<?> propertyType = PropertyUtils.getPropertyType(object, entry.getKey());
-                if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(String.class)) {
+                if(propertyType.isEnum() || propertyType.isAssignableFrom(Integer.class) || propertyType.isAssignableFrom(Double.class) || propertyType.isAssignableFrom(Float.class) || propertyType.isAssignableFrom(String.class)) {
                     DriverConfiguration driverConfiguration = new DriverConfiguration();
-                    driverConfiguration.setName(parentProperty+entry.getKey());
+                    driverConfiguration.setName(parentProperty + entry.getKey());
                     driverConfiguration.setFunction(TEMPLATE_FUNCTION);
+                    driverConfigurations.add(driverConfiguration);
+                }
+                else if(propertyType.isAssignableFrom(Boolean.class)) {
+                    DriverConfiguration driverConfiguration = new DriverConfiguration();
+                    driverConfiguration.setName(parentProperty + entry.getKey());
+                    driverConfiguration.setFunction(BOOLEAN_TEMPLATE_FUNCTION);
                     driverConfigurations.add(driverConfiguration);
                 }
                 else if(propertyType.isArray()) {

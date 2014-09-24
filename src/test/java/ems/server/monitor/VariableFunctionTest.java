@@ -65,7 +65,7 @@ public class VariableFunctionTest {
         Invocable invocable = (Invocable) scriptEngine;
         Object obj = scriptEngine.get("obj");
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-        Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
+        Status status = function.isError("value") ? Status.ERROR : function.isWarn("value") ? Status.WARN : Status.OK;
         assertEquals(Status.OK, status);
         String value = function.convert("value", null);
         assertEquals("value", value);
@@ -78,7 +78,7 @@ public class VariableFunctionTest {
         Invocable invocable = (Invocable) scriptEngine;
         Object obj = scriptEngine.get("obj");
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-        Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
+        Status status = function.isError(1) ? Status.ERROR : function.isWarn(1) ? Status.WARN : Status.OK;
         assertEquals(Status.ERROR, status);
         Number value = function.convert((Number)1, null);
         assertEquals(1, value.intValue());
@@ -91,7 +91,7 @@ public class VariableFunctionTest {
         Invocable invocable = (Invocable) scriptEngine;
         Object obj = scriptEngine.get("obj");
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-        Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
+        Status status = function.isError(1.1) ? Status.ERROR : function.isWarn(1.1) ? Status.WARN : Status.OK;
         assertEquals(Status.WARN, status);
         Number value = function.convert((Number)1.1, null);
         assertEquals(1.1, value.doubleValue(), 0.0);
@@ -104,7 +104,7 @@ public class VariableFunctionTest {
         Invocable invocable = (Invocable) scriptEngine;
         Object obj = scriptEngine.get("obj");
         VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-        Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
+        Status status = function.isError(1.0) ? Status.ERROR : function.isWarn(1.0) ? Status.WARN : Status.OK;
         assertEquals(Status.OK, status);
         SampleDriver d = new SampleDriver();
         d.setProperty(1);

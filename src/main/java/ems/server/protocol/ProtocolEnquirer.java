@@ -2,10 +2,7 @@ package ems.server.protocol;
 
 
 import ems.driver.domain.common.Status;
-import ems.server.domain.Device;
-import ems.server.domain.DriverConfiguration;
-import ems.server.domain.EventSeverity;
-import ems.server.domain.EventType;
+import ems.server.domain.*;
 import ems.server.monitor.VariableFunction;
 import ems.server.utils.EnumAwareConvertUtilsBean;
 import ems.server.utils.EventHelper;
@@ -39,10 +36,22 @@ public abstract class ProtocolEnquirer {
     protected final BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumAwareConvertUtilsBean());
     protected final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
     protected final ScriptEngine scriptEngine;
+    protected final Deque<Event> eventQueue = new ArrayDeque<Event>();
 
     public ProtocolEnquirer() {
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         scriptEngine = scriptEngineManager.getEngineByName("JavaScript");
+    }
+
+    public List<Event> getEvents() {
+        List<Event> events = new ArrayList<Event>();
+        synchronized (eventQueue) {
+            while (!eventQueue.isEmpty()) {
+                events.add(eventQueue.removeFirst());
+            }
+        }
+
+        return events;
     }
 
     /**
@@ -73,15 +82,6 @@ public abstract class ProtocolEnquirer {
      * @throws ems.server.utils.GenericException if configuration fatal error
      */
     public abstract void readValue(DriverConfiguration propertyConfiguration) throws GenericException;
-//
-//    /**
-//     * Return response handlers
-//     *
-//     * @return response handlers
-//     */
-//    public List<ResponseHandler> getResponseHandlers() {
-//        return responseHandlers;
-//    }
 
     /**
      * Adds a @ResponseHandler response handler
@@ -93,29 +93,11 @@ public abstract class ProtocolEnquirer {
             responseHandlers.add(responseHandler);
         }
     }
-//
-//    /**
-//     * Remove a@ResponseHandler response handler
-//     *
-//     * @param responseHandler a response handler
-//     */
-//    public void removeResponseHandler(ResponseHandler responseHandler) {
-//        synchronized (responseHandlers) {
-//            responseHandlers.remove(responseHandler);
-//        }
-//    }
-//
-//    /**
-//     * Returns session id
-//     * @return session id
-//     */
-//    public String getSessionId() {
-//        return sessionId;
-//    }
 
     /**
      * Sets read value to the @Driver object of the device if a valid JavaScript function is provided
      * the script engine is executed
+     *
      * @param propertyConfiguration driver configuration object
      * @param value value to be set
      * @throws NoSuchMethodException if no such method error
@@ -130,12 +112,9 @@ public abstract class ProtocolEnquirer {
                 Invocable invocable = (Invocable) scriptEngine;
                 Object obj = scriptEngine.get("obj");
                 VariableFunction function = invocable.getInterface(obj, VariableFunction.class);
-                Status status = function.isError(obj) ? Status.ERROR : function.isWarn(obj) ? Status.WARN : Status.OK;
-
-                try {
-                    beanUtilsBean.setProperty(device.getDriver(), "status", status);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                Status status = function.isError(value) ? Status.ERROR : function.isWarn(value) ? Status.WARN : Status.OK;
+                if(!status.equals(Status.OK)) {
+                    addEvent(propertyConfiguration, status);
                 }
 
                 value = function.convert(value, device.getDriver());
@@ -149,5 +128,20 @@ public abstract class ProtocolEnquirer {
             }
         }
         beanUtilsBean.setProperty(device.getDriver(), propertyConfiguration.getName(), value);
+    }
+
+    private void addEvent(DriverConfiguration propertyConfiguration, Status status) {
+        synchronized (eventQueue) {
+            EventSeverity eventSeverity = null;
+            if(status.equals(Status.ERROR)) {
+                eventSeverity = EventSeverity.EVENT_ERROR;
+            }
+            else if(status.equals(Status.WARN)) {
+                eventSeverity = EventSeverity.EVENT_WARN;
+            }
+            String description = propertyConfiguration.getName() + " current status: " + status;
+            Event event = EventHelper.getInstance().createEvent(device, EventType.EVENT_DEVICE, eventSeverity, description);
+            eventQueue.add(event);
+        }
     }
 }

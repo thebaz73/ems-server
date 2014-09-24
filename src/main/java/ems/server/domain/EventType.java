@@ -10,9 +10,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum EventType {
     EVENT_NETWORK("network"),
     EVENT_CONFIGURATION("configuration"),
-    EVENT_PROTOCOL("protocol");
+    EVENT_PROTOCOL("protocol"),
+    EVENT_DEVICE("device");
 
-    public static final EventType[] ALL = {EVENT_NETWORK, EVENT_CONFIGURATION, EVENT_PROTOCOL};
+    public static final EventType[] ALL = {EVENT_NETWORK, EVENT_CONFIGURATION, EVENT_PROTOCOL, EVENT_DEVICE};
 
     private final String name;
 
@@ -31,6 +32,8 @@ public enum EventType {
             return EVENT_CONFIGURATION;
         } else if (name.toUpperCase().equals("protocol")) {
             return EVENT_PROTOCOL;
+        } else if (name.toUpperCase().equals("device")) {
+            return EVENT_DEVICE;
         }
         throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");
     }

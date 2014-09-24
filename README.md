@@ -127,7 +127,6 @@ Project is still in its early stages.
 #### TODOs
  * Implement widget like page on device detail page
  * Implement JMX & MODBUS protocol
- * Implement a common way to assign device status depending on event
  * Extract data from MongoDB using Hadoop technologies? Use BIG DATA technologies?
 
 ### Demo

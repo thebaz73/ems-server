@@ -156,7 +156,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             TaskConfigurationHelper.getInstance().addTaskConfigurations(d1);
 
-            EventHelper.getInstance().addEvents(d1);
+            //EventHelper.getInstance().addEvents(d1);
 
             Device d2 = InventoryHelper.getInstance().createDevice("Device002", s1, Status.WARN);
             d2.setAddress("127.0.0.1");
@@ -165,7 +165,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             TaskConfigurationHelper.getInstance().addTaskConfigurations(d2);
 
-            EventHelper.getInstance().addEvents(d2);
+            //EventHelper.getInstance().addEvents(d2);
 
             Specification s2 = new Specification();
             s2.setName("AcmeModulator");
@@ -190,7 +190,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             TaskConfigurationHelper.getInstance().addTaskConfigurations(d3);
 
-            EventHelper.getInstance().addEvents(d3);
+            //EventHelper.getInstance().addEvents(d3);
 
             Location l2 = new Location();
             l2.setLatitude(45.123);
@@ -202,7 +202,7 @@ public class Application extends WebMvcConfigurerAdapter implements CommandLineR
 
             TaskConfigurationHelper.getInstance().addTaskConfigurations(d4);
 
-            EventHelper.getInstance().addEvents(d4);
+            //EventHelper.getInstance().addEvents(d4);
         }
         if (configurationRepository.count() == 0) {
             configurationRepository.save(new EmsConfigurationEntry("map_latitude", 41.28348));
