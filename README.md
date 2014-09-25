@@ -126,7 +126,7 @@ Project is still in its early stages.
 
 #### TODOs
  * Implement widget like page on device detail page
- * Implement JMX & MODBUS protocol
+ * Implement MODBUS protocol
  * Extract data from MongoDB using Hadoop technologies? Use BIG DATA technologies?
 
 ### Demo
