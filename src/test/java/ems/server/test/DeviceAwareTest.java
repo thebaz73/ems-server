@@ -26,13 +26,13 @@ public class DeviceAwareTest {
     protected DriverConfiguration name;
     protected DriverConfiguration cacheSize;
 
-    public void createDataModel() {
+    public void createDataModel(String schema, ProtocolType protocolType) {
         Specification specification = new Specification();
         specification.setName("AcmeTest");
         specification.setDriverType(DriverType.fromValue("modulator"));
         specification.setDriver("schema/modulator.json");
-        specification.setProtocolType(ProtocolType.fromValue("jmx"));
-        specification.setProtocol("schema/jmx.json");
+        specification.setProtocolType(protocolType);
+        specification.setProtocol(schema);
 
         device = new Device();
         device.setName("Device001");

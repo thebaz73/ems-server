@@ -1,10 +1,10 @@
 package ems.server.protocol.jmx;
 
+import ems.protocol.domain.ProtocolType;
 import ems.protocol.domain.jmx.JmxProtocol;
 import ems.server.test.DeviceAwareTest;
 import ems.server.test.TestEnquirer;
 import ems.server.test.TestEnquirerMBean;
-import ems.server.utils.GenericException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class JmxEnquirerTest extends DeviceAwareTest {
 
     @Test
     public void testReadValue() throws Exception {
-        createDataModel();
+        createDataModel("schema/jmx.json", ProtocolType.fromValue("jmx"));
 
         device.setAddress("127.0.0.1");
         device.setPort(9999);
