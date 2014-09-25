@@ -1,4 +1,4 @@
-package ems.server.protocol.jmx;
+package ems.server.test;
 
 /**
  * TestEnquirerMBean
