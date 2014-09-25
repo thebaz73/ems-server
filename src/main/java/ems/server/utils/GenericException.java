@@ -5,7 +5,7 @@ package ems.server.utils;
  * GenericException
  * Created by thebaz on 9/15/14.
  */
-public class GenericException extends Throwable {
+public class GenericException extends Exception {
     /**
      * Constructs a new throwable with <code>null</code> as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a

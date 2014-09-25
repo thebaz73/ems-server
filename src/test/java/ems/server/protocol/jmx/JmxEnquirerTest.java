@@ -36,7 +36,7 @@ public class JmxEnquirerTest extends DeviceAwareTest {
     }
 
     @Test
-    public void testReadValue() throws Exception, GenericException {
+    public void testReadValue() throws Exception {
         createDataModel();
 
         device.setAddress("127.0.0.1");
