@@ -85,6 +85,7 @@ public class MqttEnquirer extends ProtocolEnquirer {
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             if(propertyConfigurationMap.containsKey(topic)) {
+                client.unsubscribe(topic);
                 DriverConfiguration propertyConfiguration = propertyConfigurationMap.remove(topic);
                 setValue(propertyConfiguration, new String(message.getPayload()));
             }
