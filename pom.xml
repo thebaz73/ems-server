@@ -103,6 +103,12 @@
             <version>2.2.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- #######  MQTT   ####### -->
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>mqtt-client</artifactId>
+            <version>0.4.0</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -140,6 +146,11 @@
             <id>snmp4j-repository</id>
             <name>Snmp4j Repository</name>
             <url>https://oosnmp.net/dist/release</url>
+        </repository>
+        <repository>
+            <id>Eclipse Paho Repo</id>
+            <name>Eclipse Paho Repo</name>
+            <url>https://repo.eclipse.org/content/repositories/paho-releases</url>
         </repository>
     </repositories>
     <pluginRepositories>
