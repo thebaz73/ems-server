@@ -4,7 +4,6 @@ import ems.protocol.domain.ProtocolType;
 import ems.protocol.domain.jmx.JmxProtocol;
 import ems.server.test.DeviceAwareTest;
 import ems.server.test.TestEnquirer;
-import ems.server.test.TestEnquirerMBean;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +15,7 @@ import java.lang.management.ManagementFactory;
 import static org.junit.Assert.assertEquals;
 
 public class JmxEnquirerTest extends DeviceAwareTest {
-    public static final String OBJECT_NAME = "ems.server.protocol.jmx:type=TestEnquirer";
+    public static final String OBJECT_NAME = "ems.server.protocol.jmx:type=TestEnquirerMBean";
     private MBeanServer mBeanServer;
     private ObjectName mBeanName;
 
@@ -24,7 +23,7 @@ public class JmxEnquirerTest extends DeviceAwareTest {
     public void setUp() throws Exception {
         mBeanServer = ManagementFactory.getPlatformMBeanServer();
         mBeanName = new ObjectName(OBJECT_NAME);
-        TestEnquirerMBean mBean = new TestEnquirer();
+        TestEnquirer mBean = new TestEnquirerMBean();
         mBean.setCacheSize(200);
         mBean.setName("Marco");
         mBeanServer.registerMBean(mBean, mBeanName);

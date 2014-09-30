@@ -4,11 +4,8 @@ package ems.server.protocol.snmp;
 import ems.protocol.domain.ProtocolType;
 import ems.protocol.domain.snmp.SnmpProtocol;
 import ems.server.domain.DriverConfiguration;
-import ems.server.domain.EventSeverity;
-import ems.server.domain.EventType;
 import ems.server.protocol.ProtocolEnquirer;
 import ems.server.protocol.ResponseHandler;
-import ems.server.utils.EventHelper;
 import ems.server.utils.GenericException;
 import org.snmp4j.*;
 import org.snmp4j.event.ResponseEvent;
@@ -44,7 +41,7 @@ public class SnmpEnquirer extends ProtocolEnquirer {
     protected void postLoadConfiguration() {
         try {
             if(device.getSpecification().getProtocolType().equals(ProtocolType.SNMP)) {
-                deviceAddress = "udp://"+device.getAddress()+":"+device.getPort();
+                deviceAddress = "udp:"+device.getAddress()+"/"+device.getPort();
                 configuration = (SnmpProtocol) device.getProtocol();
                 createSession();
             }

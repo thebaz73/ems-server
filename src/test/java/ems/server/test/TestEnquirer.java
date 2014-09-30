@@ -1,26 +1,15 @@
 package ems.server.test;
 
-public class TestEnquirer implements TestEnquirerMBean {
-    private int cacheSize;
-    private String name;
+/**
+ * TestEnquirer
+ * Created by thebaz on 24/09/14.
+ */
+public interface TestEnquirer {
+    String getName();
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
+    void setName(String name);
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+    int getCacheSize();
 
-    @Override
-    public int getCacheSize() {
-        return this.cacheSize;
-    }
-
-    @Override
-    public synchronized void setCacheSize(int size) {
-        this.cacheSize = size;
-    }
+    void setCacheSize(int size);
 }
