@@ -117,7 +117,7 @@ The same solution is adopted for protocol configuration.
 }
 ```
 
-And again the application UI adaptes to the specification
+And again the application UI adapts to the specification
 
 ![protocol](docs/protocol.png)
 
