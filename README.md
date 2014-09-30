@@ -36,11 +36,11 @@ For example let's suppose we want to define a RF modulator we can prepare a JSON
             "title":"Power",
             "type":"number"
         },
-        "reflected-power":{
+        "reflectedPower":{
             "title":"Reflected power",
             "type":"number"
         },
-        "nominal-power":{
+        "nominalPower":{
             "title":"Nominal power",
             "type":"integer"
         },
@@ -64,13 +64,20 @@ Once the driver is defined and imported into the application the user will be al
 Please note that each property defined in the driver specification can be "scripted" using Javascript. Infact once the property value is retrieved from the remote device a javascript code is executed in order to accomplish some custom operations. To explain better please follow this exmaple. Suppose, again, that the user purpose is monitoring a RF Modulator, he can "normalize" the power value using following code the converts the value in percentage value:
 
 ```javascript
-var power = function(context) {
-    return (context.power / context.nominalPower) * 100;
+var obj = new Object();
+obj.isError = function(value) {
+    return value < 18;
+}
+obj.isWarn = function(value) {
+    return value >= 18 && value < 19;
+}
+obj.convert = function(value, driver) {
+    return (value / driver.nominalValue) * 100.0;
 }
 ```
 **IMPORTANT:** Javascript code is syntactically checked.
 
-The same solution is adopted for protocol configuration. Let's consider [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) which is actually integrated (other protocols to be integrated according to the plan are [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf) and [MODBUS](http://www.modbus.org/specs.php)).
+The same solution is adopted for protocol configuration. Let's consider [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) which is actually integrated (other protocols to be integrated according to the plan are [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf), [MODBUS](http://www.modbus.org/specs.php) and the MQ Telemetry Transport [MQTT](http://www.ibm.com/developerworks/library/ws-mqtt/)).
 
 ```JSON
 {
@@ -83,7 +90,7 @@ The same solution is adopted for protocol configuration. Let's consider [SNMP](h
             "title":"ProtocolType",
             "javaType": "ems.protocol.domain.ProtocolType",
             "type":"string",
-            "enum":[ "snmp", "jmx", "modbus" ],
+            "enum":[ "snmp", "jmx", "modbus", "mqtt", "demo" ],
             "default": "snmp"
         },
         "version":{
