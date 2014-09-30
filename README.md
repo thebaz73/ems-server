@@ -77,7 +77,7 @@ obj.convert = function(value, driver) {
 ```
 **IMPORTANT:** Javascript code is syntactically checked.
 
-The same solution is adopted for protocol configuration. Let's consider [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) which is actually integrated (other protocols to be integrated according to the plan are [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf), [MODBUS](http://www.modbus.org/specs.php) and the MQ Telemetry Transport [MQTT](http://www.ibm.com/developerworks/library/ws-mqtt/)).
+The same solution is adopted for protocol configuration. Let's consider [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) which is actually integrated like [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf), and the MQ Telemetry Transport Protocol [MQTT](http://www.ibm.com/developerworks/library/ws-mqtt/) ([MODBUS](http://www.modbus.org/specs.php) is on planning).
 
 ```JSON
 {
