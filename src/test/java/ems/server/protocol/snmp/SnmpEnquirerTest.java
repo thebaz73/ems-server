@@ -20,20 +20,17 @@ import static org.junit.Assert.assertEquals;
  * Created by thebaz on 9/30/14.
  */
 public class SnmpEnquirerTest extends DeviceAwareTest {
-
     public static final String NAME_OID = "1.3.6.1.4.1.21345.1";
     public static final String CACHE_OID = "1.3.6.1.4.1.21346.1";
     private TestEnquirerAgent agent;
-    private final OID nameOid = new OID(NAME_OID);
-    private final OID cacheOid = new OID(CACHE_OID);
 
     @Before
     public void setUp() throws Exception {
         agent = new TestEnquirerAgent("udp:0.0.0.0/9999");
         agent.start();
         agent.unregisterManagedObjects();
-        agent.registerManagedObject(new MOScalar(nameOid, MOAccessImpl.ACCESS_READ_ONLY, new OctetString("Marco")));
-        agent.registerManagedObject(new MOScalar(cacheOid, MOAccessImpl.ACCESS_READ_ONLY, new Integer32(200)));
+        agent.registerManagedObject(new MOScalar(new OID(NAME_OID), MOAccessImpl.ACCESS_READ_ONLY, new OctetString("Marco")));
+        agent.registerManagedObject(new MOScalar(new OID(CACHE_OID), MOAccessImpl.ACCESS_READ_ONLY, new Integer32(200)));
     }
 
     @After
@@ -51,7 +48,7 @@ public class SnmpEnquirerTest extends DeviceAwareTest {
         cacheSize.setValue(CACHE_OID);
 
         SnmpProtocol protocol = new SnmpProtocol();
-        protocol.setVersion(SnmpProtocol.Version.VERSION_1);
+        protocol.setVersion(SnmpProtocol.Version.VERSION_2_C);
         protocol.setReadCommunity("public");
         device.setProtocol(protocol);
 
