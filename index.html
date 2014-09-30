@@ -42,12 +42,24 @@
 <h3>
 <a name="project-scope" class="anchor" href="#project-scope"><span class="octicon octicon-link"></span></a>Project scope</h3>
 
-<p>Project scope is creating an application that can monitor remote devices with different protocols. Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.</p>
+<p>Project scope is creating an application that can monitor remote devices with different protocols. Following protocols are currently integrated:</p>
+
+<ul>
+<li>The Simple Network Management Protocol <a href="http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol">SNMP</a>
+</li>
+<li>The Java Management Extensions <a href="http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf">JMX</a>
+</li>
+<li>The MQ Telemetry Transport Protocol <a href="http://www.ibm.com/developerworks/library/ws-mqtt/">MQTT</a>
+</li>
+<li>The ModBUS Protocol <a href="http://www.modbus.org/specs.php">MODBUS</a> is on planning</li>
+</ul><p>Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.</p>
 
 <h4>
 <a name="dashboard" class="anchor" href="#dashboard"><span class="octicon octicon-link"></span></a>Dashboard</h4>
 
 <p>Application home page is a dashboard, each user can customize its widgets position and layout.  </p>
+
+<p><img src="https://github.com/thebaz73/ems-server/raw/master/docs/dashboard.png" alt="dashboard"></p>
 
 <p>Dashboard is a drill-down, straight-forward access point to remote device information, in order to allow operator reach the most important information in the fastest way. </p>
 
@@ -98,23 +110,25 @@
 
 <p>Once the driver is defined and imported into the application the user will be allowed to add information for each feature defined into the driver as in following screenshot.</p>
 
+<p><img src="https://github.com/thebaz73/ems-server/raw/master/docs/specification.png" alt="specification"></p>
+
 <p>Please note that each property defined in the driver specification can be "scripted" using Javascript. Infact once the property value is retrieved from the remote device a javascript code is executed in order to accomplish some custom operations. To explain better please follow this exmaple. Suppose, again, that the user purpose is monitoring a RF Modulator, he can "normalize" the power value using following code the converts the value in percentage value:</p>
 
 <div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Object</span><span class="p">();</span>
 <span class="nx">obj</span><span class="p">.</span><span class="nx">isError</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
- <span class="k">return</span> <span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="nx">obj</span><span class="p">.</span><span class="nx">isWarn</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span> 
- <span class="k">return</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">18</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">19</span><span class="p">;</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">isWarn</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">value</span> <span class="o">&gt;=</span> <span class="mi">18</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span> <span class="o">&lt;</span> <span class="mi">19</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nx">obj</span><span class="p">.</span><span class="nx">convert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">driver</span><span class="p">)</span> <span class="p">{</span>
- <span class="k">return</span> <span class="p">(</span><span class="nx">value</span> <span class="o">/</span> <span class="nx">driver</span><span class="p">.</span><span class="nx">nominalValue</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nx">value</span> <span class="o">/</span> <span class="nx">driver</span><span class="p">.</span><span class="nx">nominalValue</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 
 <p><strong>IMPORTANT:</strong> Javascript code is syntactically checked.</p>
 
-<p>The same solution is adopted for protocol configuration. Let's consider <a href="http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol">SNMP</a> which is actually integrated (other protocols to be integrated according to the plan are <a href="http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf">JMX</a> and <a href="http://www.modbus.org/specs.php">MODBUS</a>).</p>
+<p>The same solution is adopted for protocol configuration.</p>
 
 <div class="highlight highlight-JSON"><pre><span class="p">{</span>
     <span class="nt">"type"</span><span class="p">:</span><span class="s2">"object"</span><span class="p">,</span>
@@ -126,7 +140,7 @@
             <span class="nt">"title"</span><span class="p">:</span><span class="s2">"ProtocolType"</span><span class="p">,</span>
             <span class="nt">"javaType"</span><span class="p">:</span> <span class="s2">"ems.protocol.domain.ProtocolType"</span><span class="p">,</span>
             <span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span><span class="p">,</span>
-            <span class="nt">"enum"</span><span class="p">:[</span> <span class="s2">"snmp"</span><span class="p">,</span> <span class="s2">"jmx"</span><span class="p">,</span> <span class="s2">"modbus"</span> <span class="p">],</span>
+            <span class="nt">"enum"</span><span class="p">:[</span> <span class="s2">"snmp"</span><span class="p">,</span> <span class="s2">"jmx"</span><span class="p">,</span> <span class="s2">"modbus"</span><span class="p">,</span> <span class="s2">"mqtt"</span><span class="p">,</span> <span class="s2">"demo"</span> <span class="p">],</span>
             <span class="nt">"default"</span><span class="p">:</span> <span class="s2">"snmp"</span>
         <span class="p">},</span>
         <span class="nt">"version"</span><span class="p">:{</span>
@@ -149,10 +163,14 @@
 
 <p>And again the application UI adaptes to the specification</p>
 
+<p><img src="https://github.com/thebaz73/ems-server/raw/master/docs/protocol.png" alt="protocol"></p>
+
 <h4>
 <a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h4>
 
 <p>EMS Application allows a simple and usefull configuration as for example the access list definition.</p>
+
+<p><img src="https://github.com/thebaz73/ems-server/raw/master/docs/configuration.png" alt="configuration"></p>
 
 <h3>
 <a name="technology" class="anchor" href="#technology"><span class="octicon octicon-link"></span></a>Technology</h3>
