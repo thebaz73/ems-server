@@ -6,7 +6,13 @@
 In systems engineering, a system monitor (SM) is a process within a distributed system for collecting and storing state data. **Network monitoring** or more simply monitoring is the use of a system that constantly monitors a computer or a device for slow or failing components and that notifies the administrator. The **Internet of Things (IoT)** refers to the interconnection of uniquely identifiable embedded computing-like devices within the existing Internet infrastructure. 
 
 ### Project scope
-Project scope is creating an application that can monitor remote devices with different protocols. Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.
+Project scope is creating an application that can monitor remote devices with different protocols. Following protocols are currently integrated:
+ * The Simple Network Management Protocol [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol)
+ * The Java Management Extensions [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf)
+ * The MQ Telemetry Transport Protocol [MQTT](http://www.ibm.com/developerworks/library/ws-mqtt/)
+ * The ModBUS Protocol [MODBUS](http://www.modbus.org/specs.php) is on planning
+
+Application offers easly customizable dashboard, a pluggable and extensible data model, advanced configuration functionalities.
 
 #### Dashboard
 Application home page is a dashboard, each user can customize its widgets position and layout.  
@@ -77,7 +83,7 @@ obj.convert = function(value, driver) {
 ```
 **IMPORTANT:** Javascript code is syntactically checked.
 
-The same solution is adopted for protocol configuration. Let's consider [SNMP](http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) which is actually integrated (other protocols to be integrated according to the plan are [JMX](http://docs.oracle.com/javase/8/docs/.../jmx/JMX_1_4_specification.pdf), [MODBUS](http://www.modbus.org/specs.php) and the MQ Telemetry Transport [MQTT](http://www.ibm.com/developerworks/library/ws-mqtt/)).
+The same solution is adopted for protocol configuration.
 
 ```JSON
 {
